@@ -2,8 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="theme-color" content="#667eea">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Family Chat">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Isabella Chat 💬</title>
+<title>Family Chat 💬</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -385,8 +392,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
 <div id="screen-login" class="screen active">
   <div class="lcard">
     <div class="logo">💬</div>
-    <div class="ltitle">Isabella Chat</div>
-    <div class="lsub">Tu espacio privado de mensajes</div>
+    <div class="ltitle">Family Chat</div>
+    <div class="lsub">Conecta con tu familia</div>
     <div class="login-user-step" id="step-user">
       <div class="fg" style="margin-bottom:16px;">
         <div class="fl">Nombre de usuario</div>
@@ -517,7 +524,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
   <div class="app-right" id="app-right">
     <div class="chat-empty-state" id="chat-empty-state">
       <div style="font-size:64px;">💬</div>
-      <div style="font-weight:800;font-size:18px;color:var(--text);margin-top:12px;">Isabella Chat</div>
+      <div style="font-weight:800;font-size:18px;color:var(--text);margin-top:12px;">Family Chat</div>
       <div style="font-size:14px;color:var(--muted);font-weight:600;margin-top:6px;">Selecciona un chat para comenzar</div>
     </div>
     <div class="chat-panel" id="chat-panel" style="display:none;flex-direction:column;height:100%;">
@@ -1870,6 +1877,13 @@ async function checkReminders(){
 }
 
 init();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
