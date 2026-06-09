@@ -650,6 +650,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore,collection,doc,addDoc,onSnapshot,query,orderBy,serverTimestamp,getDoc,setDoc,getDocs,deleteDoc,limit,updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging,getToken,onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 const cfg = {
   apiKey:"AIzaSyBZ7X_DpQCWAvRzSDiEZMVkfG7xQMc8yRs",
@@ -661,6 +662,9 @@ const cfg = {
 };
 const app = initializeApp(cfg);
 const db  = getFirestore(app);
+let messaging = null;
+try{ messaging = getMessaging(app); }catch(e){}
+const VAPID_KEY = 'BI3hWTnXGoUmNWEcYjQ7a1H11jlZ7SpPoPPb9a4XBWTApwhgb4RcLl-WMxFyUak_jRQ1Uj9xM2zh_ln4HJLPLXE';
 
 const DEFAULTS = [
   {id:'papa',    name:'Papá',    avatar:'👨',pin:'99002376',role:'admin'},
@@ -869,7 +873,7 @@ const AppStorage = {
   }
 };
 
-// TOKEN DE DISPOSITIVO - usa cookies que persisten en PWA
+// SESIÓN SIMPLE CON COOKIE
 function getCookie(name){
   const match=document.cookie.match('(^|;)\s*'+name+'\s*=\s*([^;]+)');
   return match?decodeURIComponent(match.pop()):null;
@@ -881,40 +885,39 @@ function setCookie(name,val,days){
 function deleteCookie(name){
   document.cookie=name+'=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
 }
-
-function getDeviceToken(){
-  let token=getCookie('fc_dt');
-  if(!token){
-    token='dt_'+Date.now()+'_'+Math.random().toString(36).slice(2);
-    setCookie('fc_dt',token,365);
-  }
-  return token;
-}
-
 async function saveSession(userId){
-  const token=getDeviceToken();
-  await setDoc(doc(db,'sessions',token),{
-    userId,token,ts:serverTimestamp(),active:true
-  });
-  setCookie('fc_st',token,365);
+  setCookie('fc_uid',userId,365);
+  try{localStorage.setItem('fc_uid',userId);}catch(e){}
 }
-
 async function loadSession(){
-  try{
-    const token=getCookie('fc_st')||getDeviceToken();
-    if(!token)return null;
-    const snap=await getDoc(doc(db,'sessions',token));
-    if(snap.exists()&&snap.data().active) return snap.data().userId;
-  }catch(e){}
-  return null;
+  return getCookie('fc_uid')||localStorage.getItem('fc_uid')||null;
+}
+async function clearSession(){
+  deleteCookie('fc_uid');
+  try{localStorage.removeItem('fc_uid');}catch(e){}
 }
 
-async function clearSession(){
+// ===== PUSH NOTIFICATIONS =====
+async function initPushNotifications(){
+  if(!messaging||!me)return;
   try{
-    const token=getCookie('fc_st');
-    if(token)await setDoc(doc(db,'sessions',token),{active:false},{merge:true});
-  }catch(e){}
-  deleteCookie('fc_st');
+    const permission = await Notification.requestPermission();
+    if(permission !== 'granted')return;
+    const token = await getToken(messaging,{vapidKey:VAPID_KEY});
+    if(token){
+      // Guardar token FCM en Firestore asociado al usuario
+      await setDoc(doc(db,'fcmTokens',me.id),{
+        token, userId:me.id, userName:me.name, ts:serverTimestamp()
+      },{merge:true});
+    }
+    // Escuchar mensajes cuando la app está en primer plano
+    onMessage(messaging, payload=>{
+      const title = payload.notification?.title||'Family Chat';
+      const body  = payload.notification?.body||'Nuevo mensaje';
+      showNotif(title, body, null);
+      playNotif();
+    });
+  }catch(e){console.log('Push notif error:',e);}
 }
 // INIT
 async function init(){
@@ -1060,6 +1063,7 @@ async function showContacts(){
   await renderContacts();
   subscribeUsers();
   subscribeGlobalNotifs();
+  initPushNotifications();
   if(isAdmin){renderUsersTable();renderWordslist();renderRemindersList();populateReminderTo();populateClearChatSelect();}
   checkReminders();
 }
