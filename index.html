@@ -869,41 +869,52 @@ const AppStorage = {
   }
 };
 
-// TOKEN DE DISPOSITIVO
+// TOKEN DE DISPOSITIVO - usa cookies que persisten en PWA
+function getCookie(name){
+  const match=document.cookie.match('(^|;)\s*'+name+'\s*=\s*([^;]+)');
+  return match?decodeURIComponent(match.pop()):null;
+}
+function setCookie(name,val,days){
+  const exp=new Date(Date.now()+days*864e5).toUTCString();
+  document.cookie=name+'='+encodeURIComponent(val)+';path=/;expires='+exp+';SameSite=Lax';
+}
+function deleteCookie(name){
+  document.cookie=name+'=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+}
+
 function getDeviceToken(){
-  let token = localStorage.getItem('fc_device_token');
+  let token=getCookie('fc_dt');
   if(!token){
-    token = 'dt_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    localStorage.setItem('fc_device_token', token);
+    token='dt_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    setCookie('fc_dt',token,365);
   }
   return token;
 }
 
 async function saveSession(userId){
-  const token = getDeviceToken();
+  const token=getDeviceToken();
   await setDoc(doc(db,'sessions',token),{
-    userId, token, ts: serverTimestamp(), active: true
+    userId,token,ts:serverTimestamp(),active:true
   });
-  localStorage.setItem('fc_session_token', token);
+  setCookie('fc_st',token,365);
 }
 
 async function loadSession(){
   try{
-    const token = localStorage.getItem('fc_session_token') || getDeviceToken();
-    const snap = await getDoc(doc(db,'sessions',token));
-    if(snap.exists() && snap.data().active){
-      return snap.data().userId;
-    }
+    const token=getCookie('fc_st')||getDeviceToken();
+    if(!token)return null;
+    const snap=await getDoc(doc(db,'sessions',token));
+    if(snap.exists()&&snap.data().active) return snap.data().userId;
   }catch(e){}
   return null;
 }
 
 async function clearSession(){
   try{
-    const token = localStorage.getItem('fc_session_token');
-    if(token) await setDoc(doc(db,'sessions',token),{active:false},{merge:true});
+    const token=getCookie('fc_st');
+    if(token)await setDoc(doc(db,'sessions',token),{active:false},{merge:true});
   }catch(e){}
-  localStorage.removeItem('fc_session_token');
+  deleteCookie('fc_st');
 }
 // INIT
 async function init(){
