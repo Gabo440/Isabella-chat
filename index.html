@@ -1188,15 +1188,27 @@ window.viewMyAvatar=function(){
 };
 window.handleAvatarImg=async function(e){
   const f=e.target.files[0];if(!f)return;
-  if(f.size>500000){showToast('⚠️ Imagen muy grande (máx ~400KB)');return;}
+  // Comprimir imagen automáticamente
   const reader=new FileReader();
   reader.onload=async ev=>{
-    const photo=ev.target.result;
-    await setDoc(doc(db,'users',me.id),{photo},{merge:true});
-    me={...me,photo};
-    await loadUsers();
-    renderMyAvatar();
-    showToast('✅ Foto actualizada');
+    const img=new Image();
+    img.onload=async function(){
+      const canvas=document.createElement('canvas');
+      const MAX=400;
+      let w=img.width,h=img.height;
+      if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
+      else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const photo=canvas.toDataURL('image/jpeg',0.75);
+      if(photo.length>900000){showToast('⚠️ Imagen demasiado grande incluso comprimida');return;}
+      await setDoc(doc(db,'users',me.id),{photo},{merge:true});
+      me={...me,photo};
+      await loadUsers();
+      renderMyAvatar();
+      showToast('✅ Foto actualizada');
+    };
+    img.src=ev.target.result;
   };
   reader.readAsDataURL(f);
   e.target.value='';
