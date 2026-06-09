@@ -139,7 +139,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
 /* CHAT */
 #screen-chat{display:none;flex-direction:column;height:100dvh;max-width:480px;background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
 #screen-chat.active{display:flex;}
-.chdr{background:var(--surface);padding:13px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.chdr{background:var(--surface);padding:13px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:10;}
 .btnbk{background:none;border:none;font-size:22px;cursor:pointer;padding:4px;-webkit-tap-highlight-color:transparent;}
 .chinfo{flex:1;}
 .chnm{font-weight:800;font-size:15px;color:var(--text);}
@@ -518,6 +518,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
         </div>
         <div id="reminders-list"></div>
       </div>
+      <!-- BORRAR CHATS -->
+      <div class="words-section">
+        <div class="atl">🗑️ Borrar historial de chat</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:4px;">Selecciona el chat y confirma para eliminar todos sus mensajes.</div>
+        <div class="words-input-row" style="margin-top:10px;">
+          <select class="fi" id="clear-chat-select" style="flex:1;"></select>
+          <button onclick="clearSelectedChat()" style="border:none;border-radius:10px;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:white;background:linear-gradient(135deg,#ef4444,#dc2626);cursor:pointer;white-space:nowrap;">🗑️ Borrar</button>
+        </div>
+      </div>
     </div>
   </div>
   <!-- PANEL DERECHO -->
@@ -532,7 +541,6 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
         <button class="btnbk" id="btnbk" onclick="backToContacts()">←</button>
         <div class="hav" id="chav" style="font-size:20px;width:36px;height:36px;">👤</div>
         <div class="chinfo"><div class="chnm" id="chnm">-</div><div class="chst" id="chst">En línea ✨</div></div>
-        <button class="btn-clearchat" id="btn-clearchat" style="display:none;" onclick="clearActiveChat()" title="Borrar historial">🗑️</button>
       </div>
       <div class="msgcont" id="msgcont">
         <div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>
@@ -981,7 +989,7 @@ async function showContacts(){
   await renderContacts();
   subscribeUsers();
   subscribeGlobalNotifs();
-  if(isAdmin){renderUsersTable();renderWordslist();renderRemindersList();populateReminderTo();}
+  if(isAdmin){renderUsersTable();renderWordslist();renderRemindersList();populateReminderTo();populateClearChatSelect();}
   checkReminders();
 }
 
@@ -1301,7 +1309,6 @@ window.openChat=function(uid){
   }
   document.getElementById('chnm').textContent=other.name;
   document.getElementById('chst').textContent='En línea ✨';
-  document.getElementById('btn-clearchat').style.display=me.role==='admin'?'block':'none';
   const ce=document.getElementById('chav');
   if(other.photo){
     ce.style.cursor='zoom-in';
@@ -1328,6 +1335,35 @@ window.openChat=function(uid){
   history.pushState({chat:uid}, '', location.href);
   setTimeout(()=>renderContacts(),1500);
 };
+function populateClearChatSelect(){
+  const sel=document.getElementById('clear-chat-select');
+  if(!sel)return;
+  const others=users.filter(u=>u.id!==me.id);
+  sel.innerHTML='<option value="">-- Selecciona un chat --</option>'+
+    others.map(u=>`<option value="${u.id}">${u.name}</option>`).join('')+
+    groups.map(g=>`<option value="grp_${g.id}">${g.name} (grupo)</option>`).join('');
+}
+
+window.clearSelectedChat=async function(){
+  const sel=document.getElementById('clear-chat-select');
+  if(!sel||!sel.value){showToast('⚠️ Selecciona un chat primero');return;}
+  const val=sel.value;
+  const name=sel.options[sel.selectedIndex].text;
+  if(!confirm(`¿Borrar TODO el historial de "${name}"? Esta acción no se puede deshacer.`))return;
+  let colRef;
+  if(val.startsWith('grp_')){
+    const gid=val.replace('grp_','');
+    colRef=collection(db,'groups',gid,'messages');
+  } else {
+    colRef=collection(db,'chats',chatId(me.id,val),'messages');
+  }
+  const snap=await getDocs(colRef);
+  await Promise.all(snap.docs.map(d=>deleteDoc(doc(db,colRef.path,d.id))));
+  sel.value='';
+  renderContacts();
+  showToast('🗑️ Historial borrado');
+};
+
 window.clearActiveChat=async function(){
   const target=chat||activeGroup;
   if(!target)return;
@@ -1883,6 +1919,25 @@ if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
+}
+
+// Fix teclado móvil
+if(window.visualViewport){
+  function onViewportResize(){
+    const chatPanel=document.getElementById('chat-panel');
+    if(!chatPanel||!chatPanel.style.display||chatPanel.style.display==='none')return;
+    const appRight=document.getElementById('app-right');
+    if(!appRight||!appRight.classList.contains('mobile-open'))return;
+    const vv=window.visualViewport;
+    const offsetBottom=window.innerHeight-vv.height-vv.offsetTop;
+    chatPanel.style.bottom=offsetBottom+'px';
+    chatPanel.style.top='0';
+    // Hacer scroll al último mensaje
+    const mc=document.getElementById('msgcont');
+    if(mc)mc.scrollTop=mc.scrollHeight;
+  }
+  window.visualViewport.addEventListener('resize',onViewportResize);
+  window.visualViewport.addEventListener('scroll',onViewportResize);
 }
 </script>
 </body>
