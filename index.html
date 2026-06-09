@@ -953,7 +953,7 @@ window.doLogin=async function(){
   const u=users.find(x=>x.id===selId);
   if(!u)return;
   if(String(pin)!==String(u.pin)){document.getElementById('lerr').textContent='❌ PIN incorrecto';pin='';updDots();return;}
-  me=u;localStorage.setItem('isa_u',u.id);setPresence(true);showContacts();
+  me=u;localStorage.setItem('isa_u',u.id);localStorage.setItem('isa_p',pin);setPresence(true);showContacts();
 };
 window.doLogout=function(){
   if(unsub){unsub();unsub=null;}
@@ -964,6 +964,7 @@ window.doLogout=function(){
   setPresence(false);
   if(chat&&me)setTyping(false);
   localStorage.removeItem('isa_u');
+  localStorage.removeItem('isa_p');
   me=chat=null;pin='';selId=null;
   document.getElementById('pinsec').classList.remove('v');
   document.getElementById('step-user').style.display='flex';
