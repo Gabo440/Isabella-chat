@@ -848,6 +848,63 @@ function renderGuessNumber(m, docId, isMine){
   return `<div class="game-msg">${body}</div>`;
 }
 
+
+// Storage robusto para PWA (usa localStorage + cookie como fallback)
+const AppStorage = {
+  set: function(key, val){
+    try{localStorage.setItem(key, val);}catch(e){}
+    try{document.cookie = key+'='+encodeURIComponent(val)+';path=/;max-age=31536000';}catch(e){}
+  },
+  get: function(key){
+    try{const v=localStorage.getItem(key);if(v)return v;}catch(e){}
+    try{
+      const match=document.cookie.match('(^|;)\\s*'+key+'\\s*=\\s*([^;]+)');
+      if(match)return decodeURIComponent(match.pop());
+    }catch(e){}
+    return null;
+  },
+  remove: function(key){
+    try{localStorage.removeItem(key);}catch(e){}
+    try{document.cookie=key+'=;path=/;max-age=0';}catch(e){}
+  }
+};
+
+// TOKEN DE DISPOSITIVO
+function getDeviceToken(){
+  let token = localStorage.getItem('fc_device_token');
+  if(!token){
+    token = 'dt_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    localStorage.setItem('fc_device_token', token);
+  }
+  return token;
+}
+
+async function saveSession(userId){
+  const token = getDeviceToken();
+  await setDoc(doc(db,'sessions',token),{
+    userId, token, ts: serverTimestamp(), active: true
+  });
+  localStorage.setItem('fc_session_token', token);
+}
+
+async function loadSession(){
+  try{
+    const token = localStorage.getItem('fc_session_token') || getDeviceToken();
+    const snap = await getDoc(doc(db,'sessions',token));
+    if(snap.exists() && snap.data().active){
+      return snap.data().userId;
+    }
+  }catch(e){}
+  return null;
+}
+
+async function clearSession(){
+  try{
+    const token = localStorage.getItem('fc_session_token');
+    if(token) await setDoc(doc(db,'sessions',token),{active:false},{merge:true});
+  }catch(e){}
+  localStorage.removeItem('fc_session_token');
+}
 // INIT
 async function init(){
   for(const u of DEFAULTS){const r=doc(db,'users',u.id);if(!(await getDoc(r)).exists())await setDoc(r,u);}
@@ -855,8 +912,11 @@ async function init(){
   await loadBlockedWords();
   await loadReminders();
   renderSel();
-  const sv=localStorage.getItem('isa_u');
-  if(sv){const u=users.find(x=>x.id===sv);if(u){me=u;showContacts();return;}}
+  const savedUserId = await loadSession();
+  if(savedUserId){
+    const u=users.find(x=>x.id===savedUserId);
+    if(u){me=u;setPresence(true).catch(()=>{});showContacts();return;}
+  }
   showScr('login');
 }
 
@@ -953,7 +1013,7 @@ window.doLogin=async function(){
   const u=users.find(x=>x.id===selId);
   if(!u)return;
   if(String(pin)!==String(u.pin)){document.getElementById('lerr').textContent='❌ PIN incorrecto';pin='';updDots();return;}
-  me=u;localStorage.setItem('isa_u',u.id);localStorage.setItem('isa_p',u.pin);setPresence(true);showContacts();
+  me=u;saveSession(u.id);setPresence(true);showContacts();
 };
 window.doLogout=function(){
   if(unsub){unsub();unsub=null;}
@@ -963,8 +1023,7 @@ window.doLogout=function(){
   globalUnsubs.forEach(u=>u());globalUnsubs=[];
   setPresence(false);
   if(chat&&me)setTyping(false);
-  localStorage.removeItem('isa_u');
-  localStorage.removeItem('isa_p');
+  clearSession();
   me=chat=null;pin='';selId=null;
   document.getElementById('pinsec').classList.remove('v');
   document.getElementById('step-user').style.display='flex';
