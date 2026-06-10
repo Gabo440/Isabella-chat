@@ -1229,7 +1229,7 @@ const AppStorage = {
   }
 };
 
-// SESIÓN SIMPLE CON COOKIE
+// SESIÓN PERSISTENTE - guarda en Firestore + cookie + localStorage
 function getCookie(name){
   const match=document.cookie.match('(^|;)\s*'+name+'\s*=\s*([^;]+)');
   return match?decodeURIComponent(match.pop()):null;
@@ -1241,16 +1241,67 @@ function setCookie(name,val,days){
 function deleteCookie(name){
   document.cookie=name+'=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
 }
+
+// Obtener o crear ID único del dispositivo (se guarda en todos los storages)
+function getDeviceId(){
+  // Intentar leer de cualquier storage disponible
+  let id = null;
+  try{id=localStorage.getItem('fc_did');}catch(e){}
+  if(!id) id=getCookie('fc_did');
+  // Si no existe, crear uno nuevo
+  if(!id){
+    id='d_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);
+    // Guardar en todos lados
+    try{localStorage.setItem('fc_did',id);}catch(e){}
+    setCookie('fc_did',id,3650); // 10 años
+  } else {
+    // Refrescar en todos lados para que no expire
+    try{localStorage.setItem('fc_did',id);}catch(e){}
+    setCookie('fc_did',id,3650);
+  }
+  return id;
+}
+
 async function saveSession(userId){
-  setCookie('fc_uid',userId,365);
+  const did=getDeviceId();
+  // Guardar en Firestore (fuente de verdad)
+  try{
+    await setDoc(doc(db,'sessions',did),{
+      userId, did, updatedAt:serverTimestamp(), active:true
+    });
+  }catch(e){}
+  // También en storage local como caché rápido
   try{localStorage.setItem('fc_uid',userId);}catch(e){}
+  setCookie('fc_uid',userId,3650);
 }
+
 async function loadSession(){
-  return getCookie('fc_uid')||localStorage.getItem('fc_uid')||null;
+  const did=getDeviceId();
+  console.log('[FC] deviceId:', did);
+  // 1. Intentar desde Firestore primero
+  try{
+    const snap=await getDoc(doc(db,'sessions',did));
+    console.log('[FC] Firestore session exists:', snap.exists(), snap.exists()?snap.data():{});
+    if(snap.exists()&&snap.data().active){
+      const uid=snap.data().userId;
+      try{localStorage.setItem('fc_uid',uid);}catch(e){}
+      setCookie('fc_uid',uid,3650);
+      return uid;
+    }
+  }catch(e){console.log('[FC] Firestore error:', e.message);}
+  // 2. Fallback
+  let uid=null;
+  try{uid=localStorage.getItem('fc_uid');}catch(e){}
+  if(!uid) uid=getCookie('fc_uid');
+  console.log('[FC] fallback uid:', uid);
+  return uid||null;
 }
+
 async function clearSession(){
-  deleteCookie('fc_uid');
+  const did=getDeviceId();
+  try{await setDoc(doc(db,'sessions',did),{active:false},{merge:true});}catch(e){}
   try{localStorage.removeItem('fc_uid');}catch(e){}
+  deleteCookie('fc_uid');
 }
 
 
@@ -1641,13 +1692,27 @@ async function init(){
   await loadUsers();
   await loadBlockedWords();
   await loadReminders();
-  renderSel();
-  const savedUserId = await loadSession();
-  if(savedUserId){
-    await loadUsers(); // recargar frescos desde Firestore
-    const u=users.find(x=>x.id===savedUserId);
+  // renderSel - login por texto, no necesita preparación extra
+  // 1. sessionStorage (recargas)
+  const ssUid = sessionStorage.getItem('fc_uid');
+  console.log('[FC] sessionStorage uid:', ssUid);
+  if(ssUid){
+    const u=users.find(x=>x.id===ssUid);
+    console.log('[FC] usuario encontrado en sessionStorage:', u?.name);
     if(u){me=u;setPresence(true).catch(()=>{});showContacts();return;}
   }
+  // 2. Firestore + cookie
+  const savedUserId = await loadSession();
+  console.log('[FC] loadSession result:', savedUserId);
+  if(savedUserId){
+    const u=users.find(x=>x.id===savedUserId);
+    console.log('[FC] usuario encontrado en loadSession:', u?.name);
+    if(u){
+      sessionStorage.setItem('fc_uid',u.id);
+      me=u;setPresence(true).catch(()=>{});showContacts();return;
+    }
+  }
+  console.log('[FC] sin sesión, mostrando login');
   showScr('login');
 }
 
@@ -1750,7 +1815,7 @@ window.doLogin=async function(){
   // Leer siempre del input directamente (cubre autocompletar del browser)
   const inputVal=document.getElementById('pin-text-input')?.value||pin;
   if(String(inputVal)!==String(u.pin)){document.getElementById('lerr').textContent='❌ PIN incorrecto';pin='';updDots();return;}
-  me=u;saveSession(u.id);setPresence(true);showContacts();
+  me=u;sessionStorage.setItem('fc_uid',u.id);saveSession(u.id);setPresence(true);showContacts();
 };
 window.doLogout=function(){
   if(unsub){unsub();unsub=null;}
@@ -1760,7 +1825,7 @@ window.doLogout=function(){
   globalUnsubs.forEach(u=>u());globalUnsubs=[];
   setPresence(false);
   if(chat&&me)setTyping(false);
-  clearSession();
+  sessionStorage.removeItem('fc_uid');clearSession();
   me=chat=null;pin='';selId=null;
   document.getElementById('pinsec').classList.remove('v');
   document.getElementById('step-user').style.display='flex';
@@ -1893,7 +1958,7 @@ window.addUser=async function(){
   const id=name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now();
   await setDoc(doc(db,'users',id),{id,name,avatar:av,pin:p,role});
   ['nn','nav','npin'].forEach(x=>document.getElementById(x).value='');
-  await loadUsers();renderSel();renderUsersTable();showToast('✅ Usuario agregado');
+  await loadUsers();renderUsersTable();showToast('✅ Usuario agregado');
 };
 window.delUser=async function(uid){
   if(!confirm('¿Eliminar este usuario?'))return;
