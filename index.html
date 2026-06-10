@@ -1229,79 +1229,17 @@ const AppStorage = {
   }
 };
 
-// SESIÓN PERSISTENTE - guarda en Firestore + cookie + localStorage
-function getCookie(name){
-  const match=document.cookie.match('(^|;)\s*'+name+'\s*=\s*([^;]+)');
-  return match?decodeURIComponent(match.pop()):null;
+// SESIÓN SIMPLE Y ROBUSTA
+function saveSession(userId){
+  sessionStorage.setItem('fc_uid', userId);
+  try{localStorage.setItem('fc_uid', userId);}catch(e){}
 }
-function setCookie(name,val,days){
-  const exp=new Date(Date.now()+days*864e5).toUTCString();
-  document.cookie=name+'='+encodeURIComponent(val)+';path=/;expires='+exp+';SameSite=Lax';
+function loadSession(){
+  return sessionStorage.getItem('fc_uid') || localStorage.getItem('fc_uid') || null;
 }
-function deleteCookie(name){
-  document.cookie=name+'=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-}
-
-// Obtener o crear ID único del dispositivo (se guarda en todos los storages)
-function getDeviceId(){
-  // Intentar leer de cualquier storage disponible
-  let id = null;
-  try{id=localStorage.getItem('fc_did');}catch(e){}
-  if(!id) id=getCookie('fc_did');
-  // Si no existe, crear uno nuevo
-  if(!id){
-    id='d_'+Date.now()+'_'+Math.random().toString(36).slice(2,9);
-    // Guardar en todos lados
-    try{localStorage.setItem('fc_did',id);}catch(e){}
-    setCookie('fc_did',id,3650); // 10 años
-  } else {
-    // Refrescar en todos lados para que no expire
-    try{localStorage.setItem('fc_did',id);}catch(e){}
-    setCookie('fc_did',id,3650);
-  }
-  return id;
-}
-
-async function saveSession(userId){
-  const did=getDeviceId();
-  // Guardar en Firestore (fuente de verdad)
-  try{
-    await setDoc(doc(db,'sessions',did),{
-      userId, did, updatedAt:serverTimestamp(), active:true
-    });
-  }catch(e){}
-  // También en storage local como caché rápido
-  try{localStorage.setItem('fc_uid',userId);}catch(e){}
-  setCookie('fc_uid',userId,3650);
-}
-
-async function loadSession(){
-  const did=getDeviceId();
-  console.log('[FC] deviceId:', did);
-  // 1. Intentar desde Firestore primero
-  try{
-    const snap=await getDoc(doc(db,'sessions',did));
-    console.log('[FC] Firestore session exists:', snap.exists(), snap.exists()?snap.data():{});
-    if(snap.exists()&&snap.data().active){
-      const uid=snap.data().userId;
-      try{localStorage.setItem('fc_uid',uid);}catch(e){}
-      setCookie('fc_uid',uid,3650);
-      return uid;
-    }
-  }catch(e){console.log('[FC] Firestore error:', e.message);}
-  // 2. Fallback
-  let uid=null;
-  try{uid=localStorage.getItem('fc_uid');}catch(e){}
-  if(!uid) uid=getCookie('fc_uid');
-  console.log('[FC] fallback uid:', uid);
-  return uid||null;
-}
-
-async function clearSession(){
-  const did=getDeviceId();
-  try{await setDoc(doc(db,'sessions',did),{active:false},{merge:true});}catch(e){}
+function clearSession(){
+  sessionStorage.removeItem('fc_uid');
   try{localStorage.removeItem('fc_uid');}catch(e){}
-  deleteCookie('fc_uid');
 }
 
 
@@ -1693,26 +1631,11 @@ async function init(){
   await loadBlockedWords();
   await loadReminders();
   // renderSel - login por texto, no necesita preparación extra
-  // 1. sessionStorage (recargas)
-  const ssUid = sessionStorage.getItem('fc_uid');
-  console.log('[FC] sessionStorage uid:', ssUid);
-  if(ssUid){
-    const u=users.find(x=>x.id===ssUid);
-    console.log('[FC] usuario encontrado en sessionStorage:', u?.name);
-    if(u){me=u;setPresence(true).catch(()=>{});showContacts();return;}
-  }
-  // 2. Firestore + cookie
-  const savedUserId = await loadSession();
-  console.log('[FC] loadSession result:', savedUserId);
+  const savedUserId = loadSession();
   if(savedUserId){
     const u=users.find(x=>x.id===savedUserId);
-    console.log('[FC] usuario encontrado en loadSession:', u?.name);
-    if(u){
-      sessionStorage.setItem('fc_uid',u.id);
-      me=u;setPresence(true).catch(()=>{});showContacts();return;
-    }
+    if(u){me=u;setPresence(true).catch(()=>{});showContacts();return;}
   }
-  console.log('[FC] sin sesión, mostrando login');
   showScr('login');
 }
 
@@ -1815,7 +1738,7 @@ window.doLogin=async function(){
   // Leer siempre del input directamente (cubre autocompletar del browser)
   const inputVal=document.getElementById('pin-text-input')?.value||pin;
   if(String(inputVal)!==String(u.pin)){document.getElementById('lerr').textContent='❌ PIN incorrecto';pin='';updDots();return;}
-  me=u;sessionStorage.setItem('fc_uid',u.id);saveSession(u.id);setPresence(true);showContacts();
+  me=u;saveSession(u.id);setPresence(true);showContacts();
 };
 window.doLogout=function(){
   if(unsub){unsub();unsub=null;}
@@ -1825,7 +1748,7 @@ window.doLogout=function(){
   globalUnsubs.forEach(u=>u());globalUnsubs=[];
   setPresence(false);
   if(chat&&me)setTyping(false);
-  sessionStorage.removeItem('fc_uid');clearSession();
+  clearSession();
   me=chat=null;pin='';selId=null;
   document.getElementById('pinsec').classList.remove('v');
   document.getElementById('step-user').style.display='flex';
