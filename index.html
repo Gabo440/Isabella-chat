@@ -1657,12 +1657,11 @@ setInterval(()=>{
 async function initPushNotifications(){
   console.log('[FCM] initPushNotifications llamado — messaging:', !!messaging, '| me:', me?.id||'null');
   if(!messaging){console.log('[FCM] ABORT: messaging no inicializado');return;}
-  if(!me){console.log('[FCM] ABORT: me es null, usuario no cargado aún');return;}
+  if(!me){console.log('[FCM] ABORT: me es null');return;}
   try{
     const permission = await Notification.requestPermission();
     if(permission !== 'granted'){console.log('[FCM] permiso denegado');return;}
     console.log('[FCM] permiso concedido, registrando SW...');
-    // Registrar SW de Firebase Messaging
     const swReg = await navigator.serviceWorker.register('/Isabella-chat/firebase-messaging-sw.js', {
       scope: '/Isabella-chat/'
     });
@@ -1672,7 +1671,7 @@ async function initPushNotifications(){
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swReg
     });
-    console.log('[FCM] token:', token ? token.slice(0,20)+'...' : 'NULL — posible error VAPID o SW');
+    console.log('[FCM] token:', token ? token.slice(0,20)+'...' : 'NULL — revisar VAPID o SW');
     if(token){
       await setDoc(doc(db,'fcmTokens',me.id),{
         token, userId:me.id, userName:me.name, ts:serverTimestamp()
@@ -1830,6 +1829,7 @@ window.doLogout=function(){
 
 // CONTACTS
 async function showContacts(){
+  console.log('[FC] showContacts iniciado, me:', me?.id||'null');
   // Verificar rol desde Firestore para evitar escalada de privilegios
   const freshUser=users.find(u=>u.id===me.id);
   if(freshUser) me={...freshUser, role:me.role}; // mantener rol de login
@@ -1850,10 +1850,12 @@ async function showContacts(){
   subscribeUsers();
   subscribeGlobalNotifs();
   // Mostrar botón si no tiene permiso
+  console.log('[FC] Notification.permission:', Notification.permission);
   if('Notification' in window && Notification.permission !== 'granted'){
     const nb=document.getElementById('notif-btn');
     if(nb)nb.style.display='inline-block';
   } else if(Notification.permission === 'granted'){
+    console.log('[FC] llamando initPushNotifications (bloque 1)');
     initPushNotifications();
   }
   // Solicitar permiso notificaciones
@@ -1864,6 +1866,7 @@ async function showContacts(){
       });
     }, 2000);
   } else if(Notification.permission === 'granted'){
+    console.log('[FC] llamando initPushNotifications (bloque 2)');
     initPushNotifications();
   }
   if(isAdmin){renderUsersTable();renderWordslist();renderRemindersList();populateReminderTo();populateClearChatSelect();}
