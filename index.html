@@ -876,6 +876,7 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore,collection,doc,addDoc,onSnapshot,query,orderBy,serverTimestamp,getDoc,setDoc,getDocs,deleteDoc,limit,updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getMessaging,getToken,onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+import { getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const cfg = {
   apiKey:"AIzaSyBZ7X_DpQCWAvRzSDiEZMVkfG7xQMc8yRs",
@@ -887,6 +888,7 @@ const cfg = {
 };
 const app = initializeApp(cfg);
 const db  = getFirestore(app);
+const auth = getAuth(app);
 let messaging = null;
 try{ messaging = getMessaging(app); }catch(e){}
 const VAPID_KEY = 'BI3hWTnXGoUmNWEcYjQ7a1H11jlZ7SpPoPPb9a4XBWTApwhgb4RcLl-WMxFyUak_jRQ1Uj9xM2zh_ln4HJLPLXE';
@@ -1229,15 +1231,38 @@ const AppStorage = {
   }
 };
 
-// SESIÓN SIMPLE Y ROBUSTA
-function saveSession(userId){
+// SESIÓN CON FIREBASE AUTH
+function userEmail(userId){ return userId+'@familychat.app'; }
+
+async function saveSession(userId, pin){
+  // Autenticar con Firebase Auth (mantiene sesión automáticamente)
+  try{
+    await signInWithEmailAndPassword(auth, userEmail(userId), pin);
+  }catch(e){
+    if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'){
+      // Crear usuario en Firebase Auth si no existe
+      try{await createUserWithEmailAndPassword(auth, userEmail(userId), pin);}catch(e2){}
+      try{await signInWithEmailAndPassword(auth, userEmail(userId), pin);}catch(e3){}
+    }
+  }
+  // Backup en storage local
   sessionStorage.setItem('fc_uid', userId);
   try{localStorage.setItem('fc_uid', userId);}catch(e){}
 }
+
 function loadSession(){
+  // Firebase Auth mantiene la sesión - verificar usuario actual
+  const firebaseUser = auth.currentUser;
+  if(firebaseUser){
+    const uid = firebaseUser.email.replace('@familychat.app','');
+    return uid;
+  }
+  // Fallback a storage local
   return sessionStorage.getItem('fc_uid') || localStorage.getItem('fc_uid') || null;
 }
-function clearSession(){
+
+async function clearSession(){
+  try{await signOut(auth);}catch(e){}
   sessionStorage.removeItem('fc_uid');
   try{localStorage.removeItem('fc_uid');}catch(e){}
 }
@@ -1632,8 +1657,10 @@ async function init(){
   await loadReminders();
   // renderSel - login por texto, no necesita preparación extra
   const savedUserId = loadSession();
+  console.log('[FC] savedUserId:', savedUserId, '| users:', users.length, '| ids:', users.map(x=>x.id));
   if(savedUserId){
     const u=users.find(x=>x.id===savedUserId);
+    console.log('[FC] usuario encontrado:', u?.name||'NO ENCONTRADO');
     if(u){me=u;setPresence(true).catch(()=>{});showContacts();return;}
   }
   showScr('login');
@@ -1738,7 +1765,7 @@ window.doLogin=async function(){
   // Leer siempre del input directamente (cubre autocompletar del browser)
   const inputVal=document.getElementById('pin-text-input')?.value||pin;
   if(String(inputVal)!==String(u.pin)){document.getElementById('lerr').textContent='❌ PIN incorrecto';pin='';updDots();return;}
-  me=u;saveSession(u.id);setPresence(true);showContacts();
+  me=u;await saveSession(u.id, inputVal);setPresence(true);showContacts();
 };
 window.doLogout=function(){
   if(unsub){unsub();unsub=null;}
@@ -2428,11 +2455,18 @@ setInterval(()=>{if(me)setPresence(true);},25000);
 // Botón físico atrás: solo cierra el chat, no cierra sesión
 window.addEventListener('popstate', function(e){
   e.preventDefault();
+  // Cerrar todos los menús primero
+  document.getElementById('msg-actions')?.classList.remove('open');
+  document.getElementById('reaction-picker')?.classList.remove('open');
+  document.getElementById('customize-panel')?.classList.remove('open');
+  document.getElementById('burn-menu')?.classList.remove('open');
+  document.getElementById('game-menu')?.classList.remove('open');
+  document.getElementById('photo-menu')?.classList.remove('open');
   const appRight = document.getElementById('app-right');
   if(appRight && appRight.classList.contains('mobile-open')){
     backToContacts();
-    history.pushState(null, '', location.href);
   }
+  history.pushState(null, '', location.href);
 });
 // Registrar estado inicial para que popstate funcione
 history.pushState(null, '', location.href);
