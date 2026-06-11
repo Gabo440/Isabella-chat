@@ -1670,7 +1670,7 @@ async function init(){
   if(savedUserId){
     const u=users.find(x=>x.id===savedUserId);
     console.log('[FC] usuario encontrado:', u?.name||'NO ENCONTRADO');
-    if(u){me=u;setPresence(true).catch(()=>{});showContacts();return;}
+    if(u){me=u;try{setPresence(true);}catch(e){};showContacts();return;}
   }
   showScr('login');
 }
