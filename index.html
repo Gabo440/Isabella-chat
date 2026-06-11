@@ -1824,7 +1824,16 @@ async function showContacts(){
   await renderContacts();
   subscribeUsers();
   subscribeGlobalNotifs();
-  initPushNotifications();
+  // Solicitar permiso notificaciones
+  if('Notification' in window && Notification.permission === 'default'){
+    setTimeout(()=>{
+      Notification.requestPermission().then(perm=>{
+        if(perm==='granted') initPushNotifications();
+      });
+    }, 2000);
+  } else if(Notification.permission === 'granted'){
+    initPushNotifications();
+  }
   if(isAdmin){renderUsersTable();renderWordslist();renderRemindersList();populateReminderTo();populateClearChatSelect();}
   checkReminders();
 }
