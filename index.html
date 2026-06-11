@@ -1235,17 +1235,25 @@ const AppStorage = {
 function userEmail(userId){ return userId+'@familychat.app'; }
 
 async function saveSession(userId, pin){
-  // Autenticar con Firebase Auth (mantiene sesión automáticamente)
+  const email=userEmail(userId);
+  console.log('[FC Auth] intentando login con:', email);
   try{
-    await signInWithEmailAndPassword(auth, userEmail(userId), pin);
+    await signInWithEmailAndPassword(auth, email, String(pin));
+    console.log('[FC Auth] login exitoso');
   }catch(e){
-    if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'){
-      // Crear usuario en Firebase Auth si no existe
-      try{await createUserWithEmailAndPassword(auth, userEmail(userId), pin);}catch(e2){}
-      try{await signInWithEmailAndPassword(auth, userEmail(userId), pin);}catch(e3){}
+    console.log('[FC Auth] error login:', e.code, e.message);
+    // Crear usuario si no existe
+    if(e.code==='auth/user-not-found'||e.code==='auth/invalid-credential'||e.code==='auth/invalid-email'||e.code==='auth/wrong-password'){
+      try{
+        await createUserWithEmailAndPassword(auth, email, String(pin));
+        console.log('[FC Auth] usuario creado exitosamente');
+        await signInWithEmailAndPassword(auth, email, String(pin));
+        console.log('[FC Auth] login tras creación exitoso');
+      }catch(e2){
+        console.log('[FC Auth] error creación:', e2.code, e2.message);
+      }
     }
   }
-  // Backup en storage local
   sessionStorage.setItem('fc_uid', userId);
   try{localStorage.setItem('fc_uid', userId);}catch(e){}
 }
@@ -1629,6 +1637,7 @@ setInterval(()=>{
 
 // ===== PUSH NOTIFICATIONS =====
 async function initPushNotifications(){
+  return; // FCM deshabilitado hasta tener servidor
   if(!messaging||!me)return;
   try{
     const permission = await Notification.requestPermission();
