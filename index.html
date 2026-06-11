@@ -1642,7 +1642,6 @@ setInterval(()=>{
 
 // ===== PUSH NOTIFICATIONS =====
 async function initPushNotifications(){
-  return; // FCM deshabilitado hasta tener servidor
   if(!messaging||!me)return;
   try{
     const permission = await Notification.requestPermission();
