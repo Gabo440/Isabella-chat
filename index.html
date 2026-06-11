@@ -535,6 +535,11 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
 </style>
 </head>
 <body>
+<div id="splash-screen" style="position:fixed;inset:0;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;">
+  <div style="font-size:60px;margin-bottom:16px;">💬</div>
+  <div style="color:white;font-size:28px;font-weight:900;font-family:'Nunito',sans-serif;">Family Chat</div>
+  <div style="color:rgba(255,255,255,.7);font-size:14px;margin-top:8px;font-family:'Nunito',sans-serif;">Conectando...</div>
+</div>
 
 <!-- LOGIN -->
 <div id="screen-login" class="screen active">
@@ -1670,8 +1675,13 @@ async function init(){
   if(savedUserId){
     const u=users.find(x=>x.id===savedUserId);
     console.log('[FC] usuario encontrado:', u?.name||'NO ENCONTRADO');
-    if(u){me=u;try{setPresence(true);}catch(e){};showContacts();return;}
+    if(u){me=u;try{setPresence(true);}catch(e){};
+      const splash=document.getElementById('splash-screen');
+      if(splash)splash.style.display='none';
+      showContacts();return;}
   }
+  const splash=document.getElementById('splash-screen');
+  if(splash)splash.style.display='none';
   showScr('login');
 }
 
