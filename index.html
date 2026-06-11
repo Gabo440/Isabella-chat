@@ -1658,22 +1658,31 @@ async function initPushNotifications(){
   if(!messaging||!me)return;
   try{
     const permission = await Notification.requestPermission();
-    if(permission !== 'granted')return;
-    const token = await getToken(messaging,{vapidKey:VAPID_KEY});
+    if(permission !== 'granted'){console.log('[FCM] permiso denegado');return;}
+    console.log('[FCM] permiso concedido, registrando SW...');
+    // Registrar SW con scope correcto para GitHub Pages
+    const swReg = await navigator.serviceWorker.register('/Isabella-chat/firebase-messaging-sw.js', {
+      scope: '/Isabella-chat/'
+    });
+    console.log('[FCM] SW registrado:', swReg.scope);
+    const token = await getToken(messaging,{
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swReg
+    });
+    console.log('[FCM] token:', token ? token.slice(0,20)+'...' : 'NULL');
     if(token){
-      // Guardar token FCM en Firestore asociado al usuario
       await setDoc(doc(db,'fcmTokens',me.id),{
         token, userId:me.id, userName:me.name, ts:serverTimestamp()
       },{merge:true});
+      console.log('[FCM] token guardado en Firestore');
     }
-    // Escuchar mensajes cuando la app está en primer plano
     onMessage(messaging, payload=>{
       const title = payload.notification?.title||'Family Chat';
       const body  = payload.notification?.body||'Nuevo mensaje';
       showNotif(title, body, null);
       playNotif();
     });
-  }catch(e){console.log('Push notif error:',e);}
+  }catch(e){console.log('[FCM] error:', e.code, e.message);}
 }
 // INIT
 async function init(){
