@@ -607,6 +607,7 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
       <div style="display:flex;gap:6px;align-items:center;">
         <button class="btnmypin" id="btnmypin" style="display:none;" onclick="openPinModal(null)">👤 Mi Perfil</button>
         <button class="dark-toggle" onclick="toggleDarkMode()" id="dark-btn" title="Modo oscuro">🌙</button>
+        <button class="dark-toggle" id="notif-btn" onclick="requestNotifPermission()" title="Activar notificaciones" style="display:none;">🔔</button>
         <button class="btnout" onclick="doLogout()">Salir</button>
       </div>
     </div>
@@ -1282,6 +1283,18 @@ async function clearSession(){
 
 
 // ===== MODO OSCURO =====
+window.requestNotifPermission=async function(){
+  if(!('Notification' in window))return;
+  const perm=await Notification.requestPermission();
+  const nb=document.getElementById('notif-btn');
+  if(perm==='granted'){
+    if(nb)nb.style.display='none';
+    await initPushNotifications();
+    showToast('🔔 Notificaciones activadas');
+  } else {
+    showToast('❌ Permiso denegado');
+  }
+};
 window.toggleDarkMode=function(){
   document.body.classList.toggle('dark');
   const isDark=document.body.classList.contains('dark');
@@ -1824,6 +1837,13 @@ async function showContacts(){
   await renderContacts();
   subscribeUsers();
   subscribeGlobalNotifs();
+  // Mostrar botón si no tiene permiso
+  if('Notification' in window && Notification.permission !== 'granted'){
+    const nb=document.getElementById('notif-btn');
+    if(nb)nb.style.display='inline-block';
+  } else if(Notification.permission === 'granted'){
+    initPushNotifications();
+  }
   // Solicitar permiso notificaciones
   if('Notification' in window && Notification.permission === 'default'){
     setTimeout(()=>{
