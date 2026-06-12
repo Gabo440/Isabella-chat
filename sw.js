@@ -1,3 +1,7 @@
+// ⚡ VERSIÓN — cambia este número cada vez que subas código nuevo
+const CACHE_VERSION = 'v1';
+const CACHE_NAME = 'family-chat-' + CACHE_VERSION;
+
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
@@ -31,9 +35,38 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil(clients.openWindow(e.notification.data?.url || 'https://gabo440.github.io/Isabella-chat/'));
 });
 
-self.addEventListener('install', e => { self.skipWaiting(); });
-self.addEventListener('activate', e => { self.clients.claim(); });
+self.addEventListener('install', e => {
+  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll([
+      '/Isabella-chat/',
+      '/Isabella-chat/index.html',
+      '/Isabella-chat/icon-192.png',
+      '/Isabella-chat/icon-512.png',
+      '/Isabella-chat/manifest.json'
+    ]))
+  );
+});
+
+self.addEventListener('activate', e => {
+  // Eliminar cachés viejos automáticamente
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
+
 self.addEventListener('fetch', e => {
   if(e.request.method !== 'GET') return;
-  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+  // Network first — siempre intenta red, cae a caché si no hay conexión
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });
