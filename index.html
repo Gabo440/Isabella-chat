@@ -602,10 +602,9 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
           <div class="av-edit">📷</div>
         </div>
         <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarImg(event)">
-        <div><div class="hnm" id="hnm">-</div><div style="display:flex;align-items:center;gap:4px;"><div class="hst" style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="clickAvatar()">📷 Cambiar foto</div><span id="hst-status" style="font-size:11px;color:var(--muted);font-style:italic;"></span></div></div>
+        <div><div class="hnm" id="hnm" onclick="openPinModal(null)" title="Mi Perfil" style="cursor:pointer;" onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">-</div><div style="display:flex;align-items:center;gap:4px;"><div class="hst" style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="clickAvatar()">📷 Cambiar foto</div><span id="hst-status" style="font-size:11px;color:var(--muted);font-style:italic;"></span></div></div>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
-        <button class="btnmypin" id="btnmypin" style="display:none;" onclick="openPinModal(null)">👤 Mi Perfil</button>
         <button class="dark-toggle" onclick="toggleDarkMode()" id="dark-btn" title="Modo oscuro">🌙</button>
         <button class="dark-toggle" id="notif-btn" onclick="requestNotifPermission()" title="Activar notificaciones" style="display:none;">🔔</button>
         <button class="btnout" onclick="doLogout()">Salir</button>
@@ -1655,28 +1654,26 @@ setInterval(()=>{
 
 // ===== PUSH NOTIFICATIONS =====
 async function initPushNotifications(){
-  console.log('[FCM] initPushNotifications llamado — messaging:', !!messaging, '| me:', me?.id||'null');
-  if(!messaging){console.log('[FCM] ABORT: messaging no inicializado');return;}
-  if(!me){console.log('[FCM] ABORT: me es null');return;}
+  if(!messaging||!me)return;
   try{
     const permission = await Notification.requestPermission();
     if(permission !== 'granted'){console.log('[FCM] permiso denegado');return;}
     console.log('[FCM] permiso concedido, registrando SW...');
-    const swReg = await navigator.serviceWorker.register('/Isabella-chat/firebase-messaging-sw.js', {
+    // Registrar SW con scope correcto para GitHub Pages
+    const swReg = await navigator.serviceWorker.register('/Isabella-chat/sw.js', {
       scope: '/Isabella-chat/'
     });
-    await navigator.serviceWorker.ready;
-    console.log('[FCM] SW registrado:', swReg.scope, '| state:', swReg.active?.state||'sin active');
+    console.log('[FCM] SW registrado:', swReg.scope);
     const token = await getToken(messaging,{
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swReg
     });
-    console.log('[FCM] token:', token ? token.slice(0,20)+'...' : 'NULL — revisar VAPID o SW');
+    console.log('[FCM] token:', token ? token.slice(0,20)+'...' : 'NULL');
     if(token){
       await setDoc(doc(db,'fcmTokens',me.id),{
         token, userId:me.id, userName:me.name, ts:serverTimestamp()
       },{merge:true});
-      console.log('[FCM] token guardado en Firestore ✅');
+      console.log('[FCM] token guardado en Firestore');
     }
     onMessage(messaging, payload=>{
       const title = payload.notification?.title||'Family Chat';
@@ -1684,7 +1681,7 @@ async function initPushNotifications(){
       showNotif(title, body, null);
       playNotif();
     });
-  }catch(e){console.log('[FCM] ERROR:', e.code||'sin code', '|', e.message||'sin message', '| full:', e);}
+  }catch(e){console.log('[FCM] error:', e.code, e.message);}
 }
 // INIT
 async function init(){
@@ -1821,7 +1818,7 @@ window.doLogout=function(){
   me=chat=null;pin='';selId=null;
   document.getElementById('pinsec').classList.remove('v');
   document.getElementById('step-user').style.display='flex';
-  document.getElementById('btnmypin').style.display='none';
+
   document.getElementById('login-username').value='';
   const pt=document.getElementById('pin-text-input');if(pt)pt.value='';
   showScr('login');
@@ -1829,7 +1826,6 @@ window.doLogout=function(){
 
 // CONTACTS
 async function showContacts(){
-  console.log('[FC] showContacts iniciado, me:', me?.id||'null');
   // Verificar rol desde Firestore para evitar escalada de privilegios
   const freshUser=users.find(u=>u.id===me.id);
   if(freshUser) me={...freshUser, role:me.role}; // mantener rol de login
@@ -1840,7 +1836,7 @@ async function showContacts(){
   const hstEl=document.getElementById('hst-status');
   if(hstEl) hstEl.textContent=me.status||'';
   document.getElementById('tabsbar').style.display=isAdmin?'flex':'none';
-  document.getElementById('btnmypin').style.display='inline-block';
+
   const darkBtn=document.getElementById('dark-btn');
   if(darkBtn)darkBtn.textContent=document.body.classList.contains('dark')?'☀️':'🌙';
   showScr('app');
@@ -1850,12 +1846,10 @@ async function showContacts(){
   subscribeUsers();
   subscribeGlobalNotifs();
   // Mostrar botón si no tiene permiso
-  console.log('[FC] Notification.permission:', Notification.permission);
   if('Notification' in window && Notification.permission !== 'granted'){
     const nb=document.getElementById('notif-btn');
     if(nb)nb.style.display='inline-block';
   } else if(Notification.permission === 'granted'){
-    console.log('[FC] llamando initPushNotifications (bloque 1)');
     initPushNotifications();
   }
   // Solicitar permiso notificaciones
@@ -1866,7 +1860,6 @@ async function showContacts(){
       });
     }, 2000);
   } else if(Notification.permission === 'granted'){
-    console.log('[FC] llamando initPushNotifications (bloque 2)');
     initPushNotifications();
   }
   if(isAdmin){renderUsersTable();renderWordslist();renderRemindersList();populateReminderTo();populateClearChatSelect();}
