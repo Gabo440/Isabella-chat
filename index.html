@@ -3006,26 +3006,27 @@ function loadMsgs(){
         updateDoc(doc(db,'chats',cid,'messages',d.id),{seenBy:[...(m.seenBy||[]),me.id]}).catch(()=>{});
       }
     });
-    // Manejar modificaciones — actualizar solo el elemento modificado sin rerenderizar todo
+    // Manejar modificaciones — actualizar solo el elemento modificado sin mover el scroll
     const modifiedDocs=snap.docChanges().filter(c=>c.type==='modified');
     if(modifiedDocs.length>0){
+      const savedScrollTop=cont.scrollTop;
       modifiedDocs.forEach(change=>{
         const d=change.doc;
         const idx=snap.docs.findIndex(x=>x.id===d.id);
         const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
         const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
-        // Buscar el elemento existente y reemplazar solo su contenido
         const allDivs=cont.querySelectorAll('[data-msgid]');
         let found=false;
         allDivs.forEach(el=>{if(el.dataset.msgid===d.id){el.outerHTML=r.html;found=true;}});
         if(!found){
-          // Si no existe aún, agregarlo
           const div=document.createElement('div');
           div.innerHTML=r.html;
           while(div.firstChild)cont.appendChild(div.firstChild);
           renderedIds.add(d.id);
         }
       });
+      // Restaurar posición del scroll exacta — sin movimiento visible
+      cont.scrollTop=savedScrollTop;
       lastCount=snap.docs.length;
       firstLoad=false;
       return;
