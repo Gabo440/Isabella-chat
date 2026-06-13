@@ -3000,7 +3000,7 @@ function scrollToLastMsg(cont){
   const gameTypes=['game-bub'];
   const isGame=last.querySelector('.game-bub,.trivia-msg,.calc-msg,.word-msg,.animal-msg,.scramble-msg');
   if(isGame){
-    cont.scrollTop=cont.scrollHeight;
+    last.scrollIntoView({block:'start',behavior:'auto'});
   } else {
     cont.scrollTop=cont.scrollHeight;
   }
@@ -3064,7 +3064,11 @@ function loadMsgs(){
       renderedIds.add(d.id);
     });
     lastCount=snap.docs.length;
-    if(wasAtBottom)cont.scrollTop=cont.scrollHeight;
+    if(wasAtBottom){
+      const lastEl=cont.querySelector('[data-msgid]:last-of-type');
+      if(lastEl)lastEl.scrollIntoView({block:'start',behavior:'instant'});
+      else cont.scrollTop=cont.scrollHeight;
+    }
     firstLoad=false;
   });
 }
@@ -3522,12 +3526,13 @@ if(window.visualViewport){
     const appRight=document.getElementById('app-right');
     if(!appRight||!appRight.classList.contains('mobile-open'))return;
     const vv=window.visualViewport;
-    // Ajustar altura exacta al viewport visible
     appRight.style.height=vv.height+'px';
     appRight.style.top=vv.offsetTop+'px';
-    // Scroll al fondo del contenido
+    // Scroll al último mensaje visible
     const mc=document.getElementById('msgcont');
-    if(mc)mc.scrollTop=mc.scrollHeight;
+    if(!mc)return;
+    const lastMsg=mc.querySelector('[data-msgid]:last-of-type')||mc.lastElementChild;
+    if(lastMsg)lastMsg.scrollIntoView({block:'end',behavior:'instant'});
   }
   window.visualViewport.addEventListener('resize',onViewportResize);
   window.visualViewport.addEventListener('scroll',onViewportResize);
