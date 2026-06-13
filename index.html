@@ -150,7 +150,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
 .chinfo{flex:1;}
 .chnm{font-weight:800;font-size:15px;color:var(--text);}
 .chst{font-size:11px;color:#22c55e;font-weight:700;}
-.msgcont{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:3px;background:var(--bg);background-image:radial-gradient(circle at 10% 10%,rgba(236,72,153,.04) 0%,transparent 40%),radial-gradient(circle at 90% 90%,rgba(79,70,229,.04) 0%,transparent 40%);scroll-behavior:smooth;}
+.msgcont{flex:1;overflow-y:auto;padding:12px 12px 80px 12px;display:flex;flex-direction:column;gap:3px;background:var(--bg);background-image:radial-gradient(circle at 10% 10%,rgba(236,72,153,.04) 0%,transparent 40%),radial-gradient(circle at 90% 90%,rgba(79,70,229,.04) 0%,transparent 40%);scroll-behavior:smooth;}
 .datesep{text-align:center;font-size:11px;font-weight:800;color:var(--muted);background:rgba(255,255,255,.8);padding:3px 12px;border-radius:20px;align-self:center;margin:6px 0;}
 .mrow{display:flex;flex-direction:column;max-width:78%;animation:mi .2s ease;}
 @keyframes mi{from{opacity:0;transform:scale(.95) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -1923,8 +1923,8 @@ window.answerAnimal=async function(docId,optIdx){
   const snap=await getDoc(ref);if(!snap.exists())return;
   const g=snap.data();if(g.votes?.[me.id]!==undefined)return;
   const correct=optIdx===g.answer;
-  const hintsShown=Math.min((g.hintsShown||1)+1,g.hints.length);
-  await updateDoc(ref,{votes:{...g.votes,[me.id]:optIdx},hintsShown,state:'answered'});
+  // NO incrementar hintsShown al responder — solo se incrementa con el botón "Ver pista"
+  await updateDoc(ref,{votes:{...g.votes,[me.id]:optIdx},state:'answered'});
   if(correct){
     const chatKey=isGrp?`group_${activeGroup.id}`:`chat_${chatId(me.id,chat.id)}`;
     const scoreRef=doc(db,'triviaScores',chatKey);
@@ -1936,13 +1936,31 @@ window.answerAnimal=async function(docId,optIdx){
   }
 };
 
+window.showAnimalHint=async function(docId){
+  const isGrp=!!activeGroup;
+  const colPath=isGrp?`groups/${activeGroup.id}/messages`:`chats/${chatId(me.id,chat.id)}/messages`;
+  const ref=doc(db,colPath,docId);
+  const snap=await getDoc(ref);if(!snap.exists())return;
+  const g=snap.data();
+  const newShown=Math.min((g.hintsShown||1)+1,g.hints.length);
+  if(newShown===(g.hintsShown||1))return; // Ya se mostraron todas
+  await updateDoc(ref,{hintsShown:newShown});
+};
+
 function renderAnimal(m,docId){
   const myVote=m.votes?.[me.id];
   const answered=myVote!==undefined;
-  const shownHints=(m.hints||[]).slice(0,m.hintsShown||1);
+  const hintsShown=m.hintsShown||1;
+  const shownHints=(m.hints||[]).slice(0,hintsShown);
+  const totalHints=(m.hints||[]).length;
+  const hasMoreHints=hintsShown<totalHints&&!answered;
   let body=`<div style="color:white;font-weight:800;font-size:13px;text-align:center;margin-bottom:6px;">🐾 ¿Qué animal soy?</div>`;
   body+=`<div class="animal-emoji">${answered?m.emoji:'❓'}</div>`;
-  shownHints.forEach((h,i)=>{body+=`<div class="animal-hint">💡 ${esc(h)}</div>`;});
+  shownHints.forEach((h,i)=>{body+=`<div class="animal-hint">💡 Pista ${i+1}: ${esc(h)}</div>`;});
+  // Botón "Ver pista" si quedan pistas y no ha respondido
+  if(hasMoreHints){
+    body+=`<button onclick="showAnimalHint('${docId}')" style="width:100%;border:none;border-radius:10px;padding:7px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.2);color:white;margin-bottom:8px;">💡 Ver pista (${hintsShown}/${totalHints})</button>`;
+  }
   body+=`<div class="animal-opts">`;
   m.options.forEach((opt,i)=>{
     let cls='animal-opt';
@@ -1952,7 +1970,7 @@ function renderAnimal(m,docId){
   body+='</div>';
   if(answered){
     const correct=myVote===m.answer;
-    body+=`<div style="color:white;text-align:center;font-size:12px;margin-top:6px;font-weight:800;">${correct?'✅ ¡Correcto!':'❌ Era '+esc(m.name)}</div>`;
+    body+=`<div style="color:white;text-align:center;font-size:12px;margin-top:6px;font-weight:800;">${correct?'✅ ¡Correcto! +'+Math.max(1,4-hintsShown)+'pts':'❌ Era '+esc(m.name)}</div>`;
     body+=`<div class="trivia-ranking" id="arank-${docId}"><div style="opacity:.6;font-size:11px;text-align:center;">Cargando ranking...</div></div>`;
     setTimeout(async()=>{
       const ranking=await getTriviaRanking();
