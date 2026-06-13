@@ -2960,6 +2960,8 @@ function renderMsgEl(d, idx, allDocs, cid, prevDate){
   return {html, date:ds};
 }
 
+function isAtBottom(cont){return cont.scrollHeight-cont.scrollTop-cont.clientHeight<80;}
+
 function loadMsgs(){
   if(unsub)unsub();
   const cid=chatId(me.id,chat.id);
@@ -2968,6 +2970,7 @@ function loadMsgs(){
   const renderedIds=new Set();
   unsub=onSnapshot(q,snap=>{
     if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();return;}
+    const wasAtBottom=isAtBottom(cont);
     if(snap.docs.length>lastCount&&lastCount>0){
       const last=snap.docs[snap.docs.length-1].data();
       if(last.senderId!==me.id)playNotif();
@@ -2988,7 +2991,7 @@ function loadMsgs(){
         html2+=r.html;
       });
       cont.innerHTML=html2;
-      cont.scrollTop=cont.scrollHeight;
+      if(wasAtBottom)cont.scrollTop=cont.scrollHeight;
       renderedIds.clear();snap.docs.forEach(d=>renderedIds.add(d.id));
       return;
     }
@@ -3005,7 +3008,7 @@ function loadMsgs(){
       renderedIds.add(d.id);
     });
     lastCount=snap.docs.length;
-    cont.scrollTop=cont.scrollHeight;
+    if(wasAtBottom)cont.scrollTop=cont.scrollHeight;
   });
 }
 
