@@ -2786,7 +2786,12 @@ window.openChat=function(uid){
   document.getElementById('chat-panel').style.display='flex';
   // En móvil abrir panel derecho
   document.getElementById('app-right').classList.add('mobile-open');
-  closePK();cancelReply();loadMsgs();listenTyping();
+  closePK();cancelReply();
+  // Limpiar mensajes del chat anterior ANTES de cargar nuevos
+  const _mc=document.getElementById('msgcont');
+  if(_mc)_mc.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.3;font-size:13px;">Cargando...</div>';
+  lastCount=0;
+  loadMsgs();listenTyping();
   if(!window._pickersBuilt){buildEmojis();buildStickers();window._pickersBuilt=true;}
   setTimeout(()=>document.getElementById('minp').focus(),150);
   loadChatPrefs(uid);
@@ -2953,9 +2958,9 @@ function renderMsgEl(d, idx, allDocs, cid, prevDate){
   const pinnedMark=m.pinned?`<span style="font-size:10px;margin-left:4px;">📌</span>`:'';
   const actionBtn=`<button class="action-btn" onclick="openMsgActions(event,'${d.id}','${isMine?'mine':'theirs'}')">⋯</button>`;
   if(isMine){
-    html+=`<div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')">${replyBtn}${actionBtn}<div class="${rc}"><div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${seenHtml}${pinnedMark}</div></div></div>`;
+    html+=`<div data-msgid="${d.id}" style="display:flex;align-items:flex-end;justify-content:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')">${replyBtn}${actionBtn}<div class="${rc}"><div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${seenHtml}${pinnedMark}</div></div></div>`;
   } else {
-    html+=`<div style="display:flex;align-items:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')"><div class="${rc}">${snd}${quoteHtml}<div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${pinnedMark}</div></div>${replyBtn}${actionBtn}</div>`;
+    html+=`<div data-msgid="${d.id}" style="display:flex;align-items:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')"><div class="${rc}">${snd}${quoteHtml}<div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${pinnedMark}</div></div>${replyBtn}${actionBtn}</div>`;
   }
   return {html, date:ds};
 }
@@ -3001,18 +3006,27 @@ function loadMsgs(){
         updateDoc(doc(db,'chats',cid,'messages',d.id),{seenBy:[...(m.seenBy||[]),me.id]}).catch(()=>{});
       }
     });
-    const hasModified=snap.docChanges().some(c=>c.type==='modified');
-    if(hasModified){
-      lastCount=snap.docs.length;
-      let html2='';
-      snap.docs.forEach((d,idx)=>{
-        const prevDate2=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
-        const r=renderMsgEl(d,idx,snap.docs,cid,prevDate2);
-        html2+=r.html;
+    // Manejar modificaciones — actualizar solo el elemento modificado sin rerenderizar todo
+    const modifiedDocs=snap.docChanges().filter(c=>c.type==='modified');
+    if(modifiedDocs.length>0){
+      modifiedDocs.forEach(change=>{
+        const d=change.doc;
+        const idx=snap.docs.findIndex(x=>x.id===d.id);
+        const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
+        const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
+        // Buscar el elemento existente y reemplazar solo su contenido
+        const allDivs=cont.querySelectorAll('[data-msgid]');
+        let found=false;
+        allDivs.forEach(el=>{if(el.dataset.msgid===d.id){el.outerHTML=r.html;found=true;}});
+        if(!found){
+          // Si no existe aún, agregarlo
+          const div=document.createElement('div');
+          div.innerHTML=r.html;
+          while(div.firstChild)cont.appendChild(div.firstChild);
+          renderedIds.add(d.id);
+        }
       });
-      cont.innerHTML=html2;
-      if(wasAtBottom){if(firstLoad)scrollToLastMsg(cont);else cont.scrollTop=cont.scrollHeight;}
-      renderedIds.clear();snap.docs.forEach(d=>renderedIds.add(d.id));
+      lastCount=snap.docs.length;
       firstLoad=false;
       return;
     }
