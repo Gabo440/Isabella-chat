@@ -2440,6 +2440,9 @@ window.sendMsg=async function(){
     : collection(db,'chats',chatId(me.id,chat.id),'messages');
   const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[]};
   if(!isGrp&&replyMsg)base.replyTo=replyMsg;
+  // Limpiar y hacer focus ANTES del await — el teclado no se cierra
+  inp.value='';autoR(inp);cancelReply();inp.focus();
+  if(!isGrp)setTyping(false);
   const burnSecs=currentBurnSecs||0;
   if(pendImg){
     await addDoc(colRef,{...base,type:'image',imageData:pendImg,text:txt});rmImg();
@@ -2451,9 +2454,6 @@ window.sendMsg=async function(){
   } else {
     await addDoc(colRef,{...base,type:'text',text:txt});
   }
-  inp.value='';autoR(inp);cancelReply();
-  setTimeout(()=>inp.focus(),50);
-  if(!isGrp)setTyping(false);
   // Reset burn
   currentBurnSecs=0;setBurn(0,'Normal');
   const ind=document.getElementById('burn-indicator');if(ind)ind.style.display='none';
