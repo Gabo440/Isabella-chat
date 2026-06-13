@@ -2962,15 +2962,35 @@ function renderMsgEl(d, idx, allDocs, cid, prevDate){
 
 function isAtBottom(cont){return cont.scrollHeight-cont.scrollTop-cont.clientHeight<80;}
 
+function scrollToLastMsg(cont){
+  const children=cont.children;
+  if(!children.length){cont.scrollTop=cont.scrollHeight;return;}
+  // Buscar el último mensaje (no datesep)
+  let last=null;
+  for(let i=children.length-1;i>=0;i--){
+    if(!children[i].classList.contains('datesep')){last=children[i];break;}
+  }
+  if(!last){cont.scrollTop=cont.scrollHeight;return;}
+  // Si es un juego (ocupa mucho), scroll al inicio del mensaje
+  const gameTypes=['game-bub'];
+  const isGame=last.querySelector('.game-bub,.trivia-msg,.calc-msg,.word-msg,.animal-msg,.scramble-msg');
+  if(isGame){
+    last.scrollIntoView({block:'start',behavior:'auto'});
+  } else {
+    cont.scrollTop=cont.scrollHeight;
+  }
+}
+
 function loadMsgs(){
   if(unsub)unsub();
   const cid=chatId(me.id,chat.id);
   const q=query(collection(db,'chats',cid,'messages'),orderBy('ts','asc'));
   const cont=document.getElementById('msgcont');
   const renderedIds=new Set();
+  let firstLoad=true;
   unsub=onSnapshot(q,snap=>{
-    if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();return;}
-    const wasAtBottom=isAtBottom(cont);
+    if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();firstLoad=false;return;}
+    const wasAtBottom=firstLoad||isAtBottom(cont);
     if(snap.docs.length>lastCount&&lastCount>0){
       const last=snap.docs[snap.docs.length-1].data();
       if(last.senderId!==me.id)playNotif();
@@ -2991,8 +3011,9 @@ function loadMsgs(){
         html2+=r.html;
       });
       cont.innerHTML=html2;
-      if(wasAtBottom)cont.scrollTop=cont.scrollHeight;
+      if(wasAtBottom){if(firstLoad)scrollToLastMsg(cont);else cont.scrollTop=cont.scrollHeight;}
       renderedIds.clear();snap.docs.forEach(d=>renderedIds.add(d.id));
+      firstLoad=false;
       return;
     }
     const newDocs=snap.docs.filter(d=>!renderedIds.has(d.id));
@@ -3009,6 +3030,7 @@ function loadMsgs(){
     });
     lastCount=snap.docs.length;
     if(wasAtBottom)cont.scrollTop=cont.scrollHeight;
+    firstLoad=false;
   });
 }
 
