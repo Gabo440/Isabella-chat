@@ -2342,120 +2342,136 @@ function loadGroupMsgs(){
 
 function chatId(a,b){return[a,b].sort().join('_');}
 
+function renderMsgEl(d, idx, allDocs, cid, prevDate){
+  const m=d.data(), isMine=m.senderId===me.id;
+  const isI=me.id==='isabella';
+  const ts=m.ts?m.ts.toDate():new Date();
+  const ds=fmtDate(ts);
+  let html='';
+  if(ds!==prevDate){html+=`<div class="datesep">${ds}</div>`;}
+  const rc=isMine?`mrow mine${isI?' ci':''}`:'mrow theirs';
+  const snd=!isMine?`<div class="msnd">${m.senderName}</div>`:'';
+  const seen=isMine&&m.seenBy&&m.seenBy.includes(chat.id);
+  const seenHtml=isMine?`<span class="seen">${seen?'✓✓':'✓'}</span>`:'';
+  let quoteHtml='';
+  if(m.replyTo){
+    const qt=m.replyTo;
+    const qtTxt=qt.type==='image'?'📷 Imagen':qt.type==='sticker'?'🎨 Sticker':(qt.text||'').slice(0,60);
+    quoteHtml=`<div class="quote-preview"><div class="qsnd">${esc(qt.senderName)}</div><div class="qtxt">${esc(qtTxt)}</div></div>`;
+  }
+  const replyBtn=`<button class="reply-btn" onclick="setReply('${d.id}','${esc(m.senderName)}','${esc((m.text||'').replace(/'/g,"\'").slice(0,80))}','${m.type||'text'}','${m.sticker||''}')">↩</button>`;
+  let bc='bub',cont2='';
+  if(m.type==='image'){bc='bub';cont2=`<img src="${m.imageData}" onclick="openModal('${m.imageData.replace(/'/g,"\'")}')">`;if(m.text)cont2+=`<div style="margin-top:5px;font-size:13px;">${esc(m.text)}</div>`;}
+  else if(m.type==='sticker'){bc='bub stk';cont2=`<span>${m.sticker}</span>`;}
+  else if(m.type==='voice'){bc='bub';cont2=`<div class="bub-voice"><audio controls src="${m.audioData}"></audio><span class="voice-dur">${m.duration||0}s</span></div>`;}
+  else if(m.type==='game'){bc='bub game-bub';cont2=renderGame(m,d.id,isMine);}
+  else if(m.type==='hangman'){bc='bub game-bub';cont2=renderHangman(m,d.id,isMine);}
+  else if(m.type==='guessnumber'){bc='bub game-bub';cont2=renderGuessNumber(m,d.id,isMine);}
+  else if(m.type==='trivia'){bc='bub game-bub';cont2=renderTrivia(m,d.id);}
+  else if(m.type==='truthordare'){bc='bub game-bub';cont2=renderTruthOrDare(m,d.id);}
+  else if(m.type==='poll'){bc='bub game-bub';cont2=renderPoll(m,d.id);}
+  else if(m.type==='burn'){
+    const expireAt=m.expireAt||0;
+    const remaining=Math.max(0,Math.round((expireAt-Date.now())/1000));
+    if(remaining<=0&&expireAt>0){bc='bub';cont2='<i style="opacity:.4;font-size:12px;">🔥 Mensaje expirado</i>';}
+    else{bc='bub';cont2=esc(m.text||'')+(expireAt>0?`<div class="burn-timer" data-expire="${expireAt}">🔥 ${fmtCountdown(remaining)}</div>`:'');}
+  }
+  else if(m.type==='deleted'){bc='bub';cont2='<i style="opacity:.5;font-size:12px;">Mensaje eliminado</i>';}
+  else{cont2=esc(m.text||'');}
+  const reactions=m.reactions||{};
+  const reactHtml=Object.entries(reactions).map(([emoji,users])=>
+    `<div class="reaction-chip${users.includes(me.id)?' mine':''}" onclick="addReaction('${emoji}','${d.id}')">${emoji} <span>${users.length}</span></div>`
+  ).join('');
+  const reactionsDiv=reactHtml?`<div class="reactions">${reactHtml}</div>`:'';
+  const editedMark=m.edited?` edited`:'';
+  const pinnedMark=m.pinned?`<span style="font-size:10px;margin-left:4px;">📌</span>`:'';
+  const actionBtn=`<button class="action-btn" onclick="openMsgActions(event,'${d.id}','${isMine?'mine':'theirs'}')">⋯</button>`;
+  if(isMine){
+    html+=`<div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')">${replyBtn}${actionBtn}<div class="${rc}"><div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${seenHtml}${pinnedMark}</div></div></div>`;
+  } else {
+    html+=`<div style="display:flex;align-items:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')"><div class="${rc}">${snd}${quoteHtml}<div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${pinnedMark}</div></div>${replyBtn}${actionBtn}</div>`;
+  }
+  return {html, date:ds};
+}
+
 function loadMsgs(){
   if(unsub)unsub();
   const cid=chatId(me.id,chat.id);
   const q=query(collection(db,'chats',cid,'messages'),orderBy('ts','asc'));
   const cont=document.getElementById('msgcont');
+  const renderedIds=new Set();
   unsub=onSnapshot(q,snap=>{
-    if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;return;}
-    // Sonido nuevo mensaje
+    if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();return;}
     if(snap.docs.length>lastCount&&lastCount>0){
       const last=snap.docs[snap.docs.length-1].data();
       if(last.senderId!==me.id)playNotif();
     }
-    // Marcar mensajes del otro como vistos
     snap.docs.forEach(d=>{
       const m=d.data();
       if(m.senderId!==me.id&&!m.seenBy?.includes(me.id)){
         updateDoc(doc(db,'chats',cid,'messages',d.id),{seenBy:[...(m.seenBy||[]),me.id]}).catch(()=>{});
       }
     });
-    lastCount=snap.docs.length;
-    const isI=me.id==='isabella';
-    let html='',ld='';
-    snap.docs.forEach((d,idx)=>{
-      const m=d.data(),isMine=m.senderId===me.id;
-      const ts=m.ts?m.ts.toDate():new Date();
-      const ds=fmtDate(ts);
-      if(ds!==ld){html+=`<div class="datesep">${ds}</div>`;ld=ds;}
-      const rc=isMine?`mrow mine${isI?' ci':''}`:'mrow theirs';
-      const snd=!isMine?`<div class="msnd">${m.senderName}</div>`:'';
-      // Seen checkmarks (solo en el último mensaje mío)
-      const isLastMine=isMine&&snap.docs.slice(idx+1).every(dd=>dd.data().senderId===me.id||!dd.data().senderId);
-      const seen=isMine&&m.seenBy&&m.seenBy.includes(chat.id);
-      const seenHtml=isMine?`<span class="seen">${seen?'✓✓':'✓'}</span>`:'';
-      // Quote
-      let quoteHtml='';
-      if(m.replyTo){
-        const qt=m.replyTo;
-        const qtTxt=qt.type==='image'?'📷 Imagen':qt.type==='sticker'?'🎨 Sticker':(qt.text||'').slice(0,60);
-        quoteHtml=`<div class="quote-preview"><div class="qsnd">${esc(qt.senderName)}</div><div class="qtxt">${esc(qtTxt)}</div></div>`;
-      }
-      // Botón reply
-      const replyBtn=`<button class="reply-btn" onclick="setReply('${d.id}','${esc(m.senderName)}','${esc((m.text||'').replace(/'/g,"\\'").slice(0,80))}','${m.type||'text'}','${m.sticker||''}')">↩</button>`;
-      let bc='bub',cont2='';
-      if(m.type==='image'){bc='bub';cont2=`<img src="${m.imageData}" onclick="openModal('${m.imageData.replace(/'/g,"\\'")}')">`;if(m.text)cont2+=`<div style="margin-top:5px;font-size:13px;">${esc(m.text)}</div>`;}
-      else if(m.type==='sticker'){bc='bub stk';cont2=`<span>${m.sticker}</span>`;}
-      else if(m.type==='voice'){bc='bub';cont2=`<div class="bub-voice"><audio controls src="${m.audioData}"></audio><span class="voice-dur">${m.duration||0}s</span></div>`;}
-      else if(m.type==='game'){bc='bub game-bub';cont2=renderGame(m,d.id,isMine);}
-      else if(m.type==='hangman'){bc='bub game-bub';cont2=renderHangman(m,d.id,isMine);}
-      else if(m.type==='guessnumber'){bc='bub game-bub';cont2=renderGuessNumber(m,d.id,isMine);}
-      else if(m.type==='trivia'){bc='bub game-bub';cont2=renderTrivia(m,d.id);}
-      else if(m.type==='truthordare'){bc='bub game-bub';cont2=renderTruthOrDare(m,d.id);}
-      else if(m.type==='poll'){bc='bub game-bub';cont2=renderPoll(m,d.id);}
-      else if(m.type==='burn'){
-        const expireAt=m.expireAt||0;
-        const remaining=Math.max(0,Math.round((expireAt-Date.now())/1000));
-        if(remaining<=0&&expireAt>0){
-          bc='bub';cont2='<i style="opacity:.4;font-size:12px;">🔥 Mensaje expirado</i>';
-        } else {
-          bc='bub';
-          cont2=esc(m.text||'')+(expireAt>0?`<div class="burn-timer" data-expire="${expireAt}">🔥 ${fmtCountdown(remaining)}</div>`:'');
-        }
-      }
-      else if(m.type==='deleted'){bc='bub';cont2='<i style="opacity:.5;font-size:12px;">Mensaje eliminado</i>';}
-      else{cont2=esc(m.text||'');}
-      // Reacciones
-      const reactions=m.reactions||{};
-      const reactHtml=Object.entries(reactions).map(([emoji,users])=>
-        `<div class="reaction-chip${users.includes(me.id)?' mine':''}" onclick="addReaction('${emoji}','${d.id}')">${emoji} <span>${users.length}</span></div>`
-      ).join('');
-      const reactionsDiv=reactHtml?`<div class="reactions">${reactHtml}</div>`:'';
-      // Indicador editado
-      const editedMark=m.edited?` edited`:'';
-      // Fijado
-      const pinnedMark=m.pinned?`<span style="font-size:10px;margin-left:4px;">📌</span>`:'';
-      const actionBtn=`<button class="action-btn" onclick="openMsgActions(event,'${d.id}','${isMine?'mine':'theirs'}')">⋯</button>`;
-      if(isMine){
-        html+=`<div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')">${replyBtn}${actionBtn}<div class="${rc}"><div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${seenHtml}${pinnedMark}</div></div></div>`;
-      } else {
-        html+=`<div style="display:flex;align-items:flex-end;gap:2px;" onmouseenter="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='1')" onmouseleave="this.querySelectorAll('.reply-btn,.action-btn').forEach(b=>b.style.opacity='0')"><div class="${rc}">${snd}${quoteHtml}<div class="bub${editedMark}">${cont2}</div>${reactionsDiv}<div class="mtm">${fmtTime(ts)}${pinnedMark}</div></div>${replyBtn}${actionBtn}</div>`;
-      }
+    const hasModified=snap.docChanges().some(c=>c.type==='modified');
+    if(hasModified){
+      lastCount=snap.docs.length;
+      let html2='';
+      snap.docs.forEach((d,idx)=>{
+        const prevDate2=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
+        const r=renderMsgEl(d,idx,snap.docs,cid,prevDate2);
+        html2+=r.html;
+      });
+      cont.innerHTML=html2;
+      cont.scrollTop=cont.scrollHeight;
+      renderedIds.clear();snap.docs.forEach(d=>renderedIds.add(d.id));
+      return;
+    }
+    const newDocs=snap.docs.filter(d=>!renderedIds.has(d.id));
+    if(newDocs.length===0){lastCount=snap.docs.length;return;}
+    const empty=cont.querySelector('.empty');if(empty)empty.remove();
+    newDocs.forEach(d=>{
+      const idx=snap.docs.findIndex(x=>x.id===d.id);
+      const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
+      const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
+      const div=document.createElement('div');
+      div.innerHTML=r.html;
+      while(div.firstChild)cont.appendChild(div.firstChild);
+      renderedIds.add(d.id);
     });
-    cont.innerHTML=html;
+    lastCount=snap.docs.length;
     cont.scrollTop=cont.scrollHeight;
   });
 }
 
-window.sendMsg=async function(){
+window.sendMsg=function(){
   const inp=document.getElementById('minp'),txt=inp.value.trim();
   if(!txt&&!pendImg)return;
   if(!chat&&!activeGroup)return;
   if(txt){const blocked=containsBlocked(txt);if(blocked){showToast(`🚫 Mensaje bloqueado: contiene "${blocked}"`);return;}}
+  const txtToSend=txt;
+  const imgToSend=pendImg;
+  inp.value='';autoR(inp);cancelReply();inp.focus();
+  pendImg=null;
+  const burnSecs=currentBurnSecs||0;
+  currentBurnSecs=0;setBurn(0,'Normal');
+  const ind=document.getElementById('burn-indicator');if(ind)ind.style.display='none';
   closePK();
   const isGrp=!!activeGroup;
+  if(!isGrp)setTyping(false);
   const colRef=isGrp
     ? collection(db,'groups',activeGroup.id,'messages')
     : collection(db,'chats',chatId(me.id,chat.id),'messages');
   const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[]};
   if(!isGrp&&replyMsg)base.replyTo=replyMsg;
-  const burnSecs=currentBurnSecs||0;
-  if(pendImg){
-    await addDoc(colRef,{...base,type:'image',imageData:pendImg,text:txt});rmImg();
+  if(imgToSend){
+    addDoc(colRef,{...base,type:'image',imageData:imgToSend,text:txtToSend}).then(()=>rmImg()).catch(()=>{});
   } else if(burnSecs>0){
-    const burnAt=serverTimestamp();
-    const burnRef=await addDoc(colRef,{...base,type:'burn',text:txt});
-    const expireMs=Date.now()+burnSecs*1000;
-    await updateDoc(burnRef,{expireAt:expireMs});
+    addDoc(colRef,{...base,type:'burn',text:txtToSend}).then(ref=>{
+      updateDoc(ref,{expireAt:Date.now()+burnSecs*1000}).catch(()=>{});
+    }).catch(()=>{});
   } else {
-    await addDoc(colRef,{...base,type:'text',text:txt});
+    addDoc(colRef,{...base,type:'text',text:txtToSend}).catch(()=>{});
   }
-  inp.value='';autoR(inp);cancelReply();
-  if(!isGrp)setTyping(false);
-  // Reset burn
-  currentBurnSecs=0;setBurn(0,'Normal');
-  const ind=document.getElementById('burn-indicator');if(ind)ind.style.display='none';
 };
 
 async function sendSticker(s){
