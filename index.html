@@ -1854,21 +1854,61 @@ function renderGuessWord(m,docId){
 // ===== COMPLETA LA SERIE =====
 // ===== ¿QUÉ ANIMAL SOY? =====
 const ANIMAL_QS=[
-  {emoji:'🦁',name:'León',hints:['Soy el rey de la selva','Vivo en África','Tengo una melena majestuosa','Rujo muy fuerte'],opts:['Tigre','Leopardo','León','Jaguar'],ans:2},
-  {emoji:'🐘',name:'Elefante',hints:['Soy el animal terrestre más grande','Tengo una trompa muy larga','Mis orejas son enormes','Como plantas y frutas'],opts:['Rinoceronte','Hipopótamo','Elefante','Jirafa'],ans:2},
-  {emoji:'🦒',name:'Jirafa',hints:['Soy el animal más alto del mundo','Tengo el cuello muy largo','Como hojas de los árboles altos','Tengo manchas cafés'],opts:['Cebra','Camello','Antílope','Jirafa'],ans:3},
-  {emoji:'🐬',name:'Delfín',hints:['Vivo en el mar','Soy muy inteligente','Me comunico con sonidos','Salto fuera del agua'],opts:['Tiburón','Delfín','Ballena','Foca'],ans:1},
-  {emoji:'🦋',name:'Mariposa',hints:['Tengo alas de colores','Empecé siendo oruga','Me gustan las flores','Vuelo muy liviano'],opts:['Libélula','Abeja','Mariposa','Polilla'],ans:2},
-  {emoji:'🐧',name:'Pingüino',hints:['Soy un pájaro que no vuela','Vivo en el frío','Soy blanco y negro','Nado muy bien'],opts:['Pingüino','Tucán','Flamenco','Pelícano'],ans:0},
-  {emoji:'🦊',name:'Zorro',hints:['Soy un mamífero astuto','Tengo orejas puntiagudas','Mi cola es muy esponjosa','Soy naranja rojizo'],opts:['Lobo','Coyote','Zorro','Chacal'],ans:2},
-  {emoji:'🐊',name:'Cocodrilo',hints:['Vivo en ríos y pantanos','Tengo muchos dientes afilados','Soy reptil','Me camuflo en el agua'],opts:['Iguana','Lagarto','Tortuga','Cocodrilo'],ans:3},
-  {emoji:'🦜',name:'Loro',hints:['Soy un ave muy colorida','Puedo repetir lo que dices','Vivo en la selva tropical','Tengo pico curvo'],opts:['Loro','Tucán','Guacamayo','Cacatúa'],ans:0},
-  {emoji:'🐙',name:'Pulpo',hints:['Vivo en el mar','Tengo 8 brazos','Puedo cambiar de color','Expulso tinta'],opts:['Medusa','Calamar','Pulpo','Cangrejo'],ans:2},
+  {emoji:'🦁',name:'León',hints:['Solo los machos tenemos melena dorada','Rugimos tan fuerte que se escucha a 8km','Vivimos en grupos llamados manadas','Somos el único felino que vive en grupo'],opts:['Tigre','Leopardo','León','Guepardo'],ans:2},
+  {emoji:'🐘',name:'Elefante',hints:['Tenemos la nariz más larga del reino animal — se llama trompa','Somos el único animal que no puede saltar','Pesamos hasta 6.000 kilos','Usamos la trompa para beber, comer y saludar'],opts:['Rinoceronte','Hipopótamo','Elefante','Mamut'],ans:2},
+  {emoji:'🦒',name:'Jirafa',hints:['Nuestro cuello mide hasta 2 metros pero solo tiene 7 huesos','Somos el animal más alto del mundo','Nuestras manchas son únicas como huellas digitales','Dormimos solo 30 minutos al día'],opts:['Cebra','Camello','Ñu','Jirafa'],ans:3},
+  {emoji:'🐬',name:'Delfín',hints:['Dormimos con un ojo abierto','Nos comunicamos con clicks y silbidos únicos — es nuestro nombre','Somos los únicos animales que juegan por diversión','Nuestro cerebro es más grande que el humano en proporción'],opts:['Marsopa','Delfín','Orca','Narval'],ans:1},
+  {emoji:'🦋',name:'Mariposa',hints:['Nuestras alas tienen escamas microscópicas de colores','Empezamos siendo huevo, luego oruga, luego crisálida','Saboreamos la comida con las patas','Podemos ver colores que los humanos no pueden'],opts:['Libélula','Polilla','Mariposa','Mantis'],ans:2},
+  {emoji:'🐧',name:'Pingüino',hints:['Somos aves pero usamos las alas solo para nadar, no para volar','Los papás incubamos el huevo sobre los pies','Vivimos en grupos de miles llamados colonias','Solo existimos en el hemisferio sur'],opts:['Albatros','Pelícano','Flamenco','Pingüino'],ans:3},
+  {emoji:'🦊',name:'Zorro',hints:['Tenemos orejas enormes para escuchar presas bajo la nieve','Nuestra cola esponjosa nos sirve de bufanda en el frío','Somos omnívoros: comemos frutas, insectos y animales pequeños','Saltamos en vertical para cazar ratones bajo la nieve'],opts:['Lobo','Coyote','Zorro','Hiena'],ans:2},
+  {emoji:'🐊',name:'Cocodrilo',hints:['Llevamos 200 millones de años en la Tierra, igual que los dinosaurios','Lloramos al comer — no de tristeza, sino para lubricar los ojos','Nuestros dientes se renuevan solos hasta 3.000 veces','Podemos aguantar más de una hora bajo el agua'],opts:['Caimán','Gavial','Lagarto','Cocodrilo'],ans:3},
+  {emoji:'🦜',name:'Loro',hints:['Somos los únicos animales que imitan la voz humana con significado','Algunos vivimos más de 80 años','Usamos el pico como tercera mano para trepar','Nos apareamos de por vida con la misma pareja'],opts:['Tucán','Guacamayo','Loro','Cacatúa'],ans:2},
+  {emoji:'🐙',name:'Pulpo',hints:['Tenemos tres corazones y sangre azul','Cada uno de nuestros 8 brazos tiene cerebro propio','Podemos abrir frascos con tapa desde adentro','Somos el invertebrado más inteligente del planeta'],opts:['Calamar','Medusa','Cangrejo','Pulpo'],ans:3},
+  {emoji:'🦈',name:'Tiburón',hints:['Llevamos 450 millones de años en los océanos, antes que los dinosaurios','Podemos detectar una gota de sangre a 500 metros','Nuestros dientes caen y crecen nuevos toda la vida','Tenemos que nadar siempre para no ahogarnos'],opts:['Tiburón','Barracuda','Orca','Raya'],ans:0},
+  {emoji:'🐺',name:'Lobo',hints:['Vivimos en grupos con reglas muy estrictas llamados manadas','Aullamos para comunicarnos con nuestra familia a kilómetros de distancia','Somos los ancestros de todos los perros domésticos','Podemos correr a 60 km/h durante horas'],opts:['Perro','Coyote','Lobo','Hiena'],ans:2},
+  {emoji:'🦅',name:'Águila',hints:['Vemos 4 veces mejor que los humanos','Podemos volar a más de 3.000 metros de altura','Nuestro nido puede pesar hasta 2.000 kilos','Somos símbolo de libertad y fuerza en muchos países'],opts:['Halcón','Cóndor','Buitre','Águila'],ans:3},
+  {emoji:'🐸',name:'Rana',hints:['Bebemos agua por la piel, no por la boca','Nuestros ojos nos ayudan a tragar: los usamos para empujar la comida','Empezamos siendo renacuajos sin patas','Podemos saltar 20 veces nuestra longitud'],opts:['Sapo','Salamandra','Rana','Tritón'],ans:2},
+  {emoji:'🦝',name:'Mapache',hints:['Lavamos nuestra comida antes de comerla','Nuestras manos son tan hábiles que abrimos cerraduras','Tenemos una máscara negra natural alrededor de los ojos','Somos nocturnos y muy curiosos'],opts:['Tejón','Nutria','Comadreja','Mapache'],ans:3},
 ];
+
+// Historial de animales recientes para evitar repetición
+const _animalHistory=[];
+
+async function generateAnimalWithAI(){
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:500,
+        system:'Eres un generador de juegos para niños de 8 años. Responde SOLO con JSON válido, sin texto adicional ni backticks.',
+        messages:[{role:'user',content:`Crea UN juego de "¿Qué animal soy?" para una niña de 8 años. Las 4 pistas deben ser ÚNICAS y exclusivas de ESE animal específico — ninguna pista debe aplicar a otro animal de las opciones. Responde SOLO con este JSON exacto: {"emoji":"🐻","name":"Oso","hints":["pista1 única","pista2 única","pista3 única","pista4 única"],"opts":["Oso","Lobo","Coyote","Jabalí"],"ans":0} donde ans es el índice (0-3) del animal correcto en opts.`}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+    const clean=text.replace(/\`\`\`json|\`\`\`/g,'').trim();
+    const parsed=JSON.parse(clean);
+    if(parsed.emoji&&parsed.name&&parsed.hints?.length===4&&parsed.opts?.length===4&&typeof parsed.ans==='number') return parsed;
+  }catch(e){console.log('IA animal falló');}
+  return null;
+}
 
 window.startAnimalGame=async function(){
   if(!chat&&!activeGroup)return;
-  const q=ANIMAL_QS[Math.floor(Math.random()*ANIMAL_QS.length)];
+  showToast('🐾 Generando animal...');
+  // Intentar con IA primero
+  let q=await generateAnimalWithAI();
+  // Si falla, usar banco evitando repeticiones
+  if(!q){
+    const available=ANIMAL_QS.filter(a=>!_animalHistory.includes(a.name));
+    const pool=available.length>0?available:ANIMAL_QS;
+    q=pool[Math.floor(Math.random()*pool.length)];
+    // Registrar en historial
+    _animalHistory.push(q.name);
+    if(_animalHistory.length>5)_animalHistory.shift();
+  }
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
