@@ -3064,7 +3064,11 @@ function loadMsgs(){
       renderedIds.add(d.id);
     });
     lastCount=snap.docs.length;
-    if(wasAtBottom)cont.scrollTop=cont.scrollHeight;
+    if(wasAtBottom){
+      const lastEl=cont.querySelector('[data-msgid]:last-of-type');
+      if(lastEl)lastEl.scrollIntoView({block:'start',behavior:'instant'});
+      else cont.scrollTop=cont.scrollHeight;
+    }
     firstLoad=false;
   });
 }
@@ -3516,15 +3520,19 @@ if('serviceWorker' in navigator){
   });
 }
 
-// Fix teclado móvil — usar height real del viewport
+// Fix teclado móvil
 if(window.visualViewport){
   function onViewportResize(){
     const appRight=document.getElementById('app-right');
     if(!appRight||!appRight.classList.contains('mobile-open'))return;
     const vv=window.visualViewport;
-    // Ajustar altura del app-right al viewport visible real
     appRight.style.height=vv.height+'px';
     appRight.style.top=vv.offsetTop+'px';
+    // Scroll al último mensaje visible
+    const mc=document.getElementById('msgcont');
+    if(!mc)return;
+    const lastMsg=mc.querySelector('[data-msgid]:last-of-type')||mc.lastElementChild;
+    if(lastMsg)lastMsg.scrollIntoView({block:'end',behavior:'instant'});
   }
   window.visualViewport.addEventListener('resize',onViewportResize);
   window.visualViewport.addEventListener('scroll',onViewportResize);
