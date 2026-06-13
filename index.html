@@ -3516,20 +3516,15 @@ if('serviceWorker' in navigator){
   });
 }
 
-// Fix teclado móvil
+// Fix teclado móvil — usar height real del viewport
 if(window.visualViewport){
   function onViewportResize(){
-    const chatPanel=document.getElementById('chat-panel');
-    if(!chatPanel||!chatPanel.style.display||chatPanel.style.display==='none')return;
     const appRight=document.getElementById('app-right');
     if(!appRight||!appRight.classList.contains('mobile-open'))return;
     const vv=window.visualViewport;
-    const offsetBottom=window.innerHeight-vv.height-vv.offsetTop;
-    chatPanel.style.bottom=offsetBottom+'px';
-    chatPanel.style.top='0';
-    // Hacer scroll al último mensaje
-    const mc=document.getElementById('msgcont');
-    if(mc)mc.scrollTop=mc.scrollHeight;
+    // Ajustar altura del app-right al viewport visible real
+    appRight.style.height=vv.height+'px';
+    appRight.style.top=vv.offsetTop+'px';
   }
   window.visualViewport.addEventListener('resize',onViewportResize);
   window.visualViewport.addEventListener('scroll',onViewportResize);
