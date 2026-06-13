@@ -3066,7 +3066,7 @@ function loadMsgs(){
     lastCount=snap.docs.length;
     if(wasAtBottom){
       const lastEl=cont.querySelector('[data-msgid]:last-of-type');
-      if(lastEl)lastEl.scrollIntoView({block:'start',behavior:'instant'});
+      if(lastEl)lastEl.scrollIntoView({block:'nearest',behavior:'instant'});
       else cont.scrollTop=cont.scrollHeight;
     }
     firstLoad=false;
