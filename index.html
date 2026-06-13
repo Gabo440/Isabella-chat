@@ -2415,7 +2415,7 @@ function loadMsgs(){
     const hasModified=snap.docChanges().some(c=>c.type==='modified');
     if(hasModified){
       lastCount=snap.docs.length;
-      let html2='',ld2='';
+      let html2='';
       snap.docs.forEach((d,idx)=>{
         const prevDate2=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
         const r=renderMsgEl(d,idx,snap.docs,cid,prevDate2);
@@ -2443,34 +2443,39 @@ function loadMsgs(){
   });
 }
 
-window.sendMsg=async function(){
+window.sendMsg=function(){
   const inp=document.getElementById('minp'),txt=inp.value.trim();
   if(!txt&&!pendImg)return;
   if(!chat&&!activeGroup)return;
   if(txt){const blocked=containsBlocked(txt);if(blocked){showToast(`🚫 Mensaje bloqueado: contiene "${blocked}"`);return;}}
+  // Limpiar y mantener foco SÍNCRONAMENTE — antes de cualquier async
+  const txtToSend=txt;
+  const imgToSend=pendImg;
+  inp.value='';autoR(inp);cancelReply();inp.focus();
+  if(!pendImg)pendImg=null;
+  // Reset burn
+  const burnSecs=currentBurnSecs||0;
+  currentBurnSecs=0;setBurn(0,'Normal');
+  const ind=document.getElementById('burn-indicator');if(ind)ind.style.display='none';
   closePK();
   const isGrp=!!activeGroup;
+  if(!isGrp)setTyping(false);
   const colRef=isGrp
     ? collection(db,'groups',activeGroup.id,'messages')
     : collection(db,'chats',chatId(me.id,chat.id),'messages');
   const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[]};
   if(!isGrp&&replyMsg)base.replyTo=replyMsg;
-  const burnSecs=currentBurnSecs||0;
-  if(pendImg){
-    await addDoc(colRef,{...base,type:'image',imageData:pendImg,text:txt});rmImg();
+  // Enviar a Firestore en background — no bloqueamos el hilo principal
+  if(imgToSend){
+    addDoc(colRef,{...base,type:'image',imageData:imgToSend,text:txtToSend}).then(()=>rmImg()).catch(()=>{});
   } else if(burnSecs>0){
-    const burnAt=serverTimestamp();
-    const burnRef=await addDoc(colRef,{...base,type:'burn',text:txt});
-    const expireMs=Date.now()+burnSecs*1000;
-    await updateDoc(burnRef,{expireAt:expireMs});
+    addDoc(colRef,{...base,type:'burn',text:txtToSend}).then(ref=>{
+      const expireMs=Date.now()+burnSecs*1000;
+      updateDoc(ref,{expireAt:expireMs}).catch(()=>{});
+    }).catch(()=>{});
   } else {
-    await addDoc(colRef,{...base,type:'text',text:txt});
+    addDoc(colRef,{...base,type:'text',text:txtToSend}).catch(()=>{});
   }
-  inp.value='';autoR(inp);cancelReply();inp.focus();
-  if(!isGrp)setTyping(false);
-  // Reset burn
-  currentBurnSecs=0;setBurn(0,'Normal');
-  const ind=document.getElementById('burn-indicator');if(ind)ind.style.display='none';
 };
 
 async function sendSticker(s){

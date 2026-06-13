@@ -1,5 +1,4 @@
-// ⚡ VERSIÓN — cambia este número cada vez que subas código nuevo
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = 'family-chat-' + CACHE_VERSION;
 
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
