@@ -150,7 +150,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;backg
 .chinfo{flex:1;}
 .chnm{font-weight:800;font-size:15px;color:var(--text);}
 .chst{font-size:11px;color:#22c55e;font-weight:700;}
-.msgcont{flex:1;overflow-y:auto;padding:12px 12px 12px 12px;display:flex;flex-direction:column;gap:3px;background:var(--bg);background-image:radial-gradient(circle at 10% 10%,rgba(236,72,153,.04) 0%,transparent 40%),radial-gradient(circle at 90% 90%,rgba(79,70,229,.04) 0%,transparent 40%);scroll-behavior:smooth;}
+.msgcont{flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:3px;background:var(--bg);background-image:radial-gradient(circle at 10% 10%,rgba(236,72,153,.04) 0%,transparent 40%),radial-gradient(circle at 90% 90%,rgba(79,70,229,.04) 0%,transparent 40%);scroll-behavior:smooth;}
 .datesep{text-align:center;font-size:11px;font-weight:800;color:var(--muted);background:rgba(255,255,255,.8);padding:3px 12px;border-radius:20px;align-self:center;margin:6px 0;}
 .mrow{display:flex;flex-direction:column;max-width:78%;animation:mi .2s ease;}
 @keyframes mi{from{opacity:0;transform:scale(.95) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -2809,7 +2809,6 @@ window.openChat=function(uid){
   const _mc=document.getElementById('msgcont');
   if(_mc)_mc.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.3;font-size:13px;">Cargando...</div>';
   lastCount=0;
-  adjustMsgContPadding();
   loadMsgs();listenTyping();
   if(!window._pickersBuilt){buildEmojis();buildStickers();window._pickersBuilt=true;}
   setTimeout(()=>document.getElementById('minp').focus(),150);
@@ -2986,14 +2985,7 @@ function renderMsgEl(d, idx, allDocs, cid, prevDate){
 
 function isAtBottom(cont){return cont.scrollHeight-cont.scrollTop-cont.clientHeight<80;}
 
-function adjustMsgContPadding(){
-  const cia=document.querySelector('.cia');
-  const cont=document.getElementById('msgcont');
-  if(!cia||!cont)return;
-  const ciaH=cia.getBoundingClientRect().height;
-  // El padding-bottom debe ser al menos la altura del CIA para que el último mensaje siempre sea visible
-  cont.style.paddingBottom=Math.max(ciaH,80)+'px';
-}
+
 
 function scrollToLastMsg(cont){
   const children=cont.children;
@@ -3526,7 +3518,7 @@ if('serviceWorker' in navigator){
 
 // Fix teclado móvil
 if(window.visualViewport){
-  function onViewportResize(){adjustMsgContPadding();
+  function onViewportResize(){
     const chatPanel=document.getElementById('chat-panel');
     if(!chatPanel||!chatPanel.style.display||chatPanel.style.display==='none')return;
     const appRight=document.getElementById('app-right');
