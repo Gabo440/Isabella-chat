@@ -457,12 +457,21 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
 .word-input{flex:1;border:none;border-radius:10px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;outline:none;}
 .word-btn{border:none;border-radius:10px;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.9);color:#92400e;}
 /* COMPLETA LA SERIE */
-.series-msg{background:linear-gradient(135deg,#a18cd1,#fbc2eb);border-radius:16px;padding:14px;min-width:220px;}
-.series-q{color:white;font-weight:800;font-size:18px;text-align:center;margin-bottom:10px;letter-spacing:2px;}
-.series-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.series-opt{border:none;border-radius:10px;padding:10px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.9);color:#6b21a8;transition:all .15s;}
-.series-opt.correct{background:#22c55e!important;color:white!important;}
-.series-opt.wrong{background:#ef4444!important;color:white!important;}
+/* ¿QUÉ ANIMAL SOY? */
+.animal-msg{background:linear-gradient(135deg,#11998e,#38ef7d);border-radius:16px;padding:14px;min-width:220px;}
+.animal-emoji{font-size:48px;text-align:center;margin:6px 0;}
+.animal-hint{color:white;font-size:12px;background:rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;margin-bottom:5px;}
+.animal-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.animal-opt{border:none;border-radius:10px;padding:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.9);color:#065f46;transition:all .15s;}
+.animal-opt.correct{background:#22c55e!important;color:white!important;}
+.animal-opt.wrong{background:#ef4444!important;color:white!important;}
+/* SOPA DE LETRAS */
+.scramble-msg{background:linear-gradient(135deg,#fc5c7d,#6a3093);border-radius:16px;padding:14px;min-width:220px;}
+.scramble-word{color:white;font-size:28px;font-weight:800;text-align:center;letter-spacing:6px;margin:8px 0;}
+.scramble-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.scramble-opt{border:none;border-radius:10px;padding:9px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.9);color:#581c87;transition:all .15s;}
+.scramble-opt.correct{background:#22c55e!important;color:white!important;}
+.scramble-opt.wrong{background:#ef4444!important;color:white!important;}
 
 
 /* TOOLBAR ESTILO WHATSAPP */
@@ -800,7 +809,8 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
               <button onclick="startTriviaGame();toggleGameMenu()">🧠 Trivia</button>
               <button onclick="startCalcGame();toggleGameMenu()">🔢 Cálculo</button>
               <button onclick="startGuessWord();toggleGameMenu()">🔤 Adivina</button>
-              <button onclick="startSeriesGame();toggleGameMenu()">🧩 Series</button>
+              <button onclick="startAnimalGame();toggleGameMenu()">🐾 ¿Qué animal?</button>
+              <button onclick="startWordScramble();toggleGameMenu()">🔡 Sopa letras</button>
               <button onclick="startHangman();toggleGameMenu()">💀 Ahorcado</button>
               <button onclick="startGuessNumber();toggleGameMenu()">🎲 Número</button>
               <button onclick="sendGameInvite();toggleGameMenu()">✂️ P.P.T.</button>
@@ -1791,73 +1801,176 @@ window.guessWord=async function(docId){
   if(!inp)return;
   const guess=inp.value.trim().toUpperCase();
   if(!guess)return;
+  inp.value='';
   const isGrp=!!activeGroup;
   const colPath=isGrp?`groups/${activeGroup.id}/messages`:`chats/${chatId(me.id,chat.id)}/messages`;
   const ref=doc(db,colPath,docId);
   const snap=await getDoc(ref);if(!snap.exists())return;
   const g=snap.data();
-  if(g.guesses?.[me.id])return;
+  if(g.state==='won')return;
   const correct=guess===g.word;
-  const hintsShown=Math.min(g.hintsShown+1,g.hints.length);
-  await updateDoc(ref,{guesses:{...g.guesses,[me.id]:{guess,correct}},hintsShown,state:correct?'won':'open'});
+  // Guardar intento en array (permite múltiples intentos)
+  const attempts=[...(g.attempts||[]),{uid:me.id,name:me.name,guess,correct}];
+  const hintsShown=Math.min((g.hintsShown||1)+1,g.hints.length);
+  await updateDoc(ref,{attempts,hintsShown,state:correct?'won':'open'});
   if(correct){
     const chatKey=isGrp?`group_${activeGroup.id}`:`chat_${chatId(me.id,chat.id)}`;
     const scoreRef=doc(db,'triviaScores',chatKey);
     const scoreSnap=await getDoc(scoreRef);
     const scores=scoreSnap.exists()?scoreSnap.data().scores||{}:{};
-    const bonus=Math.max(1,5-g.hintsShown);
+    const bonus=Math.max(1,5-(g.hintsShown||1));
     scores[me.id]={pts:(scores[me.id]?.pts||0)+bonus,name:me.name};
     await setDoc(scoreRef,{scores,chatKey},{merge:true});
   }
 };
 
 function renderGuessWord(m,docId){
-  const myGuess=m.guesses?.[me.id];
   const won=m.state==='won';
+  const attempts=m.attempts||[];
+  const myAttempts=attempts.filter(a=>a.uid===me.id);
+  const iWon=myAttempts.some(a=>a.correct);
   const masked=m.word.split('').map(()=>'_').join(' ');
   let body=`<div class="word-title">🔤 Adivina la palabra</div>`;
-  body+=`<div class="word-letters">${won||myGuess?.correct?m.word:masked}</div>`;
+  body+=`<div class="word-letters">${won||iWon?m.word:masked}</div>`;
   const shownHints=(m.hints||[]).slice(0,m.hintsShown||1);
   shownHints.forEach((h,i)=>{body+=`<div class="word-hint">💡 Pista ${i+1}: ${esc(h)}</div>`;});
-  if(!myGuess&&!won){
-    body+=`<div class="word-input-row"><input class="word-input" id="gw-inp-${docId}" placeholder="Escribe tu respuesta..." maxlength="20" onkeydown="if(event.key==='Enter')guessWord('${docId}')"><button class="word-btn" onclick="guessWord('${docId}')">✓</button></div>`;
-  } else if(myGuess&&!myGuess.correct){
-    body+=`<div style="color:white;text-align:center;font-size:12px;font-weight:800;margin-top:6px;">❌ "${esc(myGuess.guess)}" — incorrecto</div>`;
+  // Mostrar intentos fallidos del usuario
+  myAttempts.filter(a=>!a.correct).forEach(a=>{
+    body+=`<div style="color:rgba(255,255,255,.7);font-size:11px;margin-top:3px;">❌ "${esc(a.guess)}" — incorrecto</div>`;
+  });
+  // Input siempre visible mientras no gane nadie y no se agoten pistas
+  if(!won&&!iWon){
+    body+=`<div class="word-input-row"><input class="word-input" id="gw-inp-${docId}" placeholder="Tu respuesta..." maxlength="20" onkeydown="if(event.key==='Enter')guessWord('${docId}')"><button class="word-btn" onclick="guessWord('${docId}')">✓</button></div>`;
   }
-  if(won)body+=`<div style="color:white;text-align:center;font-size:13px;font-weight:800;margin-top:6px;">🎉 ¡${esc(Object.entries(m.guesses||{}).find(([,v])=>v.correct)?.[1]?.guess||'')} es correcto!</div>`;
-  const total=Object.keys(m.guesses||{}).length;
+  if(won){
+    const winner=attempts.find(a=>a.correct);
+    body+=`<div style="color:white;text-align:center;font-size:13px;font-weight:800;margin-top:6px;">🎉 ¡${esc(winner?.name||'')} acertó: ${esc(m.word)}!</div>`;
+  }
+  const total=attempts.length;
   if(total>0)body+=`<div style="color:white;font-size:11px;text-align:center;margin-top:4px;opacity:.8;">${total} intento${total!==1?'s':''}</div>`;
   return `<div class="word-msg">${body}</div>`;
 }
 
 // ===== COMPLETA LA SERIE =====
-const SERIES_QS=[
-  {q:'2, 4, 6, 8, ___',opts:['9','10','11','12'],ans:1},
-  {q:'1, 3, 5, 7, ___',opts:['8','9','10','11'],ans:1},
-  {q:'5, 10, 15, 20, ___',opts:['22','23','24','25'],ans:3},
-  {q:'1, 2, 4, 8, ___',opts:['12','14','16','18'],ans:2},
-  {q:'10, 20, 30, 40, ___',opts:['45','48','50','55'],ans:2},
-  {q:'3, 6, 9, 12, ___',opts:['13','14','15','16'],ans:2},
-  {q:'1, 4, 9, 16, ___',opts:['20','23','25','27'],ans:2},
-  {q:'2, 6, 18, 54, ___',opts:['108','162','108','216'],ans:1},
-  {q:'100, 90, 80, 70, ___',opts:['55','60','65','68'],ans:1},
-  {q:'1, 1, 2, 3, 5, 8, ___',opts:['11','12','13','14'],ans:2},
-  {q:'🌑🌒🌓🌔 ___',opts:['🌑','🌕','🌙','⭐'],ans:1},
-  {q:'🔴🟡🟢🔵 ___',opts:['⚫','🟣','🟠','🟤'],ans:1},
-  {q:'A, C, E, G, ___',opts:['H','I','J','K'],ans:1},
-  {q:'Z, Y, X, W, ___',opts:['U','V','T','S'],ans:1},
+// ===== ¿QUÉ ANIMAL SOY? =====
+const ANIMAL_QS=[
+  {emoji:'🦁',name:'León',hints:['Soy el rey de la selva','Vivo en África','Tengo una melena majestuosa','Rujo muy fuerte'],opts:['Tigre','Leopardo','León','Jaguar'],ans:2},
+  {emoji:'🐘',name:'Elefante',hints:['Soy el animal terrestre más grande','Tengo una trompa muy larga','Mis orejas son enormes','Como plantas y frutas'],opts:['Rinoceronte','Hipopótamo','Elefante','Jirafa'],ans:2},
+  {emoji:'🦒',name:'Jirafa',hints:['Soy el animal más alto del mundo','Tengo el cuello muy largo','Como hojas de los árboles altos','Tengo manchas cafés'],opts:['Cebra','Camello','Antílope','Jirafa'],ans:3},
+  {emoji:'🐬',name:'Delfín',hints:['Vivo en el mar','Soy muy inteligente','Me comunico con sonidos','Salto fuera del agua'],opts:['Tiburón','Delfín','Ballena','Foca'],ans:1},
+  {emoji:'🦋',name:'Mariposa',hints:['Tengo alas de colores','Empecé siendo oruga','Me gustan las flores','Vuelo muy liviano'],opts:['Libélula','Abeja','Mariposa','Polilla'],ans:2},
+  {emoji:'🐧',name:'Pingüino',hints:['Soy un pájaro que no vuela','Vivo en el frío','Soy blanco y negro','Nado muy bien'],opts:['Pingüino','Tucán','Flamenco','Pelícano'],ans:0},
+  {emoji:'🦊',name:'Zorro',hints:['Soy un mamífero astuto','Tengo orejas puntiagudas','Mi cola es muy esponjosa','Soy naranja rojizo'],opts:['Lobo','Coyote','Zorro','Chacal'],ans:2},
+  {emoji:'🐊',name:'Cocodrilo',hints:['Vivo en ríos y pantanos','Tengo muchos dientes afilados','Soy reptil','Me camuflo en el agua'],opts:['Iguana','Lagarto','Tortuga','Cocodrilo'],ans:3},
+  {emoji:'🦜',name:'Loro',hints:['Soy un ave muy colorida','Puedo repetir lo que dices','Vivo en la selva tropical','Tengo pico curvo'],opts:['Loro','Tucán','Guacamayo','Cacatúa'],ans:0},
+  {emoji:'🐙',name:'Pulpo',hints:['Vivo en el mar','Tengo 8 brazos','Puedo cambiar de color','Expulso tinta'],opts:['Medusa','Calamar','Pulpo','Cangrejo'],ans:2},
 ];
 
-window.startSeriesGame=async function(){
+window.startAnimalGame=async function(){
   if(!chat&&!activeGroup)return;
-  const q=SERIES_QS[Math.floor(Math.random()*SERIES_QS.length)];
+  const q=ANIMAL_QS[Math.floor(Math.random()*ANIMAL_QS.length)];
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
-    type:'series',question:q.q,options:q.opts,answer:q.ans,votes:{},state:'open'});
+    type:'animal',emoji:q.emoji,name:q.name,hints:q.hints,options:q.opts,answer:q.ans,
+    hintsShown:1,votes:{},state:'open'});
 };
 
-window.answerSeries=async function(docId,optIdx){
+window.answerAnimal=async function(docId,optIdx){
+  const isGrp=!!activeGroup;
+  const colPath=isGrp?`groups/${activeGroup.id}/messages`:`chats/${chatId(me.id,chat.id)}/messages`;
+  const ref=doc(db,colPath,docId);
+  const snap=await getDoc(ref);if(!snap.exists())return;
+  const g=snap.data();if(g.votes?.[me.id]!==undefined)return;
+  const correct=optIdx===g.answer;
+  const hintsShown=Math.min((g.hintsShown||1)+1,g.hints.length);
+  await updateDoc(ref,{votes:{...g.votes,[me.id]:optIdx},hintsShown,state:'answered'});
+  if(correct){
+    const chatKey=isGrp?`group_${activeGroup.id}`:`chat_${chatId(me.id,chat.id)}`;
+    const scoreRef=doc(db,'triviaScores',chatKey);
+    const scoreSnap=await getDoc(scoreRef);
+    const scores=scoreSnap.exists()?scoreSnap.data().scores||{}:{};
+    const bonus=Math.max(1,4-(g.hintsShown||1));
+    scores[me.id]={pts:(scores[me.id]?.pts||0)+bonus,name:me.name};
+    await setDoc(scoreRef,{scores,chatKey},{merge:true});
+  }
+};
+
+function renderAnimal(m,docId){
+  const myVote=m.votes?.[me.id];
+  const answered=myVote!==undefined;
+  const shownHints=(m.hints||[]).slice(0,m.hintsShown||1);
+  let body=`<div style="color:white;font-weight:800;font-size:13px;text-align:center;margin-bottom:6px;">🐾 ¿Qué animal soy?</div>`;
+  body+=`<div class="animal-emoji">${answered?m.emoji:'❓'}</div>`;
+  shownHints.forEach((h,i)=>{body+=`<div class="animal-hint">💡 ${esc(h)}</div>`;});
+  body+=`<div class="animal-opts">`;
+  m.options.forEach((opt,i)=>{
+    let cls='animal-opt';
+    if(answered){cls+=i===m.answer?' correct':myVote===i?' wrong':'';}
+    body+=`<button class="${cls}" onclick="answerAnimal('${docId}',${i})" ${answered?'disabled':''}>${opt}</button>`;
+  });
+  body+='</div>';
+  if(answered){
+    const correct=myVote===m.answer;
+    body+=`<div style="color:white;text-align:center;font-size:12px;margin-top:6px;font-weight:800;">${correct?'✅ ¡Correcto!':'❌ Era '+esc(m.name)}</div>`;
+    body+=`<div class="trivia-ranking" id="arank-${docId}"><div style="opacity:.6;font-size:11px;text-align:center;">Cargando ranking...</div></div>`;
+    setTimeout(async()=>{
+      const ranking=await getTriviaRanking();
+      const el=document.getElementById(`arank-${docId}`);
+      if(!el||ranking.length===0)return;
+      const medals=['🥇','🥈','🥉'];
+      const rows=ranking.slice(0,5).map((r,i)=>
+        `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;${r.uid===me.id?'font-weight:800;':''}">
+          <span>${medals[i]||'  '} ${esc(r.name)}</span>
+          <span style="background:rgba(255,255,255,.3);border-radius:8px;padding:1px 7px;font-size:11px;">${r.pts} pts</span>
+        </div>`).join('');
+      el.innerHTML=`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.3);padding-top:8px;">
+        <div style="font-weight:800;font-size:11px;margin-bottom:4px;text-align:center;">🏆 Ranking del chat</div>${rows}</div>`;
+    },300);
+  }
+  return `<div class="animal-msg">${body}</div>`;
+}
+
+// ===== SOPA DE LETRAS =====
+const SCRAMBLE_QS=[
+  {word:'GATO',hint:'🐱 Animal doméstico que dice miau'},
+  {word:'PERRO',hint:'🐶 El mejor amigo del hombre'},
+  {word:'CASA',hint:'🏠 Lugar donde vivimos'},
+  {word:'LUNA',hint:'🌙 Satélite natural de la Tierra'},
+  {word:'LIBRO',hint:'📚 Lo lees para aprender'},
+  {word:'AGUA',hint:'💧 Líquido que bebemos'},
+  {word:'ÁRBOL',hint:'🌳 Tiene ramas, hojas y raíces'},
+  {word:'PECES',hint:'🐟 Animales que viven en el agua'},
+  {word:'FLOR',hint:'🌸 Parte colorida de la planta'},
+  {word:'NUBE',hint:'☁️ Flota en el cielo'},
+  {word:'LECHE',hint:'🥛 Bebida blanca nutritiva'},
+  {word:'PLAYA',hint:'🏖️ Lugar con arena y mar'},
+  {word:'TIGRE',hint:'🐯 Felino con rayas'},
+  {word:'NIEVA',hint:'❄️ Agua congelada que cae del cielo'},
+  {word:'FRUTAS',hint:'🍎 Alimentos dulces de las plantas'},
+];
+
+function scrambleWord(word){
+  const arr=word.split('');
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  const s=arr.join('');
+  return s===word?scrambleWord(word):s;
+}
+
+window.startWordScramble=async function(){
+  if(!chat&&!activeGroup)return;
+  const q=SCRAMBLE_QS[Math.floor(Math.random()*SCRAMBLE_QS.length)];
+  const scrambled=scrambleWord(q.word);
+  const cid=activeGroup?null:chatId(me.id,chat.id);
+  const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
+  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+    type:'scramble',word:q.word,scrambled,hint:q.hint,votes:{},state:'open'});
+};
+
+window.answerScramble=async function(docId,optIdx){
   const isGrp=!!activeGroup;
   const colPath=isGrp?`groups/${activeGroup.id}/messages`:`chats/${chatId(me.id,chat.id)}/messages`;
   const ref=doc(db,colPath,docId);
@@ -1870,41 +1983,61 @@ window.answerSeries=async function(docId,optIdx){
     const scoreRef=doc(db,'triviaScores',chatKey);
     const scoreSnap=await getDoc(scoreRef);
     const scores=scoreSnap.exists()?scoreSnap.data().scores||{}:{};
-    scores[me.id]={pts:(scores[me.id]?.pts||0)+1,name:me.name};
+    scores[me.id]={pts:(scores[me.id]?.pts||0)+2,name:me.name};
     await setDoc(scoreRef,{scores,chatKey},{merge:true});
   }
 };
 
-function renderSeries(m,docId){
+function genScrambleOpts(word){
+  // Generar 3 opciones falsas mezclando letras
+  const fakes=new Set();
+  while(fakes.size<3){
+    const f=scrambleWord(word);
+    if(f!==word)fakes.add(f);
+  }
+  const opts=[word,...fakes].sort(()=>Math.random()-.5);
+  return {opts,ans:opts.indexOf(word)};
+}
+
+function renderScramble(m,docId){
   const myVote=m.votes?.[me.id];
   const answered=myVote!==undefined;
-  let body=`<div class="series-q">${esc(m.question)}</div><div class="series-opts">`;
-  m.options.forEach((opt,i)=>{
-    let cls='series-opt';
-    if(answered){cls+=i===m.answer?' correct':myVote===i?' wrong':'';}
-    body+=`<button class="${cls}" onclick="answerSeries('${docId}',${i})" ${answered?'disabled':''}>${opt}</button>`;
+  // Generar opciones consistentes basadas en la palabra
+  const seed=m.word;
+  const fakes=[];
+  let s=seed;
+  for(let i=0;i<3;i++){s=scrambleWord(s);fakes.push(s);}
+  const opts=[m.word,...fakes.slice(0,3)].sort((a,b)=>a.localeCompare(b));
+  const ansIdx=opts.indexOf(m.word);
+  let body=`<div style="color:white;font-weight:800;font-size:13px;text-align:center;margin-bottom:6px;">🔡 Ordena las letras</div>`;
+  body+=`<div class="scramble-word">${answered?m.word:m.scrambled}</div>`;
+  body+=`<div style="color:rgba(255,255,255,.8);font-size:12px;text-align:center;margin-bottom:8px;">${esc(m.hint)}</div>`;
+  body+=`<div class="scramble-opts">`;
+  opts.forEach((opt,i)=>{
+    let cls='scramble-opt';
+    if(answered){cls+=i===ansIdx?' correct':myVote===i?' wrong':'';}
+    body+=`<button class="${cls}" onclick="answerScramble('${docId}',${i})" ${answered?'disabled':''}>${opt}</button>`;
   });
   body+='</div>';
   if(answered){
-    const correct=myVote===m.answer;
-    body+=`<div style="color:white;text-align:center;font-size:12px;margin-top:6px;font-weight:800;">${correct?'✅ ¡Correcto!':'❌ Incorrecto'}</div>`;
-    body+=`<div class="trivia-ranking" id="srank-${docId}"><div style="opacity:.6;font-size:11px;text-align:center;">Cargando ranking...</div></div>`;
+    const correct=myVote===ansIdx;
+    body+=`<div style="color:white;text-align:center;font-size:12px;margin-top:6px;font-weight:800;">${correct?'✅ ¡Correcto! +2pts':'❌ Era '+esc(m.word)}</div>`;
+    body+=`<div class="trivia-ranking" id="scrank-${docId}"><div style="opacity:.6;font-size:11px;text-align:center;">Cargando ranking...</div></div>`;
     setTimeout(async()=>{
       const ranking=await getTriviaRanking();
-      const el=document.getElementById(`srank-${docId}`);
+      const el=document.getElementById(`scrank-${docId}`);
       if(!el||ranking.length===0)return;
       const medals=['🥇','🥈','🥉'];
       const rows=ranking.slice(0,5).map((r,i)=>
         `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;${r.uid===me.id?'font-weight:800;':''}">
           <span>${medals[i]||'  '} ${esc(r.name)}</span>
           <span style="background:rgba(255,255,255,.3);border-radius:8px;padding:1px 7px;font-size:11px;">${r.pts} pts</span>
-        </div>`
-      ).join('');
+        </div>`).join('');
       el.innerHTML=`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.3);padding-top:8px;">
         <div style="font-weight:800;font-size:11px;margin-bottom:4px;text-align:center;">🏆 Ranking del chat</div>${rows}</div>`;
     },300);
   }
-  return `<div class="series-msg">${body}</div>`;
+  return `<div class="scramble-msg">${body}</div>`;
 }
 
 // ===== VERDAD O RETO =====
@@ -2759,7 +2892,8 @@ function renderMsgEl(d, idx, allDocs, cid, prevDate){
   else if(m.type==='trivia'){bc='bub game-bub';cont2=renderTrivia(m,d.id);}
   else if(m.type==='calc'){bc='bub game-bub';cont2=renderCalc(m,d.id);}
   else if(m.type==='guessword'){bc='bub game-bub';cont2=renderGuessWord(m,d.id);}
-  else if(m.type==='series'){bc='bub game-bub';cont2=renderSeries(m,d.id);}
+  else if(m.type==='animal'){bc='bub game-bub';cont2=renderAnimal(m,d.id);}
+  else if(m.type==='scramble'){bc='bub game-bub';cont2=renderScramble(m,d.id);}
   else if(m.type==='truthordare'){bc='bub game-bub';cont2=renderTruthOrDare(m,d.id);}
   else if(m.type==='poll'){bc='bub game-bub';cont2=renderPoll(m,d.id);}
   else if(m.type==='burn'){
