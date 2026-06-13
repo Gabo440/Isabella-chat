@@ -441,6 +441,7 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
 .trivia-opt.correct{background:#22c55e!important;color:white!important;}
 .trivia-opt.wrong{background:#ef4444!important;color:white!important;}
 .trivia-score{color:white;font-size:11px;font-weight:700;margin-top:6px;text-align:center;opacity:.8;}
+.trivia-ranking{color:white;font-size:12px;font-weight:600;}
 
 
 /* TOOLBAR ESTILO WHATSAPP */
@@ -1470,19 +1471,108 @@ window.sendMsg=async function(){
 
 // ===== TRIVIA =====
 const TRIVIA_QS=[
-  {q:'¿Cuántos planetas tiene el sistema solar?',opts:['7','8','9','10'],ans:1},
-  {q:'¿Cuál es el océano más grande?',opts:['Atlántico','Índico','Pacífico','Ártico'],ans:2},
-  {q:'¿En qué año llegó el hombre a la Luna?',opts:['1965','1967','1969','1971'],ans:2},
-  {q:'¿Cuántos colores tiene el arcoíris?',opts:['5','6','7','8'],ans:2},
-  {q:'¿Cuál es el animal más rápido del mundo?',opts:['León','Guepardo','Halcón','Águila'],ans:1},
-  {q:'¿Cuántos lados tiene un hexágono?',opts:['5','6','7','8'],ans:1},
-  {q:'¿Cuál es el país más grande del mundo?',opts:['China','Canadá','Rusia','EE.UU.'],ans:2},
-  {q:'¿Cuántos huesos tiene el cuerpo humano adulto?',opts:['186','206','226','246'],ans:1},
+  // Animales
+  {q:'¿Cuál es el animal más rápido del mundo?',opts:['León','Guepardo','Halcón','Águila'],ans:1,cat:'🐾'},
+  {q:'¿Cuántas patas tiene una araña?',opts:['4','6','8','10'],ans:2,cat:'🐾'},
+  {q:'¿Qué animal es el más grande del mundo?',opts:['Elefante','Tiburón ballena','Ballena azul','Jirafa'],ans:2,cat:'🐾'},
+  {q:'¿Qué animal puede cambiar de color?',opts:['Camaleón','Iguana','Gecko','Lagartija'],ans:0,cat:'🐾'},
+  {q:'¿Cómo se llama la cría del perro?',opts:['Gatito','Cachorro','Potro','Ternero'],ans:1,cat:'🐾'},
+  {q:'¿Qué animal produce la miel?',opts:['Mariposa','Abeja','Mosca','Avispa'],ans:1,cat:'🐾'},
+  {q:'¿Cuántos colores tiene la mariposa monarca?',opts:['Azul y negro','Rojo y blanco','Naranja y negro','Amarillo y negro'],ans:2,cat:'🐾'},
+  {q:'¿Cuál es el animal terrestre más grande?',opts:['Hipopótamo','Elefante africano','Rinoceronte','Jirafa'],ans:1,cat:'🐾'},
+  {q:'¿Qué animal es conocido como el rey de la selva?',opts:['Tigre','Leopardo','León','Jaguar'],ans:2,cat:'🐾'},
+  // Naturaleza y ciencia
+  {q:'¿Cuántos planetas tiene el sistema solar?',opts:['7','8','9','10'],ans:1,cat:'🌿'},
+  {q:'¿Cuántos colores tiene el arcoíris?',opts:['5','6','7','8'],ans:2,cat:'🌿'},
+  {q:'¿Qué necesitan las plantas para vivir?',opts:['Solo agua','Agua, luz y tierra','Solo luz','Solo tierra'],ans:1,cat:'🌿'},
+  {q:'¿Cuál es la estrella más cercana a la Tierra?',opts:['Luna','Saturno','El Sol','Marte'],ans:2,cat:'🌿'},
+  {q:'¿De qué está hecha el agua?',opts:['Hidrógeno y carbono','Oxígeno y carbono','Hidrógeno y oxígeno','Nitrógeno y oxígeno'],ans:2,cat:'🌿'},
+  {q:'¿Qué planeta tiene anillos?',opts:['Marte','Júpiter','Saturno','Venus'],ans:2,cat:'🌿'},
+  {q:'¿Cómo se llama el proceso por el que las plantas hacen su alimento?',opts:['Respiración','Fotosíntesis','Digestión','Evaporación'],ans:1,cat:'🌿'},
+  {q:'¿Cuántas lunas tiene la Tierra?',opts:['0','1','2','3'],ans:1,cat:'🌿'},
+  // Geografía
+  {q:'¿Cuál es el océano más grande?',opts:['Atlántico','Índico','Pacífico','Ártico'],ans:2,cat:'🌍'},
+  {q:'¿Cuál es el país más grande del mundo?',opts:['China','Canadá','Rusia','EE.UU.'],ans:2,cat:'🌍'},
+  {q:'¿En qué continente está Chile?',opts:['Europa','Asia','África','América del Sur'],ans:3,cat:'🌍'},
+  {q:'¿Cuál es el río más largo del mundo?',opts:['Amazonas','Nilo','Yangtsé','Misisipi'],ans:1,cat:'🌍'},
+  {q:'¿Cuál es la montaña más alta del mundo?',opts:['Aconcagua','Mont Blanc','Everest','Kilimanjaro'],ans:2,cat:'🌍'},
+  {q:'¿Cuántos continentes tiene la Tierra?',opts:['5','6','7','8'],ans:2,cat:'🌍'},
+  {q:'¿Cuál es la capital de Francia?',opts:['Londres','Madrid','Roma','París'],ans:3,cat:'🌍'},
+  {q:'¿En qué país está la Torre Eiffel?',opts:['Italia','España','Francia','Alemania'],ans:2,cat:'🌍'},
+  // Matemáticas
+  {q:'¿Cuánto es 7 × 8?',opts:['54','56','58','62'],ans:1,cat:'🔢'},
+  {q:'¿Cuántos lados tiene un hexágono?',opts:['5','6','7','8'],ans:1,cat:'🔢'},
+  {q:'¿Cuánto es 100 ÷ 4?',opts:['20','25','30','40'],ans:1,cat:'🔢'},
+  {q:'¿Cuántos minutos tiene una hora?',opts:['30','45','60','90'],ans:2,cat:'🔢'},
+  {q:'¿Cuántos lados tiene un triángulo?',opts:['2','3','4','5'],ans:1,cat:'🔢'},
+  {q:'¿Cuánto es 15 + 27?',opts:['38','40','42','44'],ans:2,cat:'🔢'},
+  {q:'¿Cuántos días tiene un año?',opts:['354','365','366','360'],ans:1,cat:'🔢'},
+  // Arte y cultura
+  {q:'¿De qué color se mezcla rojo y azul?',opts:['Verde','Naranja','Morado','Café'],ans:2,cat:'🎨'},
+  {q:'¿Cuántos colores primarios existen?',opts:['2','3','4','5'],ans:1,cat:'🎨'},
+  {q:'¿Quién pintó la Mona Lisa?',opts:['Miguel Ángel','Leonardo da Vinci','Picasso','Rafael'],ans:1,cat:'🎨'},
+  {q:'¿De qué color se mezcla rojo y amarillo?',opts:['Verde','Morado','Naranja','Café'],ans:2,cat:'🎨'},
+  // Cuentos y personajes
+  {q:'¿Cómo se llama la sirena de Disney?',opts:['Aurora','Ariel','Bella','Jasmine'],ans:1,cat:'🦸'},
+  {q:'¿Quién tiene una nariz que crece cuando miente?',opts:['Pinocho','Dumbo','Bambi','Simba'],ans:0,cat:'🦸'},
+  {q:'¿De qué color es el elefante Dumbo?',opts:['Rosa','Gris','Azul','Blanco'],ans:1,cat:'🦸'},
+  {q:'¿Cómo se llama el pez payaso de Buscando a Nemo?',opts:['Nemo','Dory','Marlin','Flounder'],ans:0,cat:'🦸'},
+  {q:'¿Quién es el mejor amigo de Woody en Toy Story?',opts:['Rex','Buzz Lightyear','Hamm','Slinky'],ans:1,cat:'🦸'},
+  {q:'¿En qué cuento una niña come una manzana envenenada?',opts:['Cenicienta','La Bella Durmiente','Blancanieves','Rapunzel'],ans:2,cat:'🦸'},
 ];
+
+const TRIVIA_CATS=['🐾 Animales','🌿 Ciencia','🌍 Geografía','🔢 Matemáticas','🎨 Arte','🦸 Cuentos','🎲 Sorpresa'];
+
+async function generateTriviaWithAI(category){
+  const catPrompt = category==='🎲 Sorpresa' ? 'cualquier categoría educativa' : category;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:400,
+        system:'Eres un generador de preguntas de trivia para una niña de 8 años. Responde SOLO con JSON válido, sin texto adicional, sin backticks.',
+        messages:[{role:'user',content:`Genera UNA pregunta de trivia de ${catPrompt} para una niña de 8 años. Debe ser educativa y divertida. Responde SOLO con este JSON exacto: {"q":"pregunta aquí","opts":["opción1","opción2","opción3","opción4"],"ans":0} donde ans es el índice (0-3) de la respuesta correcta.`}]
+      })
+    });
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+    const clean=text.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(clean);
+    if(parsed.q&&parsed.opts&&parsed.opts.length===4&&typeof parsed.ans==='number') return parsed;
+  }catch(e){console.log('IA trivia falló, usando respaldo');}
+  return null;
+}
 
 window.startTriviaGame=async function(){
   if(!chat&&!activeGroup)return;
-  const q=TRIVIA_QS[Math.floor(Math.random()*TRIVIA_QS.length)];
+  // Mostrar selector de categoría
+  const cat=await new Promise(resolve=>{
+    const overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML=`<div style="background:var(--surface);border-radius:20px;padding:20px;max-width:320px;width:100%;">
+      <div style="font-weight:800;font-size:16px;text-align:center;margin-bottom:14px;">🎯 Elige categoría</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${TRIVIA_CATS.map(c=>`<button onclick="this.closest('div[style]').parentElement._resolve('${c}')" style="border:none;border-radius:12px;padding:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#f093fb,#f5576c);color:white;">${c}</button>`).join('')}
+      </div>
+      <button onclick="this.closest('div[style]').parentElement._resolve(null)" style="width:100%;margin-top:10px;border:none;border-radius:12px;padding:8px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:var(--border);color:var(--text);">Cancelar</button>
+    </div>`;
+    overlay._resolve=(val)=>{document.body.removeChild(overlay);resolve(val);};
+    document.body.appendChild(overlay);
+  });
+  if(!cat)return;
+  showToast('✨ Generando pregunta...');
+  // Intentar con IA
+  let q=await generateTriviaWithAI(cat);
+  // Si falla, usar respaldo filtrado por categoría
+  if(!q){
+    const catCode=cat.split(' ')[0];
+    const filtered=TRIVIA_QS.filter(x=>x.cat===catCode);
+    const pool=filtered.length>0?filtered:TRIVIA_QS;
+    const backup=pool[Math.floor(Math.random()*pool.length)];
+    q={q:backup.q,opts:backup.opts,ans:backup.ans};
+  }
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
@@ -1493,7 +1583,8 @@ window.startTriviaGame=async function(){
 };
 
 window.answerTrivia=async function(docId,optIdx){
-  const colPath=activeGroup?`groups/${activeGroup.id}/messages`:`chats/${chatId(me.id,chat.id)}/messages`;
+  const isGrp=!!activeGroup;
+  const colPath=isGrp?`groups/${activeGroup.id}/messages`:`chats/${chatId(me.id,chat.id)}/messages`;
   const ref=doc(db,colPath,docId);
   const snap=await getDoc(ref);if(!snap.exists())return;
   const g=snap.data();
@@ -1501,7 +1592,31 @@ window.answerTrivia=async function(docId,optIdx){
   const votes={...g.votes,[me.id]:optIdx};
   const correct=optIdx===g.answer;
   await updateDoc(ref,{votes,state:'answered'});
+  // Actualizar puntaje en Firestore
+  if(correct){
+    const chatKey=isGrp?`group_${activeGroup.id}`:`chat_${chatId(me.id,chat.id)}`;
+    const scoreRef=doc(db,'triviaScores',chatKey);
+    const scoreSnap=await getDoc(scoreRef);
+    const scores=scoreSnap.exists()?scoreSnap.data().scores||{}:{};
+    const userScore={pts:(scores[me.id]?.pts||0)+1,name:me.name};
+    scores[me.id]=userScore;
+    await setDoc(scoreRef,{scores,chatKey},{merge:true});
+  }
 };
+
+async function getTriviaRanking(){
+  const isGrp=!!activeGroup;
+  const chatKey=isGrp?`group_${activeGroup.id}`:`chat_${chatId(me.id,chat.id)}`;
+  try{
+    const scoreRef=doc(db,'triviaScores',chatKey);
+    const snap=await getDoc(scoreRef);
+    if(!snap.exists())return [];
+    const scores=snap.data().scores||{};
+    return Object.entries(scores)
+      .map(([uid,v])=>({uid,name:v.name,pts:v.pts}))
+      .sort((a,b)=>b.pts-a.pts);
+  }catch(e){return [];}
+}
 
 function renderTrivia(m,docId){
   const myVote=m.votes?.[me.id];
@@ -1515,6 +1630,27 @@ function renderTrivia(m,docId){
   body+='</div>';
   const total=Object.keys(m.votes||{}).length;
   if(total>0)body+=`<div class="trivia-score">${total} respuesta${total!==1?'s':''}</div>`;
+  // Ranking inline si ya respondió
+  if(answered){
+    body+=`<div class="trivia-ranking" id="trank-${docId}"><div style="opacity:.6;font-size:11px;text-align:center;">Cargando ranking...</div></div>`;
+    // Cargar ranking de forma asíncrona
+    setTimeout(async()=>{
+      const ranking=await getTriviaRanking();
+      const el=document.getElementById(`trank-${docId}`);
+      if(!el||ranking.length===0)return;
+      const medals=['🥇','🥈','🥉'];
+      const rows=ranking.slice(0,5).map((r,i)=>
+        `<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;${r.uid===me.id?'font-weight:800;':''}">
+          <span>${medals[i]||'  '} ${esc(r.name)}</span>
+          <span style="background:rgba(255,255,255,.3);border-radius:8px;padding:1px 7px;font-size:11px;">${r.pts} pts</span>
+        </div>`
+      ).join('');
+      el.innerHTML=`<div style="margin-top:8px;border-top:1px solid rgba(255,255,255,.3);padding-top:8px;">
+        <div style="font-weight:800;font-size:11px;margin-bottom:4px;text-align:center;">🏆 Ranking del chat</div>
+        ${rows}
+      </div>`;
+    },300);
+  }
   return `<div class="trivia-msg">${body}</div>`;
 }
 
