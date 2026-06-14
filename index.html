@@ -1509,17 +1509,28 @@ window.sendMsg=async function(){
 
 // ===== TRIVIA =====
 const TRIVIA_QS=[
-  // Animales
+  // 🐾 Animales (20 preguntas)
   {q:'¿Cuál es el animal más rápido del mundo?',opts:['León','Guepardo','Halcón','Águila'],ans:1,cat:'🐾'},
   {q:'¿Cuántas patas tiene una araña?',opts:['4','6','8','10'],ans:2,cat:'🐾'},
   {q:'¿Qué animal es el más grande del mundo?',opts:['Elefante','Tiburón ballena','Ballena azul','Jirafa'],ans:2,cat:'🐾'},
   {q:'¿Qué animal puede cambiar de color?',opts:['Camaleón','Iguana','Gecko','Lagartija'],ans:0,cat:'🐾'},
   {q:'¿Cómo se llama la cría del perro?',opts:['Gatito','Cachorro','Potro','Ternero'],ans:1,cat:'🐾'},
   {q:'¿Qué animal produce la miel?',opts:['Mariposa','Abeja','Mosca','Avispa'],ans:1,cat:'🐾'},
-  {q:'¿Cuántos colores tiene la mariposa monarca?',opts:['Azul y negro','Rojo y blanco','Naranja y negro','Amarillo y negro'],ans:2,cat:'🐾'},
   {q:'¿Cuál es el animal terrestre más grande?',opts:['Hipopótamo','Elefante africano','Rinoceronte','Jirafa'],ans:1,cat:'🐾'},
   {q:'¿Qué animal es conocido como el rey de la selva?',opts:['Tigre','Leopardo','León','Jaguar'],ans:2,cat:'🐾'},
-  // Naturaleza y ciencia
+  {q:'¿Cuántas patas tiene un insecto?',opts:['4','6','8','10'],ans:1,cat:'🐾'},
+  {q:'¿Qué animal tiene la trompa más larga?',opts:['Tapir','Elefante','Rinoceronte','Hipopótamo'],ans:1,cat:'🐾'},
+  {q:'¿Cómo se llama la cría del gato?',opts:['Cachorro','Potro','Gatito','Corderito'],ans:2,cat:'🐾'},
+  {q:'¿Qué animal vive más tiempo?',opts:['Tortuga','Elefante','Ballena','Loro'],ans:0,cat:'🐾'},
+  {q:'¿Cuántos corazones tiene un pulpo?',opts:['1','2','3','4'],ans:2,cat:'🐾'},
+  {q:'¿Qué animal es el más alto del mundo?',opts:['Elefante','Oso polar','Jirafa','Camello'],ans:2,cat:'🐾'},
+  {q:'¿Cómo se llama el sonido que hace el pato?',opts:['Mugido','Graznido','Relincho','Maullido'],ans:1,cat:'🐾'},
+  {q:'¿Qué animal tiene rayas negras y naranjas?',opts:['León','Leopardo','Tigre','Guepardo'],ans:2,cat:'🐾'},
+  {q:'¿Cuántas patas tiene una vaca?',opts:['2','3','4','6'],ans:2,cat:'🐾'},
+  {q:'¿Qué animal construye represas en los ríos?',opts:['Nutria','Castor','Rata de agua','Visón'],ans:1,cat:'🐾'},
+  {q:'¿Qué animal puede volar pero no es pájaro?',opts:['Ardilla','Murciélago','Zarigüeya','Koala'],ans:1,cat:'🐾'},
+  {q:'¿Cómo se llama la cría del caballo?',opts:['Becerro','Corderito','Potro','Cachorro'],ans:2,cat:'🐾'},
+  // 🌿 Ciencia y naturaleza (20 preguntas)
   {q:'¿Cuántos planetas tiene el sistema solar?',opts:['7','8','9','10'],ans:1,cat:'🌿'},
   {q:'¿Cuántos colores tiene el arcoíris?',opts:['5','6','7','8'],ans:2,cat:'🌿'},
   {q:'¿Qué necesitan las plantas para vivir?',opts:['Solo agua','Agua, luz y tierra','Solo luz','Solo tierra'],ans:1,cat:'🌿'},
@@ -1528,7 +1539,19 @@ const TRIVIA_QS=[
   {q:'¿Qué planeta tiene anillos?',opts:['Marte','Júpiter','Saturno','Venus'],ans:2,cat:'🌿'},
   {q:'¿Cómo se llama el proceso por el que las plantas hacen su alimento?',opts:['Respiración','Fotosíntesis','Digestión','Evaporación'],ans:1,cat:'🌿'},
   {q:'¿Cuántas lunas tiene la Tierra?',opts:['0','1','2','3'],ans:1,cat:'🌿'},
-  // Geografía
+  {q:'¿Qué planeta es el más grande del sistema solar?',opts:['Saturno','Neptuno','Júpiter','Urano'],ans:2,cat:'🌿'},
+  {q:'¿Qué es lo que produce el trueno?',opts:['Viento fuerte','Electricidad en nubes','Choque de nubes','Lluvia intensa'],ans:1,cat:'🌿'},
+  {q:'¿Cuál es el hueso más largo del cuerpo humano?',opts:['Columna vertebral','Costilla','Fémur','Húmero'],ans:2,cat:'🌿'},
+  {q:'¿Qué órgano bombea la sangre en el cuerpo?',opts:['Pulmón','Hígado','Riñón','Corazón'],ans:3,cat:'🌿'},
+  {q:'¿De qué están hechas las nubes?',opts:['Algodón','Vapor de agua','Hielo','Gas'],ans:1,cat:'🌿'},
+  {q:'¿Qué planeta está más cerca del Sol?',opts:['Venus','Tierra','Mercurio','Marte'],ans:2,cat:'🌿'},
+  {q:'¿Cuántos huesos tiene el cuerpo humano adulto?',opts:['106','156','206','256'],ans:2,cat:'🌿'},
+  {q:'¿Qué gas respiramos para vivir?',opts:['Dióxido de carbono','Nitrógeno','Oxígeno','Hidrógeno'],ans:2,cat:'🌿'},
+  {q:'¿Cómo se llama la capa de aire que rodea la Tierra?',opts:['Hidrósfera','Litósfera','Atmósfera','Biósfera'],ans:2,cat:'🌿'},
+  {q:'¿Qué produce la fotosíntesis además de alimento?',opts:['Dióxido de carbono','Agua','Oxígeno','Nitrógeno'],ans:2,cat:'🌿'},
+  {q:'¿Cuántos dientes tiene un adulto normalmente?',opts:['24','28','32','36'],ans:2,cat:'🌿'},
+  {q:'¿Qué es un volcán?',opts:['Una montaña de hielo','Abertura en la tierra que expulsa lava','Un tipo de terremoto','Una corriente de agua'],ans:1,cat:'🌿'},
+  // 🌍 Geografía (20 preguntas)
   {q:'¿Cuál es el océano más grande?',opts:['Atlántico','Índico','Pacífico','Ártico'],ans:2,cat:'🌍'},
   {q:'¿Cuál es el país más grande del mundo?',opts:['China','Canadá','Rusia','EE.UU.'],ans:2,cat:'🌍'},
   {q:'¿En qué continente está Chile?',opts:['Europa','Asia','África','América del Sur'],ans:3,cat:'🌍'},
@@ -1537,7 +1560,19 @@ const TRIVIA_QS=[
   {q:'¿Cuántos continentes tiene la Tierra?',opts:['5','6','7','8'],ans:2,cat:'🌍'},
   {q:'¿Cuál es la capital de Francia?',opts:['Londres','Madrid','Roma','París'],ans:3,cat:'🌍'},
   {q:'¿En qué país está la Torre Eiffel?',opts:['Italia','España','Francia','Alemania'],ans:2,cat:'🌍'},
-  // Matemáticas
+  {q:'¿Cuál es la capital de Chile?',opts:['Valparaíso','Concepción','Santiago','Antofagasta'],ans:2,cat:'🌍'},
+  {q:'¿Qué desierto es el más grande del mundo?',opts:['Sahara','Gobi','Atacama','Kalahari'],ans:0,cat:'🌍'},
+  {q:'¿En qué continente está Egipto?',opts:['Asia','Europa','América','África'],ans:3,cat:'🌍'},
+  {q:'¿Cuál es el país más pequeño del mundo?',opts:['Mónaco','San Marino','Vaticano','Liechtenstein'],ans:2,cat:'🌍'},
+  {q:'¿Cuál es la capital de Japón?',opts:['Pekín','Seúl','Tokio','Bangkok'],ans:2,cat:'🌍'},
+  {q:'¿En qué continente está Brasil?',opts:['América del Norte','América del Sur','Europa','África'],ans:1,cat:'🌍'},
+  {q:'¿Qué país tiene más habitantes en el mundo?',opts:['India','EE.UU.','China','Rusia'],ans:0,cat:'🌍'},
+  {q:'¿Cuál es el océano más pequeño?',opts:['Índico','Ártico','Atlántico','Antártico'],ans:1,cat:'🌍'},
+  {q:'¿En qué país está la Gran Muralla?',opts:['Japón','Corea','China','India'],ans:2,cat:'🌍'},
+  {q:'¿Cuál es la capital de Italia?',opts:['Milán','Venecia','Florencia','Roma'],ans:3,cat:'🌍'},
+  {q:'¿Qué idioma se habla en Brasil?',opts:['Español','Inglés','Portugués','Francés'],ans:2,cat:'🌍'},
+  {q:'¿Cuál es el lago más grande del mundo?',opts:['Lago Titicaca','Lago Superior','Mar Caspio','Lago Victoria'],ans:2,cat:'🌍'},
+  // 🔢 Matemáticas (20 preguntas)
   {q:'¿Cuánto es 7 × 8?',opts:['54','56','58','62'],ans:1,cat:'🔢'},
   {q:'¿Cuántos lados tiene un hexágono?',opts:['5','6','7','8'],ans:1,cat:'🔢'},
   {q:'¿Cuánto es 100 ÷ 4?',opts:['20','25','30','40'],ans:1,cat:'🔢'},
@@ -1545,19 +1580,67 @@ const TRIVIA_QS=[
   {q:'¿Cuántos lados tiene un triángulo?',opts:['2','3','4','5'],ans:1,cat:'🔢'},
   {q:'¿Cuánto es 15 + 27?',opts:['38','40','42','44'],ans:2,cat:'🔢'},
   {q:'¿Cuántos días tiene un año?',opts:['354','365','366','360'],ans:1,cat:'🔢'},
-  // Arte y cultura
+  {q:'¿Cuánto es 9 × 9?',opts:['72','81','90','99'],ans:1,cat:'🔢'},
+  {q:'¿Cuántos lados tiene un pentágono?',opts:['4','5','6','7'],ans:1,cat:'🔢'},
+  {q:'¿Cuánto es 50 + 75?',opts:['115','120','125','130'],ans:2,cat:'🔢'},
+  {q:'¿Cuántos segundos tiene un minuto?',opts:['30','45','60','100'],ans:2,cat:'🔢'},
+  {q:'¿Cuánto es 12 × 12?',opts:['132','140','144','148'],ans:2,cat:'🔢'},
+  {q:'¿Cuántos lados tiene un cuadrado?',opts:['3','4','5','6'],ans:1,cat:'🔢'},
+  {q:'¿Cuánto es 200 ÷ 8?',opts:['20','25','30','40'],ans:1,cat:'🔢'},
+  {q:'¿Cuántas horas tiene un día?',opts:['12','20','24','48'],ans:2,cat:'🔢'},
+  {q:'¿Cuánto es 6 × 7?',opts:['36','40','42','48'],ans:2,cat:'🔢'},
+  {q:'¿Cuántos lados tiene un octágono?',opts:['6','7','8','9'],ans:2,cat:'🔢'},
+  {q:'¿Cuánto es 1000 ÷ 10?',opts:['10','100','1000','10000'],ans:1,cat:'🔢'},
+  {q:'¿Cuánto es 33 + 47?',opts:['70','75','80','85'],ans:2,cat:'🔢'},
+  {q:'¿Cuántos días tiene una semana?',opts:['5','6','7','8'],ans:2,cat:'🔢'},
+  // 🎨 Arte y cultura (15 preguntas)
   {q:'¿De qué color se mezcla rojo y azul?',opts:['Verde','Naranja','Morado','Café'],ans:2,cat:'🎨'},
   {q:'¿Cuántos colores primarios existen?',opts:['2','3','4','5'],ans:1,cat:'🎨'},
   {q:'¿Quién pintó la Mona Lisa?',opts:['Miguel Ángel','Leonardo da Vinci','Picasso','Rafael'],ans:1,cat:'🎨'},
   {q:'¿De qué color se mezcla rojo y amarillo?',opts:['Verde','Morado','Naranja','Café'],ans:2,cat:'🎨'},
-  // Cuentos y personajes
+  {q:'¿De qué color se mezcla azul y amarillo?',opts:['Morado','Verde','Naranja','Café'],ans:1,cat:'🎨'},
+  {q:'¿Cuántas notas musicales hay?',opts:['5','6','7','8'],ans:2,cat:'🎨'},
+  {q:'¿Qué instrumento tiene teclas blancas y negras?',opts:['Guitarra','Violín','Piano','Flauta'],ans:2,cat:'🎨'},
+  {q:'¿Quién esculpió el David?',opts:['Rafael','Da Vinci','Miguel Ángel','Picasso'],ans:2,cat:'🎨'},
+  {q:'¿Qué colores tiene la bandera de Chile?',opts:['Azul, blanco y rojo','Verde, blanco y rojo','Rojo, amarillo y verde','Azul, rojo y amarillo'],ans:0,cat:'🎨'},
+  {q:'¿De qué color se mezcla blanco y negro?',opts:['Beige','Gris','Marrón','Azul claro'],ans:1,cat:'🎨'},
+  {q:'¿Qué instrumento de cuerda se toca con arco?',opts:['Guitarra','Arpa','Violín','Banjo'],ans:2,cat:'🎨'},
+  {q:'¿Cuántos colores tiene la bandera de Francia?',opts:['2','3','4','5'],ans:1,cat:'🎨'},
+  {q:'¿Qué famoso museo está en París?',opts:['El Prado','El Louvre','El Hermitage','Los Uffizi'],ans:1,cat:'🎨'},
+  {q:'¿Quién pintó La noche estrellada?',opts:['Picasso','Monet','Van Gogh','Dalí'],ans:2,cat:'🎨'},
+  {q:'¿Qué instrumento sopla el viento?',opts:['Tambor','Flauta','Violín','Piano'],ans:1,cat:'🎨'},
+  // 🦸 Cuentos y personajes (15 preguntas)
   {q:'¿Cómo se llama la sirena de Disney?',opts:['Aurora','Ariel','Bella','Jasmine'],ans:1,cat:'🦸'},
   {q:'¿Quién tiene una nariz que crece cuando miente?',opts:['Pinocho','Dumbo','Bambi','Simba'],ans:0,cat:'🦸'},
-  {q:'¿De qué color es el elefante Dumbo?',opts:['Rosa','Gris','Azul','Blanco'],ans:1,cat:'🦸'},
   {q:'¿Cómo se llama el pez payaso de Buscando a Nemo?',opts:['Nemo','Dory','Marlin','Flounder'],ans:0,cat:'🦸'},
   {q:'¿Quién es el mejor amigo de Woody en Toy Story?',opts:['Rex','Buzz Lightyear','Hamm','Slinky'],ans:1,cat:'🦸'},
   {q:'¿En qué cuento una niña come una manzana envenenada?',opts:['Cenicienta','La Bella Durmiente','Blancanieves','Rapunzel'],ans:2,cat:'🦸'},
+  {q:'¿Cómo se llama el ogro verde de la película?',opts:['Donkey','Fiona','Shrek','Harold'],ans:2,cat:'🦸'},
+  {q:'¿Quién vive en una piña bajo el mar?',opts:['Patricio','Arenita','Bob Esponja','Calamardo'],ans:2,cat:'🦸'},
+  {q:'¿Cómo se llama la bruja de Blancanieves?',opts:['Maléfica','La Reina Malvada','Úrsula','Cruella'],ans:1,cat:'🦸'},
+  {q:'¿Qué superpoder tiene Superman?',opts:['Invisibilidad','Volar y superfuerza','Telepat','Control del tiempo'],ans:1,cat:'🦸'},
+  {q:'¿Cómo se llama el León de El Rey León?',opts:['Pumba','Timón','Simba','Mufasa'],ans:2,cat:'🦸'},
+  {q:'¿En qué cuento una niña duerme 100 años?',opts:['Cenicienta','Blancanieves','La Bella Durmiente','Rapunzel'],ans:2,cat:'🦸'},
+  {q:'¿Qué personaje tiene una lámpara mágica?',opts:['Simbad','Aladdín','Ali Babá','Sherezade'],ans:1,cat:'🦸'},
+  {q:'¿Cómo se llama la bruja de Los 101 Dálmatas?',opts:['Úrsula','Maléfica','Cruella de Vil','La Bruja'],ans:2,cat:'🦸'},
+  {q:'¿De qué material está hecha la zapatilla de Cenicienta?',opts:['Oro','Cristal','Plata','Diamante'],ans:1,cat:'🦸'},
+  {q:'¿Quién es el enemigo de Peter Pan?',opts:['Cocodrilo','Capitán Garfio','Smee','Campanilla'],ans:1,cat:'🦸'},
 ];
+
+// Sistema anti-repetición para trivia
+const _triviaUsed={};
+function getNextTrivia(cat){
+  const catCode=cat.split(' ')[0];
+  const pool=catCode==='🎲'?TRIVIA_QS:TRIVIA_QS.filter(q=>q.cat===catCode);
+  const key='trivia_'+catCode;
+  if(!_triviaUsed[key]||_triviaUsed[key].length>=pool.length) _triviaUsed[key]=[];
+  const available=pool.filter((_,i)=>!_triviaUsed[key].includes(i));
+  const localIdx=Math.floor(Math.random()*available.length);
+  const q=available[localIdx];
+  const globalIdx=pool.indexOf(q);
+  _triviaUsed[key].push(globalIdx);
+  return q;
+}
 
 const TRIVIA_CATS=['🐾 Animales','🌿 Ciencia','🌍 Geografía','🔢 Matemáticas','🎨 Arte','🦸 Cuentos','🎲 Sorpresa'];
 
@@ -1608,16 +1691,8 @@ window.startTriviaGame=async function(){
   });
   if(!cat)return;
   showToast('✨ Generando pregunta...');
-  // Intentar con IA
-  let q=await generateTriviaWithAI(cat);
-  // Si falla, usar respaldo filtrado por categoría
-  if(!q){
-    const catCode=cat.split(' ')[0];
-    const filtered=TRIVIA_QS.filter(x=>x.cat===catCode);
-    const pool=filtered.length>0?filtered:TRIVIA_QS;
-    const backup=pool[Math.floor(Math.random()*pool.length)];
-    q={q:backup.q,opts:backup.opts,ans:backup.ans};
-  }
+  const backup=getNextTrivia(cat);
+  const q={q:backup.q,opts:backup.opts,ans:backup.ans};
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
@@ -1785,12 +1860,115 @@ const WORD_QS=[
   {word:'PIRAMIDE',hints:['Soy una figura geométrica','Tengo base cuadrada','Las hay famosas en Egipto','Los faraones las construyeron']},
   {word:'ESTRELLA',hints:['Brillo en el cielo nocturno','El Sol es una de las mías','Tengo forma de puntas','Soy muy lejana de la Tierra']},
   {word:'CHOCOLATE',hints:['Soy un dulce delicioso','Vengo del cacao','Puedo ser negro, blanco o con leche','A muchos niños les encanto']},
-  {word:'MARIPOSA',hints:['Me transformo completamente','Paso por 4 etapas','Mis alas tienen patrones','Vivo poco tiempo']},
+  {word:'TELESCOPIO',hints:['Sirvo para ver cosas lejanas','Los astrónomos me usan','Puedo ser espacial o terrestre','Con mí puedes ver la Luna de cerca']},
+  {word:'BIBLIOTECA',hints:['Estoy llena de libros','Se puede leer en silencio','Puedo prestar libros','Es un lugar de aprendizaje']},
+  {word:'FOTOGRAFIA',hints:['Capturo momentos','Necesito luz para existir','Puedo ser digital o en papel','Una cámara me crea']},
+  {word:'AVENTURA',hints:['Soy una experiencia emocionante','Puedo ser peligrosa','Los valientes me buscan','Estoy en muchos cuentos']},
+  {word:'COMPUTADOR',hints:['Proceso información','Tengo teclado y pantalla','Me usan en oficinas y casas','Puedo conectarme a internet']},
+  {word:'MUNICIPIO',hints:['Soy una división de un país','Tengo alcalde','Me encargo de servicios locales','Soy más pequeño que una región']},
+  {word:'UNIVERSO',hints:['Contengo todo lo que existe','Incluyo galaxias y planetas','Sigo expandiéndose','Tengo millones de años']},
+  {word:'MISTERIO',hints:['Soy algo sin explicación','Los detectives me resuelven','Soy el tema de muchas novelas','Genero curiosidad e intriga']},
+  {word:'ACUARIO',hints:['Soy un lugar con peces','El agua es mi elemento','Los visitantes me admiran','Tengo peceras gigantes']},
+  {word:'LABERINTO',hints:['Soy difícil de salir','Tengo muchos caminos sin salida','Los griegos me inventaron','El Minotauro vivía en uno']},
+  {word:'DINOSAURIO',hints:['Dominé la Tierra por millones de años','Un meteorito causó mi extinción','T-Rex era uno de los más temidos','Mis huesos se encuentran como fósiles']},
+  {word:'TORNADO',hints:['Soy un remolino de viento muy destructivo','Tengo forma de embudo','Me formo en tormentas eléctricas fuertes','Puedo levantar casas enteras']},
+  {word:'TERREMOTO',hints:['Soy un movimiento brusco de la corteza terrestre','Me mido en la escala de Richter','Puedo causar tsunamis en el mar','Chile es uno de los países donde más ocurro']},
+  {word:'TSUNAMI',hints:['Soy una ola gigante del océano','Me produce un terremoto submarino','Puedo viajar a 900 km/h','Puedo destruir ciudades costeras enteras']},
+  {word:'MICROSCOPIO',hints:['Permito ver cosas muy pequeñas','Los científicos me usan mucho','Inventado en el siglo XVII','Con mí puedes ver bacterias y células']},
+  {word:'ELECTRICIDAD',hints:['Es lo que fluye por los cables','Me produce una central eléctrica','Los rayos son descargas mías naturales','Sin mí no habría luz ni internet']},
+  {word:'GRAVEDAD',hints:['Soy la fuerza que nos mantiene en la Tierra','Newton me descubrió con una manzana','Sin mí los astronautas flotan','Me tiene cualquier objeto con masa']},
+  {word:'ECOSISTEMA',hints:['Soy el conjunto de seres vivos y su entorno','Puede ser un bosque, un río o el mar','Todo está interconectado dentro de mí','Si falla una parte me afecto todo']},
+  {word:'FOTOSINTESIS',hints:['Soy el proceso que usan las plantas para comer','Necesito luz solar, agua y CO2','Produzco oxígeno como resultado','Sin mí no habría vida en la Tierra']},
+  {word:'CLOROFILA',hints:['Soy el pigmento verde de las plantas','Capturo la luz del sol','Estoy en las hojas principalmente','Gracias a mí existe la fotosíntesis']},
+  {word:'ENERGIA',hints:['Soy la capacidad de hacer trabajo','Puedo ser solar, eólica o nuclear','No se crea ni se destruye, solo se transforma','Todo ser vivo me necesita']},
+  {word:'OXIGENO',hints:['Soy el gas que respiramos','Las plantas me producen','Sin mí no hay fuego','Tengo número atómico 8']},
+  {word:'HIDROGENO',hints:['Soy el elemento más ligero del universo','Formo parte del agua','El Sol principalmente me está hecho','Me usa como combustible del futuro']},
+  {word:'TEMPERATURA',hints:['Mido el calor o el frío','Los termómetros me registran','Se expresa en grados Celsius o Fahrenheit','El cuerpo humano debe mantenerme estable']},
+  {word:'PRECIPITACION',hints:['Soy la lluvia, nieve o granizo','Caigo de las nubes','Formo parte del ciclo del agua','Sin mí los campos no producen alimentos']},
+  {word:'MAGNETISMO',hints:['Soy la fuerza que atrae el metal','Los imanes me poseen','La Tierra tiene un campo magnético','Las brújulas me usan para orientarse']},
+  {word:'EXPERIMENTO',hints:['Soy lo que hacen los científicos para probar ideas','Necesito hipótesis, método y conclusión','Puedo hacerse en laboratorios','Los niños me hacen en clase de ciencias']},
+  {word:'ATMOSFERA',hints:['Soy la capa de aire que rodea la Tierra','Protejo del sol y los meteoros','Tengo varias capas: troposfera, estratosfera...','Sin mí no habría vida en la Tierra']},
+  {word:'EVOLUCION',hints:['Soy el proceso de cambio de las especies','Darwin la describió en el siglo XIX','Ocurre durante millones de años','Explica por qué los humanos y los monos tenemos ancestros comunes']},
+  {word:'ARQUEOLOGIA',hints:['Estudio el pasado excavando restos antiguos','Los arqueólogos usan pinceles y palas pequeñas','Encuentro vasijas, huesos y herramientas viejas','Ayudo a entender civilizaciones antiguas']},
+  {word:'CIVILIZACION',hints:['Soy una sociedad organizada y avanzada','Egipto y Roma son ejemplos míos','Tengo escritura, leyes y ciudades','El ser humano me construyó durante miles de años']},
+  {word:'DEMOCRACIA',hints:['Soy el gobierno del pueblo','Las personas votan para elegir a sus líderes','Nació en la antigua Grecia','Chile y muchos países me practican']},
+  {word:'CONSTITUCION',hints:['Soy la ley más importante de un país','Me redactan los representantes del pueblo','Establezco los derechos de los ciudadanos','Todos los países democráticos tienen una como yo']},
+  {word:'INDEPENDENCIA',hints:['Soy la libertad de un país para gobernarse solo','Chile la celebra el 18 de septiembre','Las colonias la consiguieron luchando','Es el acto de separarse de un poder extranjero']},
+  {word:'REVOLUCION',hints:['Soy un cambio radical y rápido en la sociedad','La Francesa cambió el mundo en 1789','Puede ser política, industrial o tecnológica','A veces implica violencia y otras no']},
+  {word:'COLONIZACION',hints:['Es cuando un país ocupa y controla otro territorio','España me hizo en América','Trajo idiomas y culturas nuevas','También causó mucho sufrimiento a los pueblos originarios']},
+  {word:'MIGRACION',hints:['Es el movimiento de personas de un lugar a otro','Puede ser por trabajo, guerra o clima','Los pájaros también lo hacen por estaciones','Los migrantes llevan su cultura a nuevos países']},
+  {word:'SOLIDARIDAD',hints:['Soy apoyar a quienes más lo necesitan','Las catástrofes naturales la despiertan','Es un valor humano muy importante','Actuar con mí hace mejores las sociedades']},
+  {word:'IMAGINACION',hints:['Soy la capacidad de crear ideas nuevas','Los artistas y científicos me usan mucho','Los niños me tienen en abundancia','Sin mí no habría inventos ni arte']},
+  {word:'AMISTAD',hints:['Soy una relación de afecto y confianza','Los buenos amigos están en momentos difíciles','Es uno de los regalos más grandes de la vida','Se cultiva con tiempo y sinceridad']},
+  {word:'NATURALEZA',hints:['Soy todo lo que existe sin intervención humana','Incluyo montañas, ríos y animales','Es importante cuidarme y protegerme','La ciencia que me estudia es la biología']},
+  {word:'AVENTURA',hints:['Soy una experiencia emocionante y llena de riesgo','Los valientes me buscan','Estoy presente en muchos cuentos y películas','Viajar a lugares nuevos es una forma de vivirme']},
+  {word:'MISTERIO',hints:['Soy algo sin explicación conocida','Los detectives me resuelven','Soy el tema de muchas novelas y películas','Genera curiosidad e intriga en quien me encuentra']},
+  {word:'DESCUBRIMIENTO',hints:['Soy encontrar algo desconocido o nuevo','Colón hizo uno famoso en 1492','Los científicos me hacen en laboratorios','Puedo cambiar la historia del mundo']},
+  {word:'INVENCION',hints:['Soy crear algo que no existía antes','Edison inventó la bombilla','La rueda fue una de las más importantes','Los inventores necesitan curiosidad e imaginación']},
+  {word:'TECNOLOGIA',hints:['Soy el conjunto de herramientas y conocimientos técnicos','El celular y el internet son ejemplos míos','Cambia constantemente y muy rápido','Facilita la vida de las personas']},
+  {word:'COMUNICACION',hints:['Soy el intercambio de información entre personas','Puede ser oral, escrita o visual','Internet me revolucionó completamente','Sin mí las sociedades no podrían funcionar']},
+  {word:'BIBLIOTECA',hints:['Soy un lugar lleno de libros para consultar','Se puede leer y estudiar en silencio','Presto libros temporalmente','Es un espacio de conocimiento y cultura']},
+  {word:'DICCIONARIO',hints:['Contiene el significado de las palabras','Las palabras están en orden alfabético','Existe en papel y también digital','Es la herramienta básica del lenguaje']},
+  {word:'ESCRITURA',hints:['Soy la representación gráfica del lenguaje','La humanidad me inventó hace 5000 años','Sin mí no existiría la historia escrita','Los sumerios fueron de los primeros en usarme']},
+  {word:'MATEMATICAS',hints:['Soy la ciencia de los números','Incluyo suma, resta, multiplicación y división','Se usa en casi todas las profesiones','Pitágoras fue uno de mis grandes maestros']},
+  {word:'GEOMETRIA',hints:['Estudio las formas y figuras','Triángulos, círculos y cuadrados son mis objetos','Se usa en arquitectura y diseño','Euclides la sistematizó en la antigua Grecia']},
+  {word:'FILOSOFIA',hints:['Soy el amor por la sabiduría','Sócrates, Platón y Aristóteles me cultivaron','Hago preguntas sobre la existencia y la verdad','Es una de las disciplinas más antiguas del pensamiento']},
+  {word:'PSICOLOGIA',hints:['Estudio la mente y el comportamiento humano','Los psicólogos ayudan a personas con problemas emocionales','Freud fue uno de mis pioneros','Comprende el por qué actuamos como actuamos']},
+  {word:'ASTRONOMIA',hints:['Estudio los astros y el universo','Los astrónomos usan telescopios','Galileo fue uno de mis más famosos cultivadores','Nos dice de dónde venimos y hacia dónde va el universo']},
+  {word:'QUIMICA',hints:['Estudio la materia y sus transformaciones','Se hace en laboratorios con probetas y frascos','Marie Curie fue una gran figura mía','Explica por qué el agua moja y el fuego quema']},
+  {word:'BIOLOGIA',hints:['Estudio los seres vivos','Abarca desde bacterias hasta elefantes','Darwin revolucionó mi campo','Todo lo que tiene vida me interesa']},
+  {word:'GEOGRAFIA',hints:['Estudio la superficie de la Tierra','Incluye mapas, climas y países','Los geógrafos describen el mundo','Sin mí no habría atlas ni GPS']},
+  {word:'HISTORIA',hints:['Soy el estudio del pasado humano','Los historiadores me analizan con documentos y restos','Sin mí no entendemos el presente','Heródoto es considerado mi padre']},
+  {word:'LITERATURA',hints:['Soy el arte de escribir con palabras','Incluye novelas, poemas y obras de teatro','Cervantes y Neruda son grandes figuras mías','Me leen millones de personas en todo el mundo']},
+  {word:'MUSICA',hints:['Soy el arte de combinar sonidos armónicamente','Beethoven y Mozart son grandes maestros míos','Me escuchas en casi todos los momentos del día','Puede hacerte reír, llorar o bailar']},
+  {word:'TRUENO',hints:['Soy el sonido que acompaña al rayo','Me produce el calentamiento súbito del aire','Aparezco después del relámpago','En las tormentas soy señal de peligro']},
+  {word:'RAYO',hints:['Soy una descarga eléctrica de las nubes','Viajo a casi la velocidad de la luz','Puedo alcanzar 30,000 grados de temperatura','Los pararrayos me atraen para proteger edificios']},
+  {word:'ARCOIRIS',hints:['Aparezco después de la lluvia con sol','Tengo 7 colores: rojo naranja amarillo verde azul índigo violeta','Soy un fenómeno óptico de refracción','No puedes llegar a mi final porque se aleja contigo']},
+  {word:'MONTAÑA',hints:['Soy una elevación natural del terreno','El Everest es la más alta del mundo','Los escaladores me conquistan','Puedo tener nieve en la cima todo el año']},
+  {word:'DESIERTO',hints:['Soy un lugar con muy poca lluvia','El Sahara es el más grande del mundo','El Atacama en Chile es el más árido','Los camellos están adaptados para vivir en mí']},
+  {word:'OCEANO',hints:['Soy una gran masa de agua salada','Cubro el 71% de la superficie terrestre','El Pacífico es el más grande','En mí viven millones de especies']},
+  {word:'SELVA',hints:['Soy un bosque tropical muy denso y húmedo','La Amazonia es la más grande del mundo','Tengo la mayor biodiversidad del planeta','Produzco el 20% del oxígeno terrestre']},
+  {word:'SABANA',hints:['Soy una llanura tropical con pastizales','Los leones, jirafas y elefantes viven en mí','Tengo una estación seca y una lluviosa','La mayoría está en África subsahariana']},
+  {word:'TUNDRA',hints:['Soy una zona fría sin árboles','El suelo bajo mí está congelado todo el año','Los renos y osos polares viven en mí','Estoy en el Ártico y zonas de alta montaña']},
+  {word:'GLACIAR',hints:['Soy una masa de hielo que se mueve lentamente','Me formo por acumulación de nieve durante siglos','Estoy retrocediendo por el cambio climático','El Perito Moreno en Argentina es muy famoso']},
+  {word:'TORNADO',hints:['Soy un remolino de viento muy destructivo','Tengo forma de embudo','Me formo en tormentas eléctricas severas','Puedo levantar casas enteras por el aire']},
+  {word:'HURACÁN',hints:['Soy una tormenta tropical muy potente','En Asia me llaman tifón','Me mido en categorías del 1 al 5','Me alimento de agua caliente del océano']},
+  {word:'TERREMOTO',hints:['Soy un movimiento de la corteza terrestre','Me mide la escala de Richter','Chile es uno de los países que más me sufre','Puedo durar segundos o varios minutos']},
+  {word:'AURORA',hints:['Soy un fenómeno luminoso nocturno','Aparezco en los polos como colores en el cielo','Me produce el viento solar interactuando con la atmósfera','La Aurora Boreal es la más famosa']},
+  {word:'ECLIPSE',hints:['Soy cuando un astro tapa a otro','El solar ocurre cuando la Luna tapa al Sol','El lunar ocurre cuando la Tierra tapa la Luna','Los antiguos me tenían mucho miedo']},
+  {word:'COMETA',hints:['Soy un cuerpo celeste con una cola brillante','Me compongo de hielo y roca','Paso cerca del Sol periódicamente','El Halley es el más famoso y llega cada 75 años']},
+  {word:'ASTEROIDE',hints:['Soy una roca que orbita el Sol','Hay millones entre Marte y Júpiter','Un asteroide mató a los dinosaurios','Los científicos me estudian para proteger la Tierra']},
+  {word:'METEORO',hints:['Soy una roca que entra a la atmósfera terrestre','Me llaman estrella fugaz aunque no soy estrella','Si llego al suelo me llamo meteorito','Las lluvias de perseidas son lluvias de nosotros']},
+  {word:'SUPERNOVA',hints:['Soy la explosión de una estrella al morir','Soy de los eventos más energéticos del universo','Puede brillar más que toda una galaxia','Producimos los elementos pesados como el oro']},
+  {word:'AGUJERO',hints:['En el espacio, hay uno tan denso que la luz no escapa','Stephen Hawking fue el gran experto en nosotros','Nos produce una estrella muy masiva al morir','El primero fue fotografiado en 2019']},
+  {word:'GALAXIA',hints:['Soy un conjunto de millones de estrellas','La Vía Láctea es la nuestra','Hay más de 2 billones en el universo observable','Andromeda es la más cercana a nosotros']},
+  {word:'NEBULOSA',hints:['Soy una nube de gas y polvo interestelar','En mí nacen las estrellas','Las hay de colores increíbles','La de Orión es una de las más conocidas']},
+  {word:'SATELITE',hints:['Orbito alrededor de un planeta','La Luna es el satélite de la Tierra','Los artificiales transmiten señales de televisión','El GPS usa satélites para orientarte']},
+  {word:'SUBMARINO',hints:['Soy un vehículo que navega bajo el agua','Uso sonar para detectar obstáculos','Los militares me usan para misiones secretas','Tengo periscopio para ver la superficie']},
+  {word:'HELICOPTERO',hints:['Vuelo gracias a mis hélices rotatorias','Puedo despegar y aterrizar verticalmente','Me usan en rescates y emergencias médicas','No necesito pista de aterrizaje']},
+  {word:'LOCOMOTORA',hints:['Soy el motor que jala un tren','Las primeras funcionaban con vapor','Revolucioné el transporte en el siglo XIX','Hoy pueden ser eléctricas o diésel']},
+  {word:'FERROCARRIL',hints:['Soy un sistema de transporte sobre rieles','Conecté ciudades en el siglo XIX','Los trenes de alta velocidad van a 300 km/h','El Transiberiano es el más largo del mundo']},
+  {word:'ACUEDUCTO',hints:['Soy una obra para transportar agua','Los romanos construyeron los más famosos','Llevo agua desde manantiales hasta ciudades','Algunos tienen miles de años y aún funcionan']},
+  {word:'PIRAMIDE',hints:['Soy una construcción de base cuadrada','Las más famosas están en Egipto','Los faraones me construyeron como tumbas','La de Giza es una de las 7 maravillas del mundo']},
+  {word:'COLISEO',hints:['Soy un anfiteatro romano de Roma','Me construyeron hace casi 2000 años','Los gladiadores luchaban dentro de mí','Puedo albergar hasta 80,000 personas']},
+  {word:'ACROPOLIS',hints:['Soy la ciudadela sagrada de Atenas','El Partenón está sobre mí','Significa "ciudad alta" en griego','Soy símbolo de la civilización griega']},
+  {word:'MACHU PICHU',hints:['Soy una ciudadela inca en Perú','Estoy en lo alto de los Andes','Me descubrió Hiram Bingham en 1911','Soy una de las maravillas del mundo moderno']},
+  {word:'STONEHENGE',hints:['Soy un monumento de piedras gigantes en Inglaterra','Me construyeron hace más de 5000 años','No se sabe exactamente para qué servía','Estoy alineado con el solsticio de verano']},
+  {word:'PARTHENON',hints:['Soy un templo griego en la Acrópolis de Atenas','Me construyeron para honrar a Atenea','Tengo columnas de mármol blanco','Soy símbolo de la democracia y la filosofía']},
+  {word:'ESFINGE',hints:['Soy una escultura con cuerpo de león y cabeza humana','La más famosa está en Egipto junto a las pirámides','En la mitología griega hacía adivinanzas','Mido 73 metros de largo'],},
+  {word:'LABERINTO',hints:['Soy un conjunto de caminos confusos','El Minotauro vivía en el de la mitología griega','Teseo me escapó con el hilo de Ariadna','Existen en jardines como entretenimiento']},
+  {word:'CATEDRAL',hints:['Soy una iglesia muy grande e importante','La de Notre Dame en París es muy famosa','Me construyeron durante siglos en la Edad Media','Tengo vidrieras de colores y altas torres']},
+  {word:'ACUARIO',hints:['Soy un lugar donde puedes ver peces y animales marinos','Tengo tanques con agua de mar','Los tiburones y rayas nadan en mí','Es diferente al zoológico porque es acuático']},
+  {word:'ZOOLOGICO',hints:['Soy un lugar donde viven animales de todo el mundo','Hoy en día me enfocan en conservación','Los niños me visitan para ver animales','Cuido a especies en peligro de extinción']},
+  {word:'PLANETARIO',hints:['Soy un lugar donde se proyectan estrellas en el techo','Simulo el cielo nocturno con exactitud','Los astrónomos me usan para enseñar','Me visitan escuelas para aprender sobre el universo']},
 ];
 
 window.startGuessWord=async function(){
   if(!chat&&!activeGroup)return;
-  const q=WORD_QS[Math.floor(Math.random()*WORD_QS.length)];
+  if(!window._wordUsedIdx||window._wordUsedIdx.length>=WORD_QS.length) window._wordUsedIdx=[];
+  const available=WORD_QS.filter((_,i)=>!window._wordUsedIdx.includes(i));
+  const q=available[Math.floor(Math.random()*available.length)];
+  window._wordUsedIdx.push(WORD_QS.indexOf(q));
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
@@ -1870,6 +2048,101 @@ const ANIMAL_QS=[
   {emoji:'🦅',name:'Águila',hints:['Vemos 4 veces mejor que los humanos','Podemos volar a más de 3.000 metros de altura','Nuestro nido puede pesar hasta 2.000 kilos','Somos símbolo de libertad y fuerza en muchos países'],opts:['Halcón','Cóndor','Buitre','Águila'],ans:3},
   {emoji:'🐸',name:'Rana',hints:['Bebemos agua por la piel, no por la boca','Nuestros ojos nos ayudan a tragar: los usamos para empujar la comida','Empezamos siendo renacuajos sin patas','Podemos saltar 20 veces nuestra longitud'],opts:['Sapo','Salamandra','Rana','Tritón'],ans:2},
   {emoji:'🦝',name:'Mapache',hints:['Lavamos nuestra comida antes de comerla','Nuestras manos son tan hábiles que abrimos cerraduras','Tenemos una máscara negra natural alrededor de los ojos','Somos nocturnos y muy curiosos'],opts:['Tejón','Nutria','Comadreja','Mapache'],ans:3},
+  {emoji:'🐨',name:'Koala',hints:['Solo comemos hojas de eucalipto','Dormimos hasta 22 horas al día','Vivimos en Australia','Tenemos huellas dactilares casi iguales a las humanas'],opts:['Wombat','Koala','Canguro','Zarigüeya'],ans:1},
+  {emoji:'🦘',name:'Canguro',hints:['Las mamás llevamos a las crías en una bolsa','Podemos saltar hasta 3 metros de altura','Solo existimos en Australia','Usamos la cola como apoyo al estar de pie'],opts:['Wallaby','Wombat','Canguro','Koala'],ans:2},
+  {emoji:'🐼',name:'Panda',hints:['Somos blanco y negro','Comemos bambú casi todo el día','Somos originarios de China','Somos el símbolo de la conservación animal'],opts:['Panda','Oso polar','Oso pardo','Tapir'],ans:0},
+  {emoji:'🦩',name:'Flamenco',hints:['Somos rosados porque comemos camarones','Dormimos parados en un solo pie','Vivimos en colonias de miles de aves','Filtramos el agua con nuestro pico curvo'],opts:['Garza','Cigüeña','Flamenco','Ibis'],ans:2},
+  {emoji:'🐢',name:'Tortuga',hints:['Llevamos nuestra casa a cuestas','Somos el reptil más longevo — vivimos más de 150 años','Ponemos huevos en la arena','Nuestro caparazón tiene más de 60 huesos'],opts:['Iguana','Lagarto','Cocodrilo','Tortuga'],ans:3},
+  {emoji:'🦦',name:'Nutria',hints:['Dormimos flotando en el agua tomados de las manos','Usamos piedras para romper mariscos','Somos excelentes nadadores','Nuestra piel es la más densa del reino animal'],opts:['Foca','Nutria','Castor','Visón'],ans:1},
+  {emoji:'🦁',name:'León',hints:['Solo los machos tenemos melena dorada','Rugimos tan fuerte que se escucha a 8 km','Vivimos en grupos llamados manadas','Somos el único felino que vive en grupo'],opts:['Tigre','Leopardo','León','Guepardo'],ans:2},
+  {emoji:'🐝',name:'Abeja',hints:['Producimos miel en colmenas','Tenemos 5 ojos','Podemos ver colores ultravioleta que los humanos no ven','Si perdemos el aguijón al picar, morimos'],opts:['Avispa','Abeja','Abejorro','Mosca'],ans:1},
+  {emoji:'🦜',name:'Loro',hints:['Somos los únicos animales que imitan la voz humana con significado','Algunos vivimos más de 80 años','Usamos el pico como tercera mano para trepar','Nos apareamos de por vida con la misma pareja'],opts:['Tucán','Guacamayo','Loro','Cacatúa'],ans:2},
+  {emoji:'🐍',name:'Serpiente',hints:['No tenemos patas pero nos movemos muy rápido','Sentimos las vibraciones con la lengua','Algunas somos venenosas','Mudamos la piel varias veces al año'],opts:['Lagarto','Serpiente','Lombriz','Anguila'],ans:1},
+  {emoji:'🦅',name:'Águila',hints:['Vemos 4 veces mejor que los humanos','Volamos a más de 3000 metros de altura','Nuestro nido puede pesar hasta 2000 kilos','Somos símbolo de libertad en muchos países'],opts:['Halcón','Cóndor','Buitre','Águila'],ans:3},
+  {emoji:'🐊',name:'Cocodrilo',hints:['Llevamos 200 millones de años en la Tierra','Lloramos al comer para lubricar los ojos','Nuestros dientes se renuevan solos hasta 3000 veces','Podemos aguantar más de una hora bajo el agua'],opts:['Caimán','Gavial','Lagarto','Cocodrilo'],ans:3},
+  {emoji:'🦒',name:'Jirafa',hints:['Nuestro cuello mide hasta 2 metros pero solo tiene 7 huesos','Somos el animal más alto del mundo','Nuestras manchas son únicas como huellas digitales','Dormimos solo 30 minutos al día'],opts:['Cebra','Camello','Ñu','Jirafa'],ans:3},
+  {emoji:'🐋',name:'Ballena azul',hints:['Somos el animal más grande que ha existido','Nuestro corazón pesa como un auto','Nuestros bebés nacen midiendo 7 metros','Nos comunicamos con canciones que viajan miles de kilómetros'],opts:['Ballena jorobada','Ballena azul','Cachalote','Orca'],ans:1},
+  {emoji:'🦁',name:'León',hints:['Solo los machos tenemos melena dorada','Rugimos tan fuerte que se escucha a 8 km','Vivimos en grupos llamados manadas','Somos el único felino que vive en grupo'],opts:['Tigre','Leopardo','León','Guepardo'],ans:2},
+  {emoji:'🐺',name:'Lobo',hints:['Aullamos para comunicarnos con nuestra familia','Somos los ancestros de todos los perros domésticos','Vivimos en manadas con jerarquía estricta','Podemos correr a 60 km/h durante horas'],opts:['Perro','Coyote','Lobo','Hiena'],ans:2},
+  {emoji:'🦈',name:'Tiburón',hints:['Llevamos 450 millones de años en los océanos','Detectamos una gota de sangre a 500 metros','Nuestros dientes caen y crecen nuevos toda la vida','Tenemos que nadar siempre para no ahogarnos'],opts:['Tiburón','Barracuda','Orca','Raya'],ans:0},
+  {emoji:'🦋',name:'Mariposa',hints:['Nuestras alas tienen escamas microscópicas de colores','Saboreamos la comida con las patas','Podemos ver colores que los humanos no pueden','Nos transformamos completamente al salir de la crisálida'],opts:['Libélula','Polilla','Mariposa','Mantis'],ans:2},
+  {emoji:'🐸',name:'Rana',hints:['Bebemos agua por la piel, no por la boca','Nuestros ojos nos ayudan a tragar la comida','Empezamos siendo renacuajos sin patas','Podemos saltar 20 veces nuestra longitud'],opts:['Sapo','Salamandra','Rana','Tritón'],ans:2},
+  {emoji:'🦩',name:'Flamenco',hints:['Somos rosados porque comemos camarones','Dormimos parados en un solo pie','Filtramos el agua con nuestro pico curvo','Vivimos en colonias de miles de aves'],opts:['Garza','Cigüeña','Flamenco','Ibis'],ans:2},
+  {emoji:'🐢',name:'Tortuga',hints:['Llevamos nuestra casa a cuestas','Vivimos más de 150 años','Ponemos huevos en la arena','Nuestro caparazón tiene más de 60 huesos'],opts:['Iguana','Lagarto','Cocodrilo','Tortuga'],ans:3},
+  {emoji:'🦦',name:'Nutria',hints:['Dormimos flotando en el agua tomados de las manos','Usamos piedras para romper mariscos','Somos excelentes nadadores','Nuestra piel es la más densa del reino animal'],opts:['Foca','Nutria','Castor','Visón'],ans:1},
+  {emoji:'🦭',name:'Foca',hints:['Vivimos en regiones frías','Somos excelentes nadadoras pero torpes en tierra','Usamos las aletas para movernos','Los osos polares nos cazan en el hielo'],opts:['Morsa','Foca','Nutria','León marino'],ans:1},
+  {emoji:'🐻‍❄️',name:'Oso polar',hints:['Somos el carnívoro terrestre más grande','Nuestra piel es negra aunque el pelo parece blanco','Nadamos largas distancias en agua helada','Hibernamos en invierno'],opts:['Oso pardo','Oso polar','Oso negro','Oso grizzly'],ans:1},
+  {emoji:'🦊',name:'Zorro',hints:['Tenemos orejas enormes para escuchar presas bajo la nieve','Saltamos en vertical para cazar ratones','Nuestra cola esponjosa nos sirve de bufanda','Somos omnívoros y muy adaptables'],opts:['Lobo','Coyote','Zorro','Hiena'],ans:2},
+  {emoji:'🐙',name:'Pulpo',hints:['Tenemos tres corazones y sangre azul','Cada uno de nuestros 8 brazos tiene cerebro propio','Podemos abrir frascos desde adentro','Somos el invertebrado más inteligente'],opts:['Calamar','Medusa','Cangrejo','Pulpo'],ans:3},
+  {emoji:'🦑',name:'Calamar',hints:['Tenemos 10 tentáculos, no 8','Expulsamos tinta para escapar de depredadores','Podemos cambiar de color instantáneamente','El calamar gigante tiene los ojos más grandes del reino animal'],opts:['Pulpo','Calamar','Sepia','Nautilo'],ans:1},
+  {emoji:'🐬',name:'Delfín',hints:['Dormimos con un ojo abierto','Nos comunicamos con clicks y silbidos únicos que son nuestro nombre','Somos los únicos animales que juegan por diversión','Nuestro cerebro es grande en proporción al cuerpo'],opts:['Marsopa','Delfín','Orca','Narval'],ans:1},
+  {emoji:'🐘',name:'Elefante',hints:['Somos el único animal que no puede saltar','Pesamos hasta 6000 kilos','Usamos la trompa para beber, comer y saludar','Recordamos lugares y personas durante décadas'],opts:['Rinoceronte','Hipopótamo','Elefante','Mamut'],ans:2},
+  {emoji:'🦏',name:'Rinoceronte',hints:['Nuestro cuerno está hecho de queratina como las uñas','Somos los segundos animales terrestres más grandes','Tenemos muy mala vista pero olfato excelente','Usamos el barro como protector solar natural'],opts:['Hipopótamo','Rinoceronte','Tapir','Búfalo'],ans:1},
+  {emoji:'🦛',name:'Hipopótamo',hints:['Somos el tercer animal terrestre más grande','Pasamos el día en el agua para no quemarnos','Somos más peligrosos que los leones en África','Corremos a 30 km/h a pesar de nuestro tamaño'],opts:['Rinoceronte','Elefante','Hipopótamo','Búfalo'],ans:2},
+  {emoji:'🐆',name:'Leopardo',hints:['Subimos presas pesadas a los árboles para que nadie nos las robe','Somos el felino más solitario','Corremos a 60 km/h y saltamos 6 metros','Tenemos manchas en forma de roseta'],opts:['Guepardo','Jaguar','Leopardo','Ocelote'],ans:2},
+  {emoji:'🐅',name:'Tigre',hints:['Somos el felino más grande del mundo','Cada uno tiene rayas únicas como huellas digitales','Somos buenos nadadores, a diferencia de otros gatos','Vivimos principalmente en Asia'],opts:['León','Leopardo','Guepardo','Tigre'],ans:3},
+  {emoji:'🦓',name:'Cebra',hints:['Nuestras rayas son únicas como las huellas digitales','Las rayas confunden a los depredadores','Somos familiares del caballo y el burro','Vivimos en manadas en las sabanas africanas'],opts:['Burro','Caballo','Cebra','Onagro'],ans:2},
+  {emoji:'🦒',name:'Jirafa',hints:['Bebemos agua con las patas abiertas porque somos muy altos','Nuestro corazón pesa 11 kilos','Solo dormimos 30 minutos por día en total','Podemos limpiar nuestros oídos con la lengua'],opts:['Okapi','Camello','Cebra','Jirafa'],ans:3},
+  {emoji:'🦘',name:'Canguro',hints:['Las mamás llevamos a las crías en una bolsa','Podemos saltar hasta 3 metros de altura','Usamos la cola como apoyo al estar de pie','Solo existimos en Australia'],opts:['Wallaby','Wombat','Canguro','Koala'],ans:2},
+  {emoji:'🐼',name:'Panda',hints:['Comemos bambú casi todo el día','Somos blanco y negro','Tenemos un falso pulgar extra para agarrar bambú','Somos originarios de China'],opts:['Oso negro','Oso polar','Panda','Oso pardo'],ans:2},
+  {emoji:'🦧',name:'Orangután',hints:['Nuestro nombre significa "persona del bosque"','Somos uno de los primates más inteligentes','Construimos una cama nueva en los árboles cada noche','Vivimos en Borneo y Sumatra'],opts:['Gorila','Chimpancé','Gibón','Orangután'],ans:3},
+  {emoji:'🦍',name:'Gorila',hints:['Somos el primate más grande del mundo','Compartimos el 98% del ADN con los humanos','El macho dominante se llama espalda plateada','Nos comunicamos con más de 20 sonidos diferentes'],opts:['Chimpancé','Orangután','Gorila','Mandril'],ans:2},
+  {emoji:'🐒',name:'Chimpancé',hints:['Usamos herramientas como palos para conseguir comida','Compartimos el 99% del ADN con los humanos','Reconocemos nuestro reflejo en el espejo','Vivimos en grupos con jerarquía social compleja'],opts:['Gorila','Orangután','Mandril','Chimpancé'],ans:3},
+  {emoji:'🦔',name:'Erizo',hints:['Tenemos hasta 5000 espinas en el cuerpo','Nos enrollamos en una bola cuando tenemos miedo','Somos inmunes al veneno de muchas serpientes','Hibernamos en invierno'],opts:['Puercoespín','Erizo','Armadillo','Topo'],ans:1},
+  {emoji:'🦡',name:'Tejón',hints:['Somos excelentes excavadores con garras poderosas','Vivimos en madrigueras llamadas "setos"','Somos nocturnos y muy territoriales','Tenemos una franja blanca en la cara'],opts:['Hurón','Comadreja','Nutria','Tejón'],ans:3},
+  {emoji:'🦫',name:'Castor',hints:['Construimos represas en los ríos con ramas y barro','Nuestros dientes crecen toda la vida y son de color naranja','Podemos aguantar 15 minutos bajo el agua','Somos el segundo roedor más grande del mundo'],opts:['Nutria','Rata almizclera','Castor','Coypu'],ans:2},
+  {emoji:'🐓',name:'Gallo',hints:['Cantamos al amanecer','Nuestro canto se llama quiquiriquí','Somos machos de la gallina','Tenemos una cresta roja en la cabeza'],opts:['Pavo','Faisán','Gallo','Pato'],ans:2},
+  {emoji:'🦃',name:'Pavo',hints:['Podemos pesar hasta 11 kilos','Los machos abrimos nuestra cola en forma de abanico','Somos originarios de América del Norte','Tenemos una carúncula roja colgante en el pico'],opts:['Gallo','Faisán','Avestruz','Pavo'],ans:3},
+  {emoji:'🦆',name:'Pato',hints:['Tenemos plumas impermeables al agua','Nuestro graznido hace eco pero no se escucha el eco','Dormimos con un ojo abierto','Podemos dormir parados en una sola pata'],opts:['Ganso','Cisne','Pato','Gaviota'],ans:2},
+  {emoji:'🦢',name:'Cisne',hints:['Somos símbolo de elegancia y amor eterno','Nos apareamos de por vida con la misma pareja','Los bebés se llaman polluelos grises','Podemos ser peligrosos si nos sentimos amenazados'],opts:['Garza','Pelícano','Cigüeña','Cisne'],ans:3},
+  {emoji:'🦚',name:'Pavo real',hints:['Solo los machos tenemos la cola de colores','Nuestra cola puede medir más de un metro','Los ojos en nuestra cola espantan depredadores','Somos originarios de Asia del Sur'],opts:['Faisán','Quetzal','Pavo real','Tucán'],ans:2},
+  {emoji:'🦩',name:'Flamenco',hints:['Somos rosados por los carotenoides de nuestra comida','Podemos pararnos en un pie por horas','Nuestras crías nacen blancas','Vivimos en zonas pantanosas y lagunas saladas'],opts:['Ibis','Garza','Cigüeña','Flamenco'],ans:3},
+  {emoji:'🐦',name:'Gorrión',hints:['Somos uno de los pájaros más comunes del mundo','Vivimos cerca de los humanos en ciudades','Comemos semillas e insectos','Nuestro canto es muy conocido en todo el mundo'],opts:['Canario','Jilguero','Gorrión','Pinzón'],ans:2},
+  {emoji:'🦤',name:'Dodo',hints:['Me extinguí en el siglo XVII','No podía volar','Vivía en la isla Mauricio','Los humanos me cazaron hasta hacerme desaparecer'],opts:['Dodo','Quagga','Tilacino','Mamut llanero'],ans:0},
+  {emoji:'🐾',name:'Guepardo',hints:['Somos el animal más rápido en tierra, llegamos a 120 km/h','A diferencia de otros felinos, no podemos rugir','Nuestras manchas sólidas nos diferencian del leopardo','Aceleramos de 0 a 100 km/h en 3 segundos'],opts:['Leopardo','León','Jaguar','Guepardo'],ans:3},
+  {emoji:'🦌',name:'Ciervo',hints:['Los machos tenemos cuernos llamados astas que cambian cada año','Somos símbolo del bosque en muchas culturas','Corremos a 80 km/h cuando huimos de depredadores','Las hembras se llaman ciervas y no tienen astas'],opts:['Alce','Reno','Ciervo','Gamo'],ans:2},
+  {emoji:'🐐',name:'Cabra',hints:['Trepamos paredes verticales con facilidad','Tenemos pupilas rectangulares horizontales','Comemos casi cualquier tipo de planta','Producimos leche que se usa para hacer queso'],opts:['Oveja','Cabra','Antílope','Íbice'],ans:1},
+  {emoji:'🐑',name:'Oveja',hints:['Nuestra lana se esquila una vez al año','Somos animales gregarios que seguimos al rebaño','Los machos se llaman carneros y tienen cuernos','Producimos leche con la que se hace queso manchego'],opts:['Cabra','Llama','Oveja','Alpaca'],ans:2},
+  {emoji:'🐄',name:'Vaca',hints:['Tenemos 4 estómagos para digerir el pasto','Producimos leche para alimentar a los humanos','Mascamos el alimento varias veces, se llama rumia','Somos sagradas en la cultura hindú'],opts:['Búfala','Bisonte','Cebú','Vaca'],ans:3},
+  {emoji:'🐖',name:'Cerdo',hints:['Somos más inteligentes que los perros','Nos revolcamos en barro para regular la temperatura','Tenemos el olfato más desarrollado del reino animal','No tenemos glándulas sudoríparas'],opts:['Jabalí','Tapir','Hipopótamo','Cerdo'],ans:3},
+  {emoji:'🐎',name:'Caballo',hints:['Dormimos de pie para escapar rápido de depredadores','Podemos ver casi 360 grados a nuestro alrededor','Nos comunicamos con las orejas y la cola','Nuestras crías pueden correr horas después de nacer'],opts:['Burro','Zebra','Caballo','Mula'],ans:2},
+  {emoji:'🐫',name:'Camello',hints:['Guardamos grasa, no agua, en las jorobas','Podemos beber 100 litros de agua en 10 minutos','Cerramos los ojos y las fosas nasales durante las tormentas de arena','Vivimos en los desiertos de Asia y África'],opts:['Dromedario','Alpaca','Llama','Camello'],ans:3},
+  {emoji:'🦙',name:'Llama',hints:['Somos originarios de los Andes sudamericanos','Escupimos cuando nos sentimos amenazados','Se usa nuestra lana para hacer ropa abrigada','Somos primos de los camellos pero sin joroba'],opts:['Alpaca','Vicuña','Guanaco','Llama'],ans:3},
+  {emoji:'🐇',name:'Conejo',hints:['Nuestros dientes nunca dejan de crecer','Podemos girar las orejas 270 grados','Comemos nuestras propias heces para aprovechar los nutrientes','Nuestros bebés nacen sin pelo y con los ojos cerrados'],opts:['Liebre','Cobayo','Chinchilla','Conejo'],ans:3},
+  {emoji:'🐿️',name:'Ardilla',hints:['Escondemos bellotas para el invierno y olvidamos dónde','Podemos girar los tobillos 180 grados al bajar árboles','Nuestros dientes frontales son de color naranja','Usamos la cola para equilibrarnos al saltar'],opts:['Marmota','Tuza','Ardilla','Chipmunk'],ans:2},
+  {emoji:'🦔',name:'Erizo',hints:['Rodamos en bola cuando nos asustamos','Las espinas son pelos endurecidos','Somos inmunes al veneno de víboras','Hibernamos en invierno consumiendo la grasa acumulada'],opts:['Puercoespín','Armadillo','Erizo','Topo'],ans:2},
+  {emoji:'🐓',name:'Gallina',hints:['Pusimos el primer huevo antes de convertirnos en gallinas (evolutivamente)','Podemos recordar más de 100 caras diferentes','Usamos más de 30 sonidos distintos para comunicarnos','Somos el ave doméstica más numerosa del mundo'],opts:['Pato','Paloma','Gallina','Codorniz'],ans:2},
+  {emoji:'🐠',name:'Pez payaso',hints:['Vivimos entre los tentáculos venenosos de las anémonas','Somos inmunes al veneno de la anémona','Podemos cambiar de sexo si el dominante del grupo muere','Uno de nosotros es el protagonista de Buscando a Nemo'],opts:['Pez globo','Pez ángel','Pez payaso','Pez loro'],ans:2},
+  {emoji:'🦀',name:'Cangrejo',hints:['Caminamos de lado','Tenemos 10 patas, 2 son pinzas','Podemos regenerar una pinza si la perdemos','Respiramos bajo el agua y también fuera de ella por un rato'],opts:['Langosta','Camarón','Cangrejo','Ermitaño'],ans:2},
+  {emoji:'🦞',name:'Langosta',hints:['Somos biológicamente inmortales, aunque morimos por enfermedades','Nuestro color es azul oscuro vivo, no rojo','El rojo aparece solo al cocinarlas','Podemos pesar hasta 20 kilos'],opts:['Bogavante','Langosta','Camarón gigante','Cangrejo rey'],ans:1},
+  {emoji:'🐡',name:'Pez globo',hints:['Nos inflamos absorbiendo agua para parecer más grandes','Somos uno de los animales más venenosos del mundo','Nuestro veneno, la tetrodotoxina, no tiene antídoto','En Japón somos un plato delicado llamado fugu'],opts:['Pez cofre','Pez globo','Pez puercoespín','Pez piedra'],ans:1},
+  {emoji:'🦗',name:'Grillo',hints:['Cantamos frotando las alas, no con la boca','Podemos escuchar con las patas delanteras','Somos utilizados como alimento en muchos países','Nuestro canto es más rápido cuando hace calor'],opts:['Cigarra','Saltamontes','Grillo','Langosta'],ans:2},
+  {emoji:'🦋',name:'Polilla',hints:['Somos atraídas por la luz artificial','Volamos de noche, no de día','Las larvas de algunas de nosotras comen ropa','Somos la versión nocturna de la mariposa'],opts:['Mariposa','Libélula','Polilla','Mosca'],ans:2},
+  {emoji:'🐜',name:'Hormiga',hints:['Podemos cargar 50 veces nuestro peso','Vivimos en colonias de millones de individuos','Nos comunicamos con feromonas químicas','Nunca dormimos en toda nuestra vida'],opts:['Termita','Abeja','Avispa','Hormiga'],ans:3},
+  {emoji:'🕷️',name:'Araña',hints:['Tenemos 8 ojos aunque no todos ven bien','Producimos seda más resistente que el acero en proporción','No somos insectos, somos arácnidos','Inyectamos veneno para digerir a la presa externamente'],opts:['Escorpión','Ciempiés','Araña','Garrapata'],ans:2},
+  {emoji:'🦂',name:'Escorpión',hints:['Tenemos el aguijón en la cola, no en las pinzas','Brillamos bajo la luz ultravioleta','Podemos sobrevivir sin comer por un año','Somos más peligrosos que la mayoría de las serpientes'],opts:['Araña','Cangrejo de herradura','Escorpión','Garrapata'],ans:2},
+  {emoji:'🐛',name:'Oruga',hints:['Soy la etapa larval de una mariposa o polilla','Tengo hasta 16 patas','Me transformaré completamente dentro de una crisálida','Como hojas constantemente para almacenar energía'],opts:['Lombriz','Milpiés','Ciempiés','Oruga'],ans:3},
+  {emoji:'🦠',name:'Pulga',hints:['Podemos saltar 200 veces nuestra longitud','Somos responsables de transmitir la peste bubónica','No tenemos alas pero somos extraordinarias saltadoras','Nos alimentamos de sangre de animales'],opts:['Garrapata','Piojo','Pulga','Chinche'],ans:2},
+  {emoji:'🐲',name:'Dragón de Komodo',hints:['Somos el lagarto más grande del mundo','Nuestra saliva tiene bacterias letales','Podemos reproducirnos sin macho (partenogénesis)','Solo vivimos en algunas islas de Indonesia'],opts:['Varano del Nilo','Monitor gigante','Dragón de Komodo','Gecko gigante'],ans:2},
+  {emoji:'🦕',name:'Jirafa',hints:['Tenemos la presión arterial más alta de todos los mamíferos','Damos a luz de pie y las crías caen 2 metros al nacer','Nuestras manchas son distintas en cada subespecie','Dormimos muy poco para mantenernos alerta'],opts:['Jirafa reticulada','Okapi','Cebra','Jirafa'],ans:3},
+  {emoji:'🐟',name:'Salmón',hints:['Nacemos en agua dulce y migramos al océano','Volvemos al mismo río donde nacimos para reproducir','Después de desovar, la mayoría morimos','Nuestro color rosa viene de los camarones que comemos'],opts:['Trucha','Salmón','Atún','Lucio'],ans:1},
+  {emoji:'🐬',name:'Orca',hints:['Somos el mayor depredador del océano','Somos en realidad delfines, no ballenas','Cazamos en grupos familiares coordinados','Cada grupo habla un dialecto diferente que se transmite de generación en generación'],opts:['Ballena piloto','Delfín mular','Orca','Cachalote'],ans:2},
+  {emoji:'🦭',name:'Morsa',hints:['Nuestros colmillos pueden medir hasta 1 metro','Los usamos para subir a las rocas y el hielo','Tenemos bigotes sensoriales para buscar comida','Podemos bucear hasta 80 metros de profundidad'],opts:['Foca elefante','Morsa','León marino','Foca leopardo'],ans:1},
+  {emoji:'🐳',name:'Ballena jorobada',hints:['Cantamos canciones que pueden durar horas','Nuestras canciones evolucionan cada temporada','Saltamos completamente fuera del agua','Migramos las distancias más largas de todos los mamíferos'],opts:['Ballena azul','Ballena gris','Cachalote','Ballena jorobada'],ans:3},
+  {emoji:'🦈',name:'Tiburón blanco',hints:['No tenemos huesos, solo cartílago','Necesitamos seguir nadando para respirar','Tenemos filas de dientes de repuesto','Podemos detectar el campo eléctrico de otros animales'],opts:['Tiburón toro','Tiburón tigre','Tiburón blanco','Tiburón martillo'],ans:2},
+  {emoji:'🐙',name:'Mantarraya',hints:['Somos parientes del tiburón pero inofensivas','Podemos planear en el agua como si voláramos','Saltamos completamente fuera del agua','Tenemos el cerebro más grande de todos los peces'],opts:['Raya eléctrica','Mantarraya','Raya látigo','Pez guitarra'],ans:1},
+  {emoji:'🐠',name:'Pez ángel',hints:['Vivimos en arrecifes de coral tropicales','Tenemos colores brillantes para advertir que somos venenosos','Cambiamos de color y patrón a lo largo de nuestra vida','Limpiamos parásitos de otros peces en "estaciones de limpieza"'],opts:['Pez mariposa','Pez ángel','Pez loro','Pez cirujano'],ans:1},
+  {emoji:'🦑',name:'Sepia',hints:['Tenemos 10 tentáculos y sangre azul','Podemos cambiar el color y la textura de la piel en milisegundos','Usamos señales de color para comunicarnos y cazar','Somos usadas en la cocina para dar sabor oscuro a la tinta'],opts:['Calamar','Pulpo','Nautilo','Sepia'],ans:3},
+  {emoji:'🐡',name:'Pez luna',hints:['Somos el pez más pesado del mundo — hasta 2 toneladas','Nadamos de lado en la superficie del agua','Ponemos más huevos que cualquier otro pez vertebrado','Comemos medusas principalmente'],opts:['Manta raya','Pez espada','Pez vela','Pez luna'],ans:3},
+  {emoji:'🦬',name:'Bisonte',hints:['Somos el animal terrestre más pesado de América','Casi nos extinguimos en el siglo XIX','Vivíamos en millones en las praderas americanas','Los nativos americanos dependían de nosotros para sobrevivir'],opts:['Búfalo africano','Yak','Bisonte','Búfalo de agua'],ans:2},
+  {emoji:'🦫',name:'Castor',hints:['Construimos represas de ramas y barro','Nuestros dientes crecen toda la vida y son naranja','Podemos aguantar 15 minutos bajo el agua','Somos el segundo roedor más grande del mundo'],opts:['Nutria','Rata almizclera','Castor','Coypu'],ans:2},
+  {emoji:'🐃',name:'Búfalo',hints:['Somos el bovino salvaje más peligroso de África','Matamos más personas que cualquier otro animal grande allí','Vivimos en manadas de hasta 1000 individuos','Los leones nos cazan pero somos difíciles de derribar'],opts:['Bisonte','Búfalo de agua','Búfalo','Yak'],ans:2},
+  {emoji:'🦌',name:'Alce',hints:['Somos el ciervo más grande del mundo','Los machos tenemos astas de hasta 2 metros de ancho','Somos excelentes nadadores','Vivimos en bosques del norte de América y Europa'],opts:['Ciervo','Reno','Alce','Caribú'],ans:2},
+  {emoji:'🐏',name:'Carnero',hints:['Somos el macho de la oveja','Tenemos cuernos enrollados en espiral','Usamos los cuernos para pelear por las hembras','Nuestros cuernos pueden pesar hasta 14 kilos'],opts:['Íbice','Muflón','Carnero','Cabra montés'],ans:2},
+  {emoji:'🦙',name:'Alpaca',hints:['Somos primas de las llamas pero más pequeñas','Nuestra fibra es más fina y suave que la lana','Somos originarias de los Andes de Sudamérica','No escupimos como las llamas, somos más tranquilas'],opts:['Llama','Vicuña','Alpaca','Guanaco'],ans:2},
+  {emoji:'🐓',name:'Avestruz',hints:['Somos el ave más grande del mundo','No podemos volar pero corremos a 70 km/h','Ponemos los huevos más grandes del mundo','Enterramos la cabeza en la arena según el mito, pero no lo hacemos'],opts:['Emú','Ñandú','Kiwi','Avestruz'],ans:3},
+  {emoji:'🦤',name:'Emú',hints:['Somos el segundo ave más grande del mundo','No podemos volar y somos originarios de Australia','Corremos a 50 km/h','Australia libró una "guerra" contra nosotros en 1932'],opts:['Avestruz','Emú','Ñandú','Casuario'],ans:1},
+  {emoji:'🐦',name:'Cóndor',hints:['Somos el ave voladora más grande del mundo','Nuestras alas pueden medir 3 metros','Somos símbolo de varios países andinos','Podemos vivir hasta 75 años'],opts:['Buitre','Águila real','Cóndor','Quebrantahuesos'],ans:2},
 ];
 
 // Historial de animales recientes para evitar repetición
@@ -1899,17 +2172,12 @@ async function generateAnimalWithAI(){
 window.startAnimalGame=async function(){
   if(!chat&&!activeGroup)return;
   showToast('🐾 Generando animal...');
-  // Intentar con IA primero
-  let q=await generateAnimalWithAI();
-  // Si falla, usar banco evitando repeticiones
-  if(!q){
-    const available=ANIMAL_QS.filter(a=>!_animalHistory.includes(a.name));
-    const pool=available.length>0?available:ANIMAL_QS;
-    q=pool[Math.floor(Math.random()*pool.length)];
-    // Registrar en historial
-    _animalHistory.push(q.name);
-    if(_animalHistory.length>5)_animalHistory.shift();
-  }
+  // Anti-repetición: no repetir hasta usar todos
+  if(!window._animalUsedIdx||window._animalUsedIdx.length>=ANIMAL_QS.length) window._animalUsedIdx=[];
+  const available=ANIMAL_QS.filter((_,i)=>!window._animalUsedIdx.includes(i));
+  const idx=Math.floor(Math.random()*available.length);
+  const q=available[idx];
+  window._animalUsedIdx.push(ANIMAL_QS.indexOf(q));
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
@@ -2007,6 +2275,101 @@ const SCRAMBLE_QS=[
   {word:'TIGRE',hint:'🐯 Felino con rayas'},
   {word:'NIEVA',hint:'❄️ Agua congelada que cae del cielo'},
   {word:'FRUTAS',hint:'🍎 Alimentos dulces de las plantas'},
+  {word:'CIUDAD',hint:'🏙️ Gran conjunto de edificios y personas'},
+  {word:'COHETE',hint:'🚀 Vehículo que va al espacio'},
+  {word:'JARDÍN',hint:'🌺 Lugar con plantas y flores'},
+  {word:'MANZANA',hint:'🍎 Fruta roja o verde muy conocida'},
+  {word:'MÚSICA',hint:'🎵 Arte de combinar sonidos'},
+  {word:'OCÉANO',hint:'🌊 Gran masa de agua salada'},
+  {word:'PLANETA',hint:'🪐 Cuerpo celeste que orbita una estrella'},
+  {word:'QUESO',hint:'🧀 Alimento derivado de la leche'},
+  {word:'ROBOT',hint:'🤖 Máquina que puede moverse sola'},
+  {word:'SANDÍA',hint:'🍉 Fruta grande verde por fuera y roja por dentro'},
+  {word:'TREN',hint:'🚂 Vehículo que viaja sobre rieles'},
+  {word:'UVAS',hint:'🍇 Fruta pequeña que crece en racimos'},
+  {word:'ZAPATO',hint:'👟 Lo usamos para proteger los pies'},
+  {word:'COLEGIO',hint:'🏫 Lugar donde los niños van a aprender'},
+  {word:'DRAGÓN',hint:'🐉 Animal mítico que escupe fuego'},
+  {word:'COHETE',hint:'🚀 Vehículo que viaja al espacio'},
+  {word:'PALOMA',hint:'🕊️ Ave blanca símbolo de paz'},
+  {word:'NIEVE',hint:'❄️ Agua que cae del cielo en invierno'},
+  {word:'PIRATA',hint:'🏴‍☠️ Personaje que navega en busca de tesoros'},
+  {word:'CASTILLO',hint:'🏰 Edificio medieval con torres y murallas'},
+  {word:'TESORO',hint:'💰 Conjunto de objetos valiosos escondidos'},
+  {word:'ESPADA',hint:'⚔️ Arma blanca larga y afilada'},
+  {word:'BRUJA',hint:'🧙 Personaje de cuento con poderes mágicos'},
+  {word:'HADA',hint:'🧚 Criatura mágica con alas que concede deseos'},
+  {word:'UNICORNIO',hint:'🦄 Caballo mágico con un cuerno en la frente'},
+  {word:'MAGO',hint:'🎩 Persona que hace trucos de magia'},
+  {word:'CAPA',hint:'🦸 Prenda que usan los superhéroes'},
+  {word:'CORONA',hint:'👑 Accesorio que lleva un rey o reina'},
+  {word:'ESPEJO',hint:'🪞 Objeto que refleja tu imagen'},
+  {word:'MAPA',hint:'🗺️ Representación gráfica de un territorio'},
+  {word:'BRUJULA',hint:'🧭 Instrumento que señala el norte'},
+  {word:'LINTERNA',hint:'🔦 Luz portátil de mano'},
+  {word:'TIENDA',hint:'⛺ Refugio de camping hecho de tela'},
+  {word:'MOCHILA',hint:'🎒 Bolsa que se lleva en la espalda'},
+  {word:'CAMARA',hint:'📷 Dispositivo para tomar fotografías'},
+  {word:'PELICULA',hint:'🎬 Obra audiovisual que se proyecta en el cine'},
+  {word:'CANCION',hint:'🎵 Composición musical con letra'},
+  {word:'BAILE',hint:'💃 Movimiento rítmico del cuerpo con música'},
+  {word:'TEATRO',hint:'🎭 Lugar donde se hacen obras dramáticas'},
+  {word:'CIRCO',hint:'🎪 Espectáculo con acróbatas y animales'},
+  {word:'MAGIA',hint:'✨ Arte de hacer cosas imposibles aparentemente'},
+  {word:'TRUCO',hint:'🃏 Habilidad que parece imposible'},
+  {word:'FIESTA',hint:'🎉 Celebración con amigos y familia'},
+  {word:'REGALO',hint:'🎁 Objeto que se da a alguien especialmente'},
+  {word:'PASTEL',hint:'🎂 Dulce que se come en cumpleaños'},
+  {word:'GLOBO',hint:'🎈 Bolsa inflada que flota'},
+  {word:'COHETE',hint:'🎆 Fuego artificial que sube al cielo'},
+  {word:'CARNAVAL',hint:'🎭 Fiesta de disfraces y colores'},
+  {word:'DISFRAZ',hint:'👻 Ropa especial para aparentar ser otro'},
+  {word:'MASCARA',hint:'😷 Cubierta para la cara'},
+  {word:'PAYASO',hint:'🤡 Personaje de circo que hace reír'},
+  {word:'MALABAR',hint:'🤹 Arte de lanzar y atrapar objetos en el aire'},
+  {word:'TRAPECIO',hint:'🎪 Barra colgante usada por acróbatas'},
+  {word:'ELÁSTICO',hint:'🤸 Material que se estira y vuelve a su forma'},
+  {word:'PELOTA',hint:'⚽ Objeto esférico para jugar'},
+  {word:'CANASTA',hint:'🏀 Red elevada donde se mete la pelota en básquetbol'},
+  {word:'PATINES',hint:'⛸️ Zapatos con ruedas o cuchillas para deslizarse'},
+  {word:'BICICLETA',hint:'🚲 Vehículo de dos ruedas que se pedalea'},
+  {word:'NATACION',hint:'🏊 Deporte que se practica en el agua'},
+  {word:'ESCALADA',hint:'🧗 Deporte de subir paredes o montañas'},
+  {word:'SURFING',hint:'🏄 Deporte de deslizarse sobre olas'},
+  {word:'VOLEIBOL',hint:'🏐 Deporte de red donde se golpea el balón con las manos'},
+  {word:'TENIS',hint:'🎾 Deporte con raquetas y pelota amarilla'},
+  {word:'BADMINTON',hint:'🏸 Deporte similar al tenis pero con volante'},
+  {word:'AJEDREZ',hint:'♟️ Juego de estrategia con 32 piezas'},
+  {word:'DOMINÓ',hint:'🁣 Juego con fichas de puntos'},
+  {word:'CRUCIGRAMA',hint:'🔤 Juego de palabras en cuadrícula'},
+  {word:'SUDOKU',hint:'🔢 Juego de números del 1 al 9'},
+  {word:'PUZLE',hint:'🧩 Juego de encajar piezas para formar una imagen'},
+  {word:'ORIGAMI',hint:'🦢 Arte japonés de doblar papel'},
+  {word:'PINTURA',hint:'🎨 Arte de crear imágenes con colores'},
+  {word:'ESCULTURA',hint:'🗿 Arte de modelar figuras en 3D'},
+  {word:'CERAMICA',hint:'🏺 Arte de moldear arcilla y cocerla'},
+  {word:'BORDADO',hint:'🧵 Arte de decorar tela con hilo de colores'},
+  {word:'COSTURA',hint:'🪡 Arte de unir telas con aguja e hilo'},
+  {word:'TEJIDO',hint:'🧶 Arte de entrelazar hilos para hacer ropa'},
+  {word:'QUESO',hint:'🧀 Alimento derivado de la leche'},
+  {word:'MANTEQUILLA',hint:'🧈 Grasa que se obtiene de la leche'},
+  {word:'YOGUR',hint:'🥛 Leche fermentada cremosa'},
+  {word:'HELADO',hint:'🍦 Postre frío y cremoso de sabores'},
+  {word:'GALLETA',hint:'🍪 Dulce pequeño y crujiente'},
+  {word:'PANQUEQUE',hint:'🥞 Torta plana que se hace en sartén'},
+  {word:'EMPANADA',hint:'🥟 Masa rellena horneada o frita'},
+  {word:'ENSALADA',hint:'🥗 Plato de verduras crudas mezcladas'},
+  {word:'SOPA',hint:'🍲 Plato líquido caliente con ingredientes'},
+  {word:'ARROZ',hint:'🍚 Grano blanco muy consumido en el mundo'},
+  {word:'PASTA',hint:'🍝 Alimento de harina de trigo como espagueti'},
+  {word:'PAPA',hint:'🥔 Tubérculo que se puede freír o hervir'},
+  {word:'ZANAHORIA',hint:'🥕 Verdura naranja alargada'},
+  {word:'CEBOLLA',hint:'🧅 Verdura que nos hace llorar al cortarla'},
+  {word:'AJO',hint:'🧄 Condimento de fuerte olor'},
+  {word:'FRESA',hint:'🍓 Fruta roja pequeña con semillas afuera'},
+  {word:'NARANJA',hint:'🍊 Fruta cítrica redonda y anaranjada'},
+  {word:'LIMON',hint:'🍋 Fruta amarilla ácida'},
+  {word:'MELON',hint:'🍈 Fruta grande verde por fuera y naranja por dentro'},
 ];
 
 function scrambleWord(word){
@@ -2021,7 +2384,10 @@ function scrambleWord(word){
 
 window.startWordScramble=async function(){
   if(!chat&&!activeGroup)return;
-  const q=SCRAMBLE_QS[Math.floor(Math.random()*SCRAMBLE_QS.length)];
+  if(!window._scrambleUsedIdx||window._scrambleUsedIdx.length>=SCRAMBLE_QS.length) window._scrambleUsedIdx=[];
+  const _scAvail=SCRAMBLE_QS.filter((_,i)=>!window._scrambleUsedIdx.includes(i));
+  const q=_scAvail[Math.floor(Math.random()*_scAvail.length)];
+  window._scrambleUsedIdx.push(SCRAMBLE_QS.indexOf(q));
   const scrambled=scrambleWord(q.word);
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
