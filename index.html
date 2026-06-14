@@ -1851,118 +1851,84 @@ function renderCalc(m,docId){
 
 // ===== ADIVINA LA PALABRA =====
 const WORD_QS=[
-  {word:'MARIPOSA',hints:['Tengo alas de colores','Empecé siendo oruga','Vuelo de flor en flor','Me gusta el néctar']},
-  {word:'ELEFANTE',hints:['Soy el animal terrestre más grande','Tengo una trompa muy larga','Mis orejas son enormes','Vivo en África y Asia']},
-  {word:'ARCOIRIS',hints:['Aparezco después de la lluvia','Tengo 7 colores','Formo un arco en el cielo','El sol me hace aparecer']},
-  {word:'DINOSAURIO',hints:['Viví hace millones de años','Ya estoy extinto','Algunos éramos carnívoros','Hay películas famosas sobre mí']},
-  {word:'SUBMARINO',hints:['Viajo bajo el agua','Soy un vehículo','Tengo periscopio','Los marinos me usan']},
-  {word:'VOLCAN',hints:['Soy una montaña especial','Expulso lava','Puedo hacer erupción','Soy muy caliente']},
-  {word:'PIRAMIDE',hints:['Soy una figura geométrica','Tengo base cuadrada','Las hay famosas en Egipto','Los faraones las construyeron']},
-  {word:'ESTRELLA',hints:['Brillo en el cielo nocturno','El Sol es una de las mías','Tengo forma de puntas','Soy muy lejana de la Tierra']},
-  {word:'CHOCOLATE',hints:['Soy un dulce delicioso','Vengo del cacao','Puedo ser negro, blanco o con leche','A muchos niños les encanto']},
-  {word:'TELESCOPIO',hints:['Sirvo para ver cosas lejanas','Los astrónomos me usan','Puedo ser espacial o terrestre','Con mí puedes ver la Luna de cerca']},
-  {word:'BIBLIOTECA',hints:['Estoy llena de libros','Se puede leer en silencio','Puedo prestar libros','Es un lugar de aprendizaje']},
-  {word:'FOTOGRAFIA',hints:['Capturo momentos','Necesito luz para existir','Puedo ser digital o en papel','Una cámara me crea']},
-  {word:'AVENTURA',hints:['Soy una experiencia emocionante','Puedo ser peligrosa','Los valientes me buscan','Estoy en muchos cuentos']},
-  {word:'COMPUTADOR',hints:['Proceso información','Tengo teclado y pantalla','Me usan en oficinas y casas','Puedo conectarme a internet']},
-  {word:'MUNICIPIO',hints:['Soy una división de un país','Tengo alcalde','Me encargo de servicios locales','Soy más pequeño que una región']},
-  {word:'UNIVERSO',hints:['Contengo todo lo que existe','Incluyo galaxias y planetas','Sigo expandiéndose','Tengo millones de años']},
-  {word:'MISTERIO',hints:['Soy algo sin explicación','Los detectives me resuelven','Soy el tema de muchas novelas','Genero curiosidad e intriga']},
-  {word:'ACUARIO',hints:['Soy un lugar con peces','El agua es mi elemento','Los visitantes me admiran','Tengo peceras gigantes']},
-  {word:'LABERINTO',hints:['Soy difícil de salir','Tengo muchos caminos sin salida','Los griegos me inventaron','El Minotauro vivía en uno']},
-  {word:'DINOSAURIO',hints:['Dominé la Tierra por millones de años','Un meteorito causó mi extinción','T-Rex era uno de los más temidos','Mis huesos se encuentran como fósiles']},
-  {word:'TORNADO',hints:['Soy un remolino de viento muy destructivo','Tengo forma de embudo','Me formo en tormentas eléctricas fuertes','Puedo levantar casas enteras']},
-  {word:'TERREMOTO',hints:['Soy un movimiento brusco de la corteza terrestre','Me mido en la escala de Richter','Puedo causar tsunamis en el mar','Chile es uno de los países donde más ocurro']},
-  {word:'TSUNAMI',hints:['Soy una ola gigante del océano','Me produce un terremoto submarino','Puedo viajar a 900 km/h','Puedo destruir ciudades costeras enteras']},
-  {word:'MICROSCOPIO',hints:['Permito ver cosas muy pequeñas','Los científicos me usan mucho','Inventado en el siglo XVII','Con mí puedes ver bacterias y células']},
-  {word:'ELECTRICIDAD',hints:['Es lo que fluye por los cables','Me produce una central eléctrica','Los rayos son descargas mías naturales','Sin mí no habría luz ni internet']},
-  {word:'GRAVEDAD',hints:['Soy la fuerza que nos mantiene en la Tierra','Newton me descubrió con una manzana','Sin mí los astronautas flotan','Me tiene cualquier objeto con masa']},
-  {word:'ECOSISTEMA',hints:['Soy el conjunto de seres vivos y su entorno','Puede ser un bosque, un río o el mar','Todo está interconectado dentro de mí','Si falla una parte me afecto todo']},
-  {word:'FOTOSINTESIS',hints:['Soy el proceso que usan las plantas para comer','Necesito luz solar, agua y CO2','Produzco oxígeno como resultado','Sin mí no habría vida en la Tierra']},
-  {word:'CLOROFILA',hints:['Soy el pigmento verde de las plantas','Capturo la luz del sol','Estoy en las hojas principalmente','Gracias a mí existe la fotosíntesis']},
-  {word:'ENERGIA',hints:['Soy la capacidad de hacer trabajo','Puedo ser solar, eólica o nuclear','No se crea ni se destruye, solo se transforma','Todo ser vivo me necesita']},
-  {word:'OXIGENO',hints:['Soy el gas que respiramos','Las plantas me producen','Sin mí no hay fuego','Tengo número atómico 8']},
-  {word:'HIDROGENO',hints:['Soy el elemento más ligero del universo','Formo parte del agua','El Sol principalmente me está hecho','Me usa como combustible del futuro']},
-  {word:'TEMPERATURA',hints:['Mido el calor o el frío','Los termómetros me registran','Se expresa en grados Celsius o Fahrenheit','El cuerpo humano debe mantenerme estable']},
-  {word:'PRECIPITACION',hints:['Soy la lluvia, nieve o granizo','Caigo de las nubes','Formo parte del ciclo del agua','Sin mí los campos no producen alimentos']},
-  {word:'MAGNETISMO',hints:['Soy la fuerza que atrae el metal','Los imanes me poseen','La Tierra tiene un campo magnético','Las brújulas me usan para orientarse']},
-  {word:'EXPERIMENTO',hints:['Soy lo que hacen los científicos para probar ideas','Necesito hipótesis, método y conclusión','Puedo hacerse en laboratorios','Los niños me hacen en clase de ciencias']},
-  {word:'ATMOSFERA',hints:['Soy la capa de aire que rodea la Tierra','Protejo del sol y los meteoros','Tengo varias capas: troposfera, estratosfera...','Sin mí no habría vida en la Tierra']},
-  {word:'EVOLUCION',hints:['Soy el proceso de cambio de las especies','Darwin la describió en el siglo XIX','Ocurre durante millones de años','Explica por qué los humanos y los monos tenemos ancestros comunes']},
-  {word:'ARQUEOLOGIA',hints:['Estudio el pasado excavando restos antiguos','Los arqueólogos usan pinceles y palas pequeñas','Encuentro vasijas, huesos y herramientas viejas','Ayudo a entender civilizaciones antiguas']},
-  {word:'CIVILIZACION',hints:['Soy una sociedad organizada y avanzada','Egipto y Roma son ejemplos míos','Tengo escritura, leyes y ciudades','El ser humano me construyó durante miles de años']},
-  {word:'DEMOCRACIA',hints:['Soy el gobierno del pueblo','Las personas votan para elegir a sus líderes','Nació en la antigua Grecia','Chile y muchos países me practican']},
-  {word:'CONSTITUCION',hints:['Soy la ley más importante de un país','Me redactan los representantes del pueblo','Establezco los derechos de los ciudadanos','Todos los países democráticos tienen una como yo']},
-  {word:'INDEPENDENCIA',hints:['Soy la libertad de un país para gobernarse solo','Chile la celebra el 18 de septiembre','Las colonias la consiguieron luchando','Es el acto de separarse de un poder extranjero']},
-  {word:'REVOLUCION',hints:['Soy un cambio radical y rápido en la sociedad','La Francesa cambió el mundo en 1789','Puede ser política, industrial o tecnológica','A veces implica violencia y otras no']},
-  {word:'COLONIZACION',hints:['Es cuando un país ocupa y controla otro territorio','España me hizo en América','Trajo idiomas y culturas nuevas','También causó mucho sufrimiento a los pueblos originarios']},
-  {word:'MIGRACION',hints:['Es el movimiento de personas de un lugar a otro','Puede ser por trabajo, guerra o clima','Los pájaros también lo hacen por estaciones','Los migrantes llevan su cultura a nuevos países']},
-  {word:'SOLIDARIDAD',hints:['Soy apoyar a quienes más lo necesitan','Las catástrofes naturales la despiertan','Es un valor humano muy importante','Actuar con mí hace mejores las sociedades']},
-  {word:'IMAGINACION',hints:['Soy la capacidad de crear ideas nuevas','Los artistas y científicos me usan mucho','Los niños me tienen en abundancia','Sin mí no habría inventos ni arte']},
-  {word:'AMISTAD',hints:['Soy una relación de afecto y confianza','Los buenos amigos están en momentos difíciles','Es uno de los regalos más grandes de la vida','Se cultiva con tiempo y sinceridad']},
-  {word:'NATURALEZA',hints:['Soy todo lo que existe sin intervención humana','Incluyo montañas, ríos y animales','Es importante cuidarme y protegerme','La ciencia que me estudia es la biología']},
-  {word:'AVENTURA',hints:['Soy una experiencia emocionante y llena de riesgo','Los valientes me buscan','Estoy presente en muchos cuentos y películas','Viajar a lugares nuevos es una forma de vivirme']},
-  {word:'MISTERIO',hints:['Soy algo sin explicación conocida','Los detectives me resuelven','Soy el tema de muchas novelas y películas','Genera curiosidad e intriga en quien me encuentra']},
-  {word:'DESCUBRIMIENTO',hints:['Soy encontrar algo desconocido o nuevo','Colón hizo uno famoso en 1492','Los científicos me hacen en laboratorios','Puedo cambiar la historia del mundo']},
-  {word:'INVENCION',hints:['Soy crear algo que no existía antes','Edison inventó la bombilla','La rueda fue una de las más importantes','Los inventores necesitan curiosidad e imaginación']},
-  {word:'TECNOLOGIA',hints:['Soy el conjunto de herramientas y conocimientos técnicos','El celular y el internet son ejemplos míos','Cambia constantemente y muy rápido','Facilita la vida de las personas']},
-  {word:'COMUNICACION',hints:['Soy el intercambio de información entre personas','Puede ser oral, escrita o visual','Internet me revolucionó completamente','Sin mí las sociedades no podrían funcionar']},
-  {word:'BIBLIOTECA',hints:['Soy un lugar lleno de libros para consultar','Se puede leer y estudiar en silencio','Presto libros temporalmente','Es un espacio de conocimiento y cultura']},
-  {word:'DICCIONARIO',hints:['Contiene el significado de las palabras','Las palabras están en orden alfabético','Existe en papel y también digital','Es la herramienta básica del lenguaje']},
-  {word:'ESCRITURA',hints:['Soy la representación gráfica del lenguaje','La humanidad me inventó hace 5000 años','Sin mí no existiría la historia escrita','Los sumerios fueron de los primeros en usarme']},
-  {word:'MATEMATICAS',hints:['Soy la ciencia de los números','Incluyo suma, resta, multiplicación y división','Se usa en casi todas las profesiones','Pitágoras fue uno de mis grandes maestros']},
-  {word:'GEOMETRIA',hints:['Estudio las formas y figuras','Triángulos, círculos y cuadrados son mis objetos','Se usa en arquitectura y diseño','Euclides la sistematizó en la antigua Grecia']},
-  {word:'FILOSOFIA',hints:['Soy el amor por la sabiduría','Sócrates, Platón y Aristóteles me cultivaron','Hago preguntas sobre la existencia y la verdad','Es una de las disciplinas más antiguas del pensamiento']},
-  {word:'PSICOLOGIA',hints:['Estudio la mente y el comportamiento humano','Los psicólogos ayudan a personas con problemas emocionales','Freud fue uno de mis pioneros','Comprende el por qué actuamos como actuamos']},
-  {word:'ASTRONOMIA',hints:['Estudio los astros y el universo','Los astrónomos usan telescopios','Galileo fue uno de mis más famosos cultivadores','Nos dice de dónde venimos y hacia dónde va el universo']},
-  {word:'QUIMICA',hints:['Estudio la materia y sus transformaciones','Se hace en laboratorios con probetas y frascos','Marie Curie fue una gran figura mía','Explica por qué el agua moja y el fuego quema']},
-  {word:'BIOLOGIA',hints:['Estudio los seres vivos','Abarca desde bacterias hasta elefantes','Darwin revolucionó mi campo','Todo lo que tiene vida me interesa']},
-  {word:'GEOGRAFIA',hints:['Estudio la superficie de la Tierra','Incluye mapas, climas y países','Los geógrafos describen el mundo','Sin mí no habría atlas ni GPS']},
-  {word:'HISTORIA',hints:['Soy el estudio del pasado humano','Los historiadores me analizan con documentos y restos','Sin mí no entendemos el presente','Heródoto es considerado mi padre']},
-  {word:'LITERATURA',hints:['Soy el arte de escribir con palabras','Incluye novelas, poemas y obras de teatro','Cervantes y Neruda son grandes figuras mías','Me leen millones de personas en todo el mundo']},
-  {word:'MUSICA',hints:['Soy el arte de combinar sonidos armónicamente','Beethoven y Mozart son grandes maestros míos','Me escuchas en casi todos los momentos del día','Puede hacerte reír, llorar o bailar']},
-  {word:'TRUENO',hints:['Soy el sonido que acompaña al rayo','Me produce el calentamiento súbito del aire','Aparezco después del relámpago','En las tormentas soy señal de peligro']},
-  {word:'RAYO',hints:['Soy una descarga eléctrica de las nubes','Viajo a casi la velocidad de la luz','Puedo alcanzar 30,000 grados de temperatura','Los pararrayos me atraen para proteger edificios']},
-  {word:'ARCOIRIS',hints:['Aparezco después de la lluvia con sol','Tengo 7 colores: rojo naranja amarillo verde azul índigo violeta','Soy un fenómeno óptico de refracción','No puedes llegar a mi final porque se aleja contigo']},
-  {word:'MONTAÑA',hints:['Soy una elevación natural del terreno','El Everest es la más alta del mundo','Los escaladores me conquistan','Puedo tener nieve en la cima todo el año']},
-  {word:'DESIERTO',hints:['Soy un lugar con muy poca lluvia','El Sahara es el más grande del mundo','El Atacama en Chile es el más árido','Los camellos están adaptados para vivir en mí']},
-  {word:'OCEANO',hints:['Soy una gran masa de agua salada','Cubro el 71% de la superficie terrestre','El Pacífico es el más grande','En mí viven millones de especies']},
-  {word:'SELVA',hints:['Soy un bosque tropical muy denso y húmedo','La Amazonia es la más grande del mundo','Tengo la mayor biodiversidad del planeta','Produzco el 20% del oxígeno terrestre']},
-  {word:'SABANA',hints:['Soy una llanura tropical con pastizales','Los leones, jirafas y elefantes viven en mí','Tengo una estación seca y una lluviosa','La mayoría está en África subsahariana']},
-  {word:'TUNDRA',hints:['Soy una zona fría sin árboles','El suelo bajo mí está congelado todo el año','Los renos y osos polares viven en mí','Estoy en el Ártico y zonas de alta montaña']},
-  {word:'GLACIAR',hints:['Soy una masa de hielo que se mueve lentamente','Me formo por acumulación de nieve durante siglos','Estoy retrocediendo por el cambio climático','El Perito Moreno en Argentina es muy famoso']},
-  {word:'TORNADO',hints:['Soy un remolino de viento muy destructivo','Tengo forma de embudo','Me formo en tormentas eléctricas severas','Puedo levantar casas enteras por el aire']},
-  {word:'HURACÁN',hints:['Soy una tormenta tropical muy potente','En Asia me llaman tifón','Me mido en categorías del 1 al 5','Me alimento de agua caliente del océano']},
-  {word:'TERREMOTO',hints:['Soy un movimiento de la corteza terrestre','Me mide la escala de Richter','Chile es uno de los países que más me sufre','Puedo durar segundos o varios minutos']},
-  {word:'AURORA',hints:['Soy un fenómeno luminoso nocturno','Aparezco en los polos como colores en el cielo','Me produce el viento solar interactuando con la atmósfera','La Aurora Boreal es la más famosa']},
-  {word:'ECLIPSE',hints:['Soy cuando un astro tapa a otro','El solar ocurre cuando la Luna tapa al Sol','El lunar ocurre cuando la Tierra tapa la Luna','Los antiguos me tenían mucho miedo']},
-  {word:'COMETA',hints:['Soy un cuerpo celeste con una cola brillante','Me compongo de hielo y roca','Paso cerca del Sol periódicamente','El Halley es el más famoso y llega cada 75 años']},
-  {word:'ASTEROIDE',hints:['Soy una roca que orbita el Sol','Hay millones entre Marte y Júpiter','Un asteroide mató a los dinosaurios','Los científicos me estudian para proteger la Tierra']},
-  {word:'METEORO',hints:['Soy una roca que entra a la atmósfera terrestre','Me llaman estrella fugaz aunque no soy estrella','Si llego al suelo me llamo meteorito','Las lluvias de perseidas son lluvias de nosotros']},
-  {word:'SUPERNOVA',hints:['Soy la explosión de una estrella al morir','Soy de los eventos más energéticos del universo','Puede brillar más que toda una galaxia','Producimos los elementos pesados como el oro']},
-  {word:'AGUJERO',hints:['En el espacio, hay uno tan denso que la luz no escapa','Stephen Hawking fue el gran experto en nosotros','Nos produce una estrella muy masiva al morir','El primero fue fotografiado en 2019']},
-  {word:'GALAXIA',hints:['Soy un conjunto de millones de estrellas','La Vía Láctea es la nuestra','Hay más de 2 billones en el universo observable','Andromeda es la más cercana a nosotros']},
-  {word:'NEBULOSA',hints:['Soy una nube de gas y polvo interestelar','En mí nacen las estrellas','Las hay de colores increíbles','La de Orión es una de las más conocidas']},
-  {word:'SATELITE',hints:['Orbito alrededor de un planeta','La Luna es el satélite de la Tierra','Los artificiales transmiten señales de televisión','El GPS usa satélites para orientarte']},
-  {word:'SUBMARINO',hints:['Soy un vehículo que navega bajo el agua','Uso sonar para detectar obstáculos','Los militares me usan para misiones secretas','Tengo periscopio para ver la superficie']},
-  {word:'HELICOPTERO',hints:['Vuelo gracias a mis hélices rotatorias','Puedo despegar y aterrizar verticalmente','Me usan en rescates y emergencias médicas','No necesito pista de aterrizaje']},
-  {word:'LOCOMOTORA',hints:['Soy el motor que jala un tren','Las primeras funcionaban con vapor','Revolucioné el transporte en el siglo XIX','Hoy pueden ser eléctricas o diésel']},
-  {word:'FERROCARRIL',hints:['Soy un sistema de transporte sobre rieles','Conecté ciudades en el siglo XIX','Los trenes de alta velocidad van a 300 km/h','El Transiberiano es el más largo del mundo']},
-  {word:'ACUEDUCTO',hints:['Soy una obra para transportar agua','Los romanos construyeron los más famosos','Llevo agua desde manantiales hasta ciudades','Algunos tienen miles de años y aún funcionan']},
-  {word:'PIRAMIDE',hints:['Soy una construcción de base cuadrada','Las más famosas están en Egipto','Los faraones me construyeron como tumbas','La de Giza es una de las 7 maravillas del mundo']},
-  {word:'COLISEO',hints:['Soy un anfiteatro romano de Roma','Me construyeron hace casi 2000 años','Los gladiadores luchaban dentro de mí','Puedo albergar hasta 80,000 personas']},
-  {word:'ACROPOLIS',hints:['Soy la ciudadela sagrada de Atenas','El Partenón está sobre mí','Significa "ciudad alta" en griego','Soy símbolo de la civilización griega']},
-  {word:'MACHU PICHU',hints:['Soy una ciudadela inca en Perú','Estoy en lo alto de los Andes','Me descubrió Hiram Bingham en 1911','Soy una de las maravillas del mundo moderno']},
-  {word:'STONEHENGE',hints:['Soy un monumento de piedras gigantes en Inglaterra','Me construyeron hace más de 5000 años','No se sabe exactamente para qué servía','Estoy alineado con el solsticio de verano']},
-  {word:'PARTHENON',hints:['Soy un templo griego en la Acrópolis de Atenas','Me construyeron para honrar a Atenea','Tengo columnas de mármol blanco','Soy símbolo de la democracia y la filosofía']},
-  {word:'ESFINGE',hints:['Soy una escultura con cuerpo de león y cabeza humana','La más famosa está en Egipto junto a las pirámides','En la mitología griega hacía adivinanzas','Mido 73 metros de largo'],},
-  {word:'LABERINTO',hints:['Soy un conjunto de caminos confusos','El Minotauro vivía en el de la mitología griega','Teseo me escapó con el hilo de Ariadna','Existen en jardines como entretenimiento']},
-  {word:'CATEDRAL',hints:['Soy una iglesia muy grande e importante','La de Notre Dame en París es muy famosa','Me construyeron durante siglos en la Edad Media','Tengo vidrieras de colores y altas torres']},
-  {word:'ACUARIO',hints:['Soy un lugar donde puedes ver peces y animales marinos','Tengo tanques con agua de mar','Los tiburones y rayas nadan en mí','Es diferente al zoológico porque es acuático']},
-  {word:'ZOOLOGICO',hints:['Soy un lugar donde viven animales de todo el mundo','Hoy en día me enfocan en conservación','Los niños me visitan para ver animales','Cuido a especies en peligro de extinción']},
-  {word:'PLANETARIO',hints:['Soy un lugar donde se proyectan estrellas en el techo','Simulo el cielo nocturno con exactitud','Los astrónomos me usan para enseñar','Me visitan escuelas para aprender sobre el universo']},
+  // Animales fáciles
+  {word:'MARIPOSA',hints:['Tengo alas de colores muy bonitas','Empecé siendo una oruga','Vuelo de flor en flor','Me gustan los jardines']},
+  {word:'ELEFANTE',hints:['Soy el animal más grande de la tierra','Tengo una trompa muy larga','Mis orejas son enormes','Como pasto y frutas']},
+  {word:'DINOSAURIO',hints:['Viví hace millones de años','Ya no existo en la Tierra','Algunos éramos muy grandes','El T-Rex era uno famoso']},
+  {word:'TORTUGA',hints:['Llevo mi casa en la espalda','Soy muy lenta pero llego lejos','Puedo vivir cien años','Me escondo dentro de mi caparazón']},
+  {word:'DELFIN',hints:['Vivo en el mar','Soy muy inteligente','Salto fuera del agua','Hago sonidos divertidos']},
+  {word:'PINGÜINO',hints:['Soy un pájaro que no puede volar','Soy blanco y negro','Vivo en lugares muy fríos','Nado muy bien en el agua']},
+  {word:'COCODRILO',hints:['Vivo en ríos y lagos','Tengo muchos dientes','Soy un reptil','Me quedo quieto en el agua esperando']},
+  {word:'CANGURO',hints:['La mamá lleva al bebé en su bolsa','Salto muy alto','Vivo en Australia','Tengo cola muy larga']},
+  {word:'RINOCERONTE',hints:['Tengo un cuerno en la nariz','Soy muy grande y pesado','Mi piel es muy gruesa','Vivo en África']},
+  {word:'HIPOPOTAMO',hints:['Paso el día en el agua','Soy muy grande y gordo','Abro la boca enorme para bostezar','Vivo en ríos africanos']},
+  // Naturaleza
+  {word:'ARCOIRIS',hints:['Aparezco después de la lluvia','Tengo muchos colores bonitos','Formo una curva en el cielo','El sol me hace aparecer']},
+  {word:'VOLCAN',hints:['Soy una montaña especial','Lanzo lava muy caliente','Hago erupción','Puedo ser muy peligroso']},
+  {word:'ESTRELLA',hints:['Brillo en el cielo de noche','Soy muy lejana de la Tierra','El Sol es una de las mías','Me ves al mirar el cielo oscuro']},
+  {word:'NUBE',hints:['Floto en el cielo','Estoy hecha de agua','A veces traigo lluvia','Tengo diferentes formas']},
+  {word:'TORNADO',hints:['Soy un remolino de viento','Giro muy rápido','Puedo destruir casas','Me formo en tormentas grandes']},
+  {word:'GLACIAR',hints:['Soy una montaña de hielo','Me muevo muy lentamente','Estoy en lugares muy fríos','Me derriten el calor y el sol']},
+  {word:'TSUNAMI',hints:['Soy una ola gigante del mar','Me produce un terremoto','Puedo inundar ciudades costeras','Soy muy peligroso']},
+  {word:'LUNA',hints:['Me ves en el cielo de noche','Orbito alrededor de la Tierra','A veces soy redonda y a veces media luna','Los astronautas me visitaron']},
+  {word:'COMETA',hints:['Vuelo por el espacio','Tengo una cola brillante','Paso cerca del Sol','Puedo verse desde la Tierra'],},
+  {word:'AURORA',hints:['Soy luces de colores en el cielo nocturno','Aparezco cerca de los polos','Soy muy bonita y misteriosa','La Aurora Boreal es la más famosa']},
+  // Objetos cotidianos
+  {word:'BICICLETA',hints:['Tengo dos ruedas','La mueves con los pies pedaleando','No necesita gasolina','Es buena para el medio ambiente']},
+  {word:'PARAGUAS',hints:['Me uso cuando llueve','Me abro para protegerte','Soy colorido o negro','Sin mí te mojarías']},
+  {word:'TELESCOPIO',hints:['Sirvo para ver muy lejos','Los astrónomos me usan','Con mí puedes ver la Luna de cerca','Apunto hacia el cielo']},
+  {word:'MICROSCOPIO',hints:['Sirvo para ver cosas muy pequeñas','Los científicos me usan','Con mí puedes ver las bacterias','Todo se ve más grande con mí']},
+  {word:'SUBMARINO',hints:['Viajo bajo el agua','Soy un vehículo especial','Los marineros me usan','Tengo periscopio para ver afuera']},
+  {word:'COHETE',hints:['Vuelo al espacio','Salgo disparado muy rápido','Los astronautas viajan en mí','Uso mucho combustible']},
+  {word:'MOCHILA',hints:['Me llevas en la espalda','Los niños me usan para ir al colegio','Guardo libros y cosas dentro','Tengo correas en los hombros']},
+  {word:'LINTERNA',hints:['Doy luz cuando hay oscuridad','Funciono con pilas','Me puedes llevar a todas partes','Los campistas me usan mucho']},
+  {word:'BRUJULA',hints:['Señalo el norte siempre','Los exploradores me usan','Tengo una aguja que gira','No necesito batería ni señal']},
+  {word:'ACUARIO',hints:['Estoy lleno de peces','Tengo agua adentro','Los peces nadan dentro de mí','Es como un mar en miniatura']},
+  // Comida y objetos
+  {word:'CHOCOLATE',hints:['Soy un dulce muy rico','Vengo del cacao','Puedo ser negro, blanco o con leche','Me derrito con el calor']},
+  {word:'HELADO',hints:['Soy frío y dulce','Me derriten el calor y el sol','Tengo muchos sabores','Lo comes con cono o en palito']},
+  {word:'SANDALIA',hints:['Soy un zapato para el verano','Dejo los dedos al descubierto','Me pones en los pies','Son perfectas para la playa']},
+  {word:'SEMAFORO',hints:['Tengo tres luces de colores','Verde es para pasar y rojo para parar','Estoy en las calles y avenidas','Ayudo a ordenar el tráfico']},
+  {word:'CALENDARIO',hints:['Muestro los días del año','Tiene 12 meses','Se cuelga en la pared','Con él sabes qué día es hoy']},
+  {word:'TERMOMETRO',hints:['Mido la temperatura','El médico lo usa para saber si tienes fiebre','Sube cuando hace calor','Tiene un líquido que sube y baja']},
+  {word:'DICCIONARIO',hints:['Tengo el significado de las palabras','Las palabras están en orden alfabético','Es muy grueso y pesado','Lo usas cuando no sabes qué significa algo']},
+  {word:'MAPA',hints:['Muestro los países y ciudades','Los viajeros me usan para no perderse','Puedo ser de papel o digital','Tengo colores para identificar países']},
+  {word:'COLEGIO',hints:['Es donde van los niños a aprender','Tiene salones, patio y profesores','Se estudia matemáticas, lenguaje y más','Los amigos se encuentran aquí']},
+  {word:'BIBLIOTECA',hints:['Estoy llena de libros para leer','Se puede estar en silencio','Presto libros temporalmente','Es un lugar de conocimiento']},
+  // Personajes y juegos
+  {word:'PIRATA',hints:['Navego buscando tesoros','Tengo un parche en el ojo','Viajo en barco con bandera de calavera','Me gusta el mar y las aventuras']},
+  {word:'CASTILLO',hints:['Soy donde vive el rey o la reina','Tengo torres y murallas','Los caballeros me defienden','En los cuentos hay princesas en mí']},
+  {word:'DRAGON',hints:['Soy un animal de cuento','Escupo fuego por la boca','Tengo alas y escamas','Los caballeros me combaten en las historias']},
+  {word:'TESORO',hints:['Estoy lleno de monedas y joyas','Los piratas me buscan','Puedo estar enterrado en una isla','Los mapas del tesoro llevan a mí']},
+  {word:'UNICORNIO',hints:['Soy un caballo mágico','Tengo un cuerno en la frente','Soy de colores brillantes','Aparezco en cuentos de hadas']},
+  {word:'BRUJA',hints:['Vuelo en escoba en los cuentos','Tengo poderes mágicos','Uso un sombrero negro puntiagudo','A veces soy mala y a veces buena']},
+  {word:'MAGO',hints:['Hago trucos que parecen imposibles','Tengo varita mágica','Saco conejos del sombrero','Digo palabras mágicas como abracadabra']},
+  {word:'PRINCESA',hints:['Vivo en un castillo en los cuentos','Soy hija del rey y la reina','Uso corona y vestido elegante','Cenicienta y Blancanieves son mis amigas']},
+  {word:'SUPERHÉROE',hints:['Tengo poderes especiales','Uso capa y traje especial','Salvo personas del peligro','Superman y Spiderman son ejemplos']},
+  {word:'ROBOT',hints:['Soy una máquina que puede moverse','Me programan para hacer tareas','Aparezco en películas de ciencia ficción','No tengo sentimientos como los humanos']},
+  // Lugares divertidos
+  {word:'CIRCO',hints:['Es un espectáculo muy divertido','Hay payasos, acróbatas y animales','Tiene una carpa grande de colores','Los niños adoran visitarme']},
+  {word:'ZOOLOGICO',hints:['Es un lugar con muchos animales','Los niños van a ver los animales','Hay leones, jirafas y monos','Los animales viven en recintos especiales']},
+  {word:'PARQUE',hints:['Es un lugar verde con árboles','Los niños juegan en mí','Tiene columpios y toboganes','Las familias picnican en mí']},
+  {word:'PLAYA',hints:['Hay arena y mar en mí','Los niños construyen castillos de arena','Es muy divertida en verano','Puedes nadar y jugar con las olas']},
+  {word:'MONTAÑA',hints:['Soy muy alta y majestuosa','Puedo tener nieve en la cima','Los excursionistas me escalan','A veces hay volcanes como yo']},
+  {word:'SELVA',hints:['Soy un bosque muy espeso y verde','Llueve mucho en mí','Viven muchos animales como monos y loros','Es difícil caminar por mí por tantas plantas']},
+  {word:'DESIERTO',hints:['Soy un lugar muy seco y caliente','Hay poca o ninguna lluvia en mí','Los camellos se adaptan a vivir en mí','El Sahara es el más famoso del mundo']},
+  {word:'CUEVA',hints:['Soy un hueco en la montaña o bajo tierra','Los murciélagos viven en mí','Los exploradores me descubren','Puede haber estalactitas y estalagmitas en mí']},
+  {word:'ISLA',hints:['Soy tierra rodeada de agua por todos lados','Las palmeras crecen en muchas de mis hermanas tropicales','Los piratas buscan tesoros enterrados en mí','Hawaii y Pascua son islas famosas']},
+  {word:'CASCADA',hints:['Soy agua que cae desde altura','Puedo ser muy alta y hermosa','El Niágara es la cascada más famosa','Hago un sonido muy relajante al caer']},
+  // Cosas de la vida cotidiana
+  {word:'SEMILLA',hints:['De mí nace una planta','Soy pequeña pero poderosa','Necesito agua y tierra para crecer','Las plantas me producen']},
+  {word:'ARCOIRIS',hints:['Aparezco cuando brilla el sol después de llover','Tengo rojo naranja amarillo verde azul y violeta','Soy un arco de colores en el cielo','No puedes tocarme ni llegar hasta mí']},
+  {word:'PARAGUAS',hints:['Me abres cuando llueve','Me cierras cuando para de llover','Tengo mango para sostenerme','Sin mí me mojaría la lluvia']},
+  {word:'BURBUJA',hints:['Soy una esfera de jabón y aire','Vuelo y soy muy frágil','Los niños soplan para hacerme','Cuando me tocan, exploto']},
+  {word:'SOMBRA',hints:['Aparezco cuando hay luz y un objeto','Soy oscura como silueta','Me sigo a todas partes cuando hay sol','Al mediodía soy más pequeña']},
+  {word:'ECO',hints:['Soy el sonido que rebota en las paredes','En las cuevas y montañas me escuchas','Repito lo que dices','Los murciélagos me usan para orientarse']},
+  {word:'ESPEJO',hints:['Muestro tu reflejo','Los artistas me usan para verse','En los cuentos algunos tienen poderes','Sin mí no sabrías cómo te ves']},
+  {word:'IMÁN',hints:['Atraigo objetos de metal','Los polos opuestos se atraen entre sí','Los brújulas usan el magnetismo','Se usa en muchos aparatos eléctricos']},
+  {word:'LUPA',hints:['Hago las cosas más grandes al mirarlas','Los detectives me usan para buscar pistas','Soy una lente circular','Sherlock Holmes me usaba']},
+  {word:'PRISMÁTICO',hints:['Son como dos telescopios para los ojos','Los birdwatchers me usan para ver pájaros','Amplifican lo que está lejos','Se usan en conciertos y deportes']},
 ];
-
 window.startGuessWord=async function(){
   if(!chat&&!activeGroup)return;
   if(!window._wordUsedIdx||window._wordUsedIdx.length>=WORD_QS.length) window._wordUsedIdx=[];
@@ -2389,10 +2355,16 @@ window.startWordScramble=async function(){
   const q=_scAvail[Math.floor(Math.random()*_scAvail.length)];
   window._scrambleUsedIdx.push(SCRAMBLE_QS.indexOf(q));
   const scrambled=scrambleWord(q.word);
+  // Generar opciones UNA SOLA VEZ y guardarlas en Firestore
+  const fakes=new Set();
+  let _s=q.word;
+  while(fakes.size<3){_s=scrambleWord(_s);if(_s!==q.word)fakes.add(_s);}
+  const scrambleOpts=[q.word,...fakes].sort((a,b)=>a.localeCompare(b));
+  const scrambleAns=scrambleOpts.indexOf(q.word);
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
-    type:'scramble',word:q.word,scrambled,hint:q.hint,votes:{},state:'open'});
+    type:'scramble',word:q.word,scrambled,hint:q.hint,opts:scrambleOpts,answer:scrambleAns,votes:{},state:'open'});
 };
 
 window.answerScramble=async function(docId,optIdx){
@@ -2427,13 +2399,9 @@ function genScrambleOpts(word){
 function renderScramble(m,docId){
   const myVote=m.votes?.[me.id];
   const answered=myVote!==undefined;
-  // Generar opciones consistentes basadas en la palabra
-  const seed=m.word;
-  const fakes=[];
-  let s=seed;
-  for(let i=0;i<3;i++){s=scrambleWord(s);fakes.push(s);}
-  const opts=[m.word,...fakes.slice(0,3)].sort((a,b)=>a.localeCompare(b));
-  const ansIdx=opts.indexOf(m.word);
+  // Usar opciones guardadas en Firestore — no regenerar aleatoriamente
+  const opts=m.opts||[m.word,'???','???','???'];
+  const ansIdx=m.answer!==undefined?m.answer:opts.indexOf(m.word);
   let body=`<div style="color:white;font-weight:800;font-size:13px;text-align:center;margin-bottom:6px;">🔡 Ordena las letras</div>`;
   body+=`<div class="scramble-word">${answered?m.word:m.scrambled}</div>`;
   body+=`<div style="color:rgba(255,255,255,.8);font-size:12px;text-align:center;margin-bottom:8px;">${esc(m.hint)}</div>`;
@@ -3029,16 +2997,18 @@ window.handleAvatarImg=async function(e){
     const img=new Image();
     img.onload=async function(){
       const canvas=document.createElement('canvas');
-      const MAX=300;
+      const MAX=600;
       let w=img.width,h=img.height;
       if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
       else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
       canvas.width=w;canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      // Intentar diferentes calidades hasta que quepa
-      let photo,quality=0.7;
-      do{photo=canvas.toDataURL('image/jpeg',quality);quality-=0.1;}
-      while(photo.length>800000&&quality>0.2);
+      const ctx=canvas.getContext('2d');
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,0,0,w,h);
+      let photo,quality=0.92;
+      do{photo=canvas.toDataURL('image/jpeg',quality);quality-=0.05;}
+      while(photo.length>800000&&quality>0.6);
       if(photo.length>800000){showToast('⚠️ Imagen demasiado grande incluso comprimida');return;}
       await setDoc(doc(db,'users',me.id),{photo},{merge:true});
       me={...me,photo};
@@ -3650,10 +3620,32 @@ window.togglePhotoMenu=function(){
 
 window.handleImg=function(e){
   const f=e.target.files[0];if(!f)return;
-  if(f.size>700000){showToast('⚠️ Imagen muy grande (máx ~600KB)');return;}
-  const r=new FileReader();
-  r.onload=ev=>{pendImg=ev.target.result;document.getElementById('ipimg').src=pendImg;document.getElementById('ipwrap').classList.add('v');};
-  r.readAsDataURL(f);e.target.value='';
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.createElement('canvas');
+      const MAX=1200;
+      let w=img.width,h=img.height;
+      if(w>h){if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}}
+      else{if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}}
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      ctx.drawImage(img,0,0,w,h);
+      let photo,quality=0.85;
+      do{photo=canvas.toDataURL('image/jpeg',quality);quality-=0.05;}
+      while(photo.length>800000&&quality>0.4);
+      if(photo.length>800000){showToast('⚠️ Imagen demasiado grande incluso comprimida');return;}
+      pendImg=photo;
+      document.getElementById('ipimg').src=photo;
+      document.getElementById('ipwrap').classList.add('v');
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(f);
+  e.target.value='';
 };
 window.rmImg=function(){pendImg=null;document.getElementById('ipwrap').classList.remove('v');document.getElementById('ipimg').src='';};
 window.openModal=function(src){document.getElementById('imodalimg').src=src;document.getElementById('imodal').classList.add('open');};
