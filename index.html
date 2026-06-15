@@ -634,10 +634,9 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
         </div>
         <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarImg(event)">
         <input type="file" id="avatar-input-cam" accept="image/*" capture="environment" style="display:none" onchange="handleAvatarImg(event)">
-        <div><div class="hnm" id="hnm">-</div><div style="display:flex;align-items:center;gap:4px;"><div class="hst" style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="clickAvatar()">📷 Cambiar foto</div><span id="hst-status" style="font-size:11px;color:var(--muted);font-style:italic;"></span></div></div>
+        <div><div class="hnm" id="hnm" onclick="openPinModal(null)" title="Mi Perfil" style="cursor:pointer;" onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">-</div><div style="display:flex;align-items:center;gap:4px;"><div class="hst" style="font-size:11px;color:var(--muted);cursor:pointer;" onclick="clickAvatar()">📷 Cambiar foto</div><span id="hst-status" style="font-size:11px;color:var(--muted);font-style:italic;"></span></div></div>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
-        <button class="btnmypin" id="btnmypin" style="display:none;" onclick="openPinModal(null)">👤 Mi Perfil</button>
         <button class="dark-toggle" onclick="toggleDarkMode()" id="dark-btn" title="Modo oscuro">🌙</button>
         <button class="dark-toggle" id="notif-btn" onclick="requestNotifPermission()" title="Activar notificaciones" style="display:none;">🔔</button>
         <button class="btnout" onclick="doLogout()">Salir</button>
@@ -2734,7 +2733,6 @@ window.doLogout=function(){
   me=chat=null;pin='';selId=null;
   document.getElementById('pinsec').classList.remove('v');
   document.getElementById('step-user').style.display='flex';
-  document.getElementById('btnmypin').style.display='none';
   document.getElementById('login-username').value='';
   const pt=document.getElementById('pin-text-input');if(pt)pt.value='';
   showScr('login');
@@ -2752,7 +2750,6 @@ async function showContacts(){
   const hstEl=document.getElementById('hst-status');
   if(hstEl) hstEl.textContent=me.status||'';
   document.getElementById('tabsbar').style.display=isAdmin?'flex':'none';
-  document.getElementById('btnmypin').style.display='inline-block';
   const darkBtn=document.getElementById('dark-btn');
   if(darkBtn)darkBtn.textContent=document.body.classList.contains('dark')?'☀️':'🌙';
   showScr('app');
