@@ -3373,7 +3373,7 @@ function loadMsgs(){
         updateDoc(doc(db,'chats',cid,'messages',d.id),{seenBy:[...(m.seenBy||[]),me.id]}).catch(()=>{});
       }
     });
-    // Manejar modificaciones — actualizar solo el elemento modificado sin mover el scroll
+    // 1. Manejar modificaciones sin mover scroll
     const modifiedDocs=snap.docChanges().filter(c=>c.type==='modified');
     if(modifiedDocs.length>0){
       const savedScrollTop=cont.scrollTop;
@@ -3392,14 +3392,11 @@ function loadMsgs(){
           renderedIds.add(d.id);
         }
       });
-      // Restaurar posición del scroll exacta — sin movimiento visible
       cont.scrollTop=savedScrollTop;
-      lastCount=snap.docs.length;
-      firstLoad=false;
-      return;
     }
+    // 2. Agregar mensajes nuevos — SIEMPRE, incluso si hubo modificaciones
     const newDocs=snap.docs.filter(d=>!renderedIds.has(d.id));
-    if(newDocs.length===0){lastCount=snap.docs.length;return;}
+    if(newDocs.length===0){lastCount=snap.docs.length;firstLoad=false;return;}
     const empty=cont.querySelector('.empty');if(empty)empty.remove();
     newDocs.forEach(d=>{
       const idx=snap.docs.findIndex(x=>x.id===d.id);
