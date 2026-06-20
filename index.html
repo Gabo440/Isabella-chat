@@ -3368,52 +3368,57 @@ function loadMsgs(){
       const last=snap.docs[snap.docs.length-1].data();
       if(last.senderId!==me.id)playNotif();
     }
+    // Marcar como visto SIN esperar — en background, no bloquea el render
     snap.docs.forEach(d=>{
       const m=d.data();
       if(m.senderId!==me.id&&!m.seenBy?.includes(me.id)){
         updateDoc(doc(db,'chats',cid,'messages',d.id),{seenBy:[...(m.seenBy||[]),me.id]}).catch(()=>{});
       }
     });
-    // 1. Manejar modificaciones sin mover scroll
-    const modifiedDocs=snap.docChanges().filter(c=>c.type==='modified');
-    if(modifiedDocs.length>0){
-      const savedScrollTop=cont.scrollTop;
-      modifiedDocs.forEach(change=>{
-        const d=change.doc;
-        const idx=snap.docs.findIndex(x=>x.id===d.id);
-        const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
-        const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
-        const allDivs=cont.querySelectorAll('[data-msgid]');
-        let found=false;
-        allDivs.forEach(el=>{if(el.dataset.msgid===d.id){el.outerHTML=r.html;found=true;}});
-        if(!found){
-          const div=document.createElement('div');
-          div.innerHTML=r.html;
-          while(div.firstChild)cont.appendChild(div.firstChild);
-          renderedIds.add(d.id);
-        }
-      });
-      cont.scrollTop=savedScrollTop;
-    }
-    // 2. Agregar mensajes nuevos — SIEMPRE, incluso si hubo modificaciones
-    const newDocs=snap.docs.filter(d=>!renderedIds.has(d.id));
-    if(newDocs.length===0){lastCount=snap.docs.length;firstLoad=false;return;}
     const empty=cont.querySelector('.empty');if(empty)empty.remove();
-    newDocs.forEach(d=>{
+    const savedScrollTop=cont.scrollTop;
+    let hasNew=false;
+    // Recorrer TODOS los docChanges en orden — added, modified, removed por separado
+    snap.docChanges().forEach(change=>{
+      const d=change.doc;
       const idx=snap.docs.findIndex(x=>x.id===d.id);
       const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
       const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
-      const div=document.createElement('div');
-      div.innerHTML=r.html;
-      while(div.firstChild)cont.appendChild(div.firstChild);
-      renderedIds.add(d.id);
+      const existing=cont.querySelector(`[data-msgid="${d.id}"]`);
+      if(change.type==='added'){
+        if(existing){
+          // Ya estaba en el DOM (raro pero por seguridad), solo actualizar
+          existing.outerHTML=r.html;
+        } else {
+          const div=document.createElement('div');
+          div.innerHTML=r.html;
+          while(div.firstChild)cont.appendChild(div.firstChild);
+          hasNew=true;
+        }
+        renderedIds.add(d.id);
+      } else if(change.type==='modified'){
+        if(existing){
+          existing.outerHTML=r.html;
+        } else {
+          // No estaba renderizado aún — agregarlo igual
+          const div=document.createElement('div');
+          div.innerHTML=r.html;
+          while(div.firstChild)cont.appendChild(div.firstChild);
+          hasNew=true;
+        }
+        renderedIds.add(d.id);
+      } else if(change.type==='removed'){
+        if(existing)existing.remove();
+        renderedIds.delete(d.id);
+      }
     });
     lastCount=snap.docs.length;
-    if(wasAtBottom){
-      // Doble intento: inmediato y diferido, por si hay imágenes/juegos que cambian la altura al cargar
+    if(hasNew&&wasAtBottom){
       requestAnimationFrame(()=>{cont.scrollTop=cont.scrollHeight;});
       setTimeout(()=>{cont.scrollTop=cont.scrollHeight;},150);
       setTimeout(()=>{cont.scrollTop=cont.scrollHeight;},400);
+    } else if(!hasNew){
+      cont.scrollTop=savedScrollTop;
     }
     firstLoad=false;
   });
