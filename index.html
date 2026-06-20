@@ -1111,7 +1111,7 @@ window.startHangman = async function(){
   const cid = activeGroup?null:chatId(me.id,chat.id);
   const colRef = activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
-    senderId:me.id, senderName:me.name, ts:serverTimestamp(), seenBy:[],
+    senderId:me.id, senderName:me.name, ts:serverTimestamp(),tsLocal:Date.now(), seenBy:[],
     type:'hangman',
     word: word.trim().toUpperCase(),
     guessed: [],
@@ -1178,7 +1178,7 @@ window.startGuessNumber = async function(){
   const cid = activeGroup?null:chatId(me.id,chat.id);
   const colRef = activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
-    senderId:me.id, senderName:me.name, ts:serverTimestamp(), seenBy:[],
+    senderId:me.id, senderName:me.name, ts:serverTimestamp(),tsLocal:Date.now(), seenBy:[],
     type:'guessnumber',
     secret, max,
     guesses:[],
@@ -1696,7 +1696,7 @@ window.startTriviaGame=async function(){
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
-    senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+    senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'trivia',question:q.q,options:q.opts,answer:q.ans,
     votes:{},state:'open'
   });
@@ -1795,7 +1795,7 @@ window.startCalcGame=async function(){
   const q=genCalcQuestion();
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
-  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'calc',question:q.q,options:q.opts,answer:q.ans,votes:{},state:'open'});
 };
 
@@ -1937,7 +1937,7 @@ window.startGuessWord=async function(){
   window._wordUsedIdx.push(WORD_QS.indexOf(q));
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
-  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'guessword',word:q.word,hints:q.hints,hintsShown:1,guesses:{},state:'open'});
 };
 
@@ -2146,7 +2146,7 @@ window.startAnimalGame=async function(){
   window._animalUsedIdx.push(ANIMAL_QS.indexOf(q));
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
-  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'animal',emoji:q.emoji,name:q.name,hints:q.hints,options:q.opts,answer:q.ans,
     hintsShown:1,votes:{},state:'open'});
 };
@@ -2363,7 +2363,7 @@ window.startWordScramble=async function(){
   const scrambleAns=scrambleOpts.indexOf(q.word);
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
-  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+  await addDoc(colRef,{senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'scramble',word:q.word,scrambled,hint:q.hint,opts:scrambleOpts,answer:scrambleAns,votes:{},state:'open'});
 };
 
@@ -2442,7 +2442,7 @@ window.startTruthOrDare=async function(){
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
-    senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+    senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'truthordare',state:'choosing',choice:null,content:null
   });
 };
@@ -2486,7 +2486,7 @@ window.startPoll=async function(){
   const cid=activeGroup?null:chatId(me.id,chat.id);
   const colRef=activeGroup?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',cid,'messages');
   await addDoc(colRef,{
-    senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],
+    senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],
     type:'poll',question:question.trim(),options,votes:{}
   });
 };
@@ -2587,7 +2587,7 @@ async function initPushNotifications(){
     console.log('[FCM] token:', token ? token.slice(0,20)+'...' : 'NULL');
     if(token){
       await setDoc(doc(db,'fcmTokens',me.id),{
-        token, userId:me.id, userName:me.name, ts:serverTimestamp()
+        token, userId:me.id, userName:me.name, ts:serverTimestamp(),tsLocal:Date.now()
       },{merge:true});
       console.log('[FCM] token guardado en Firestore');
     }
@@ -3240,11 +3240,23 @@ window.openGroup=function(gid){
   setTimeout(()=>renderContacts(),1500);
 };
 
+function _sortKey(docData){
+  // ts (servidor) puede ser null mientras el write está pendiente de confirmación.
+  // tsLocal (cliente) SIEMPRE tiene valor inmediato. Usamos tsLocal como criterio
+  // primario; si no existe (mensajes históricos sin ese campo), usamos ts.
+  if(docData.tsLocal)return docData.tsLocal;
+  if(docData.ts&&docData.ts.toMillis)return docData.ts.toMillis();
+  return 0;
+}
+
 function loadGroupMsgs(){
   if(unsub)unsub();
   const q=query(collection(db,'groups',activeGroup.id,'messages'),orderBy('ts','asc'));
   const cont=document.getElementById('msgcont');
-  unsub=onSnapshot(q,snap=>{
+  unsub=onSnapshot(q,rawSnap=>{
+    // Reordenar en cliente con _sortKey — ver explicación en loadMsgs()
+    const sortedDocs=[...rawSnap.docs].sort((a,b)=>_sortKey(a.data())-_sortKey(b.data()));
+    const snap={docs:sortedDocs,empty:rawSnap.empty};
     if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;return;}
     if(snap.docs.length>lastCount&&lastCount>0){
       const last=snap.docs[snap.docs.length-1].data();
@@ -3357,11 +3369,19 @@ function scrollToLastMsg(cont){
 function loadMsgs(){
   if(unsub)unsub();
   const cid=chatId(me.id,chat.id);
+  // NOTA: orderBy('ts','asc') se mantiene solo para que Firestore devuelva un orden base;
+  // el orden REAL y definitivo que se usa para renderizar se recalcula en el cliente con _sortKey,
+  // porque 'ts' (serverTimestamp) puede ser null mientras el documento está pendiente de
+  // confirmación del servidor, lo cual lo posiciona incorrectamente (al inicio) y antes
+  // causaba que el último mensaje pareciera "no aparecer" tras enviarlo.
   const q=query(collection(db,'chats',cid,'messages'),orderBy('ts','asc'));
   const cont=document.getElementById('msgcont');
   const renderedIds=new Set();
   let firstLoad=true;
-  unsub=onSnapshot(q,snap=>{
+  unsub=onSnapshot(q,rawSnap=>{
+    // Reordenar SIEMPRE en el cliente usando _sortKey antes de cualquier otro procesamiento
+    const sortedDocs=[...rawSnap.docs].sort((a,b)=>_sortKey(a.data())-_sortKey(b.data()));
+    const snap={docs:sortedDocs,empty:rawSnap.empty,docChanges:()=>rawSnap.docChanges()};
     if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();firstLoad=false;return;}
     const wasAtBottom=firstLoad||isAtBottom(cont);
     if(snap.docs.length>lastCount&&lastCount>0){
@@ -3379,20 +3399,40 @@ function loadMsgs(){
     const savedScrollTop=cont.scrollTop;
     let hasNew=false;
     // Recorrer TODOS los docChanges en orden — added, modified, removed por separado
-    snap.docChanges().forEach(change=>{
+    // Usamos snap.docs (ya reordenado con _sortKey) para calcular idx y prevDate correctamente
+    rawSnap.docChanges().forEach(change=>{
       const d=change.doc;
       const idx=snap.docs.findIndex(x=>x.id===d.id);
-      const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||new Date()):'';
+      const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||snap.docs[idx-1].data().tsLocal||new Date()):'';
       const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
       const existing=cont.querySelector(`[data-msgid="${d.id}"]`);
+      // Encontrar el nodo de referencia correcto buscando por data-msgid del SIGUIENTE
+      // mensaje en snap.docs (no por índice numérico de cont.children, que se desalinea
+      // porque cada mensaje puede generar 1 o 2 nodos DOM — el separador de fecha + el mensaje).
+      function findRefNode(){
+        for(let i=idx+1;i<snap.docs.length;i++){
+          const nextEl=cont.querySelector(`[data-msgid="${snap.docs[i].id}"]`);
+          if(nextEl){
+            // El nodo de referencia debe ser el PRIMER nodo de ese mensaje (puede tener
+            // un .datesep inmediatamente antes que pertenece a ese mismo mensaje).
+            const prevSibling=nextEl.previousElementSibling;
+            if(prevSibling&&prevSibling.classList.contains('datesep'))return prevSibling;
+            return nextEl;
+          }
+        }
+        return null; // No hay mensaje posterior renderizado aún → insertar al final
+      }
       if(change.type==='added'){
         if(existing){
-          // Ya estaba en el DOM (raro pero por seguridad), solo actualizar
           existing.outerHTML=r.html;
         } else {
           const div=document.createElement('div');
           div.innerHTML=r.html;
-          while(div.firstChild)cont.appendChild(div.firstChild);
+          const refNode=findRefNode();
+          while(div.firstChild){
+            if(refNode)cont.insertBefore(div.firstChild,refNode);
+            else cont.appendChild(div.firstChild);
+          }
           hasNew=true;
         }
         renderedIds.add(d.id);
@@ -3400,10 +3440,13 @@ function loadMsgs(){
         if(existing){
           existing.outerHTML=r.html;
         } else {
-          // No estaba renderizado aún — agregarlo igual
           const div=document.createElement('div');
           div.innerHTML=r.html;
-          while(div.firstChild)cont.appendChild(div.firstChild);
+          const refNode=findRefNode();
+          while(div.firstChild){
+            if(refNode)cont.insertBefore(div.firstChild,refNode);
+            else cont.appendChild(div.firstChild);
+          }
           hasNew=true;
         }
         renderedIds.add(d.id);
@@ -3442,7 +3485,7 @@ window.sendMsg=function(){
   const colRef=isGrp
     ? collection(db,'groups',activeGroup.id,'messages')
     : collection(db,'chats',chatId(me.id,chat.id),'messages');
-  const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[]};
+  const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[]};
   if(!isGrp&&replyMsg)base.replyTo=replyMsg;
   if(imgToSend){
     addDoc(colRef,{...base,type:'image',imageData:imgToSend,text:txtToSend}).then(()=>rmImg()).catch(()=>{});
@@ -3459,7 +3502,7 @@ async function sendSticker(s){
   if(!chat&&!activeGroup)return;closePK();
   const isGrp=!!activeGroup;
   const colRef=isGrp?collection(db,'groups',activeGroup.id,'messages'):collection(db,'chats',chatId(me.id,chat.id),'messages');
-  const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),seenBy:[],type:'sticker',sticker:s};
+  const base={senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),seenBy:[],type:'sticker',sticker:s};
   if(!isGrp&&replyMsg)base.replyTo=replyMsg;
   await addDoc(colRef,base);
   cancelReply();
@@ -3469,13 +3512,13 @@ async function sendSticker(s){
 async function setTyping(isTyping){
   if(!me||!chat)return;
   const cid=chatId(me.id,chat.id);
-  try{await setDoc(doc(db,'chats',cid,'typing',me.id),{uid:me.id,name:me.name,typing:isTyping,ts:serverTimestamp()},{merge:true});}catch(e){}
+  try{await setDoc(doc(db,'chats',cid,'typing',me.id),{uid:me.id,name:me.name,typing:isTyping,ts:serverTimestamp(),tsLocal:Date.now()},{merge:true});}catch(e){}
 }
 
 // PRESENCIA
 function setPresence(online){
   if(!me)return;
-  setDoc(doc(db,'presence',me.id),{online,uid:me.id,ts:serverTimestamp()},{merge:true}).catch(()=>{});
+  setDoc(doc(db,'presence',me.id),{online,uid:me.id,ts:serverTimestamp(),tsLocal:Date.now()},{merge:true}).catch(()=>{});
 }
 
 function listenTyping(){
@@ -3716,7 +3759,7 @@ window.toggleVoice=async function(){
       reader.onload=async ev=>{
         const cid=chatId(me.id,chat.id);
         await addDoc(collection(db,'chats',cid,'messages'),{
-          senderId:me.id,senderName:me.name,ts:serverTimestamp(),
+          senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),
           type:'voice',audioData:ev.target.result,duration:dur,seenBy:[]
         });
       };
@@ -3746,7 +3789,7 @@ window.sendGameInvite=async function(){
   const cid=chatId(me.id,chat.id);
   const gameId='game_'+Date.now();
   await addDoc(collection(db,'chats',cid,'messages'),{
-    senderId:me.id,senderName:me.name,ts:serverTimestamp(),
+    senderId:me.id,senderName:me.name,ts:serverTimestamp(),tsLocal:Date.now(),
     type:'game',gameId,gameState:'waiting',
     player1:me.id,player1Name:me.name,
     player2:chat.id,player2Name:chat.name,
@@ -3876,7 +3919,7 @@ async function checkReminders(){
     const cid=chatId(r.fromId,r.toId);
     await addDoc(collection(db,'chats',cid,'messages'),{
       senderId:r.fromId,senderName:r.fromName,
-      ts:serverTimestamp(),type:'text',text:r.msg,seenBy:[],isReminder:true
+      ts:serverTimestamp(),tsLocal:Date.now(),type:'text',text:r.msg,seenBy:[],isReminder:true
     });
     // Eliminar para no repetir
     reminders=reminders.filter(x=>!(x.date===today&&x.toId===me.id&&x.msg===r.msg));
