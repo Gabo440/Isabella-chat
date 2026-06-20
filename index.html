@@ -547,7 +547,8 @@ body.dark .ahdr,body.dark .chdr,body.dark .cia{background:#16213e!important;bord
   .screen.active{display:flex;z-index:10;}
   #screen-app{max-width:100%;height:100dvh;border-radius:0;flex-direction:column;}
   .app-left{width:100%;height:100dvh;border-right:none;flex-shrink:0;}
-  .app-right{display:none;position:fixed;top:0;left:0;right:0;height:100dvh;z-index:20;background:var(--surface);flex-direction:column;overflow:hidden;}
+  .app-left.mobile-hidden{display:none!important;}
+  .app-right{display:none;position:fixed;top:0;left:0;right:0;bottom:0;height:100dvh;z-index:9999;background:var(--surface);flex-direction:column;overflow:hidden;}
   .app-right.mobile-open{display:flex;}
   .btnbk{display:flex!important;}
   .lcard{border-radius:0;height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:32px 24px;overflow-y:auto;}
@@ -2753,7 +2754,7 @@ async function showContacts(){
   const darkBtn=document.getElementById('dark-btn');
   if(darkBtn)darkBtn.textContent=document.body.classList.contains('dark')?'☀️':'🌙';
   showScr('app');
-  document.getElementById('app-right').classList.remove('mobile-open');
+  document.getElementById('app-right').classList.remove('mobile-open');document.getElementById('app-left')?.classList.remove('mobile-hidden');
   await loadGroups();
   await renderContacts();
   subscribeUsers();
@@ -3150,7 +3151,7 @@ window.openChat=function(uid){
   document.getElementById('chat-empty-state').style.display='none';
   document.getElementById('chat-panel').style.display='flex';
   // En móvil abrir panel derecho
-  document.getElementById('app-right').classList.add('mobile-open');
+  document.getElementById('app-right').classList.add('mobile-open');document.getElementById('app-left')?.classList.add('mobile-hidden');
   closePK();cancelReply();
   // Limpiar mensajes del chat anterior ANTES de cargar nuevos
   const _mc=document.getElementById('msgcont');
@@ -3218,7 +3219,7 @@ window.backToContacts=function(){
   if(unsubTyping){unsubTyping();unsubTyping=null;}
   if(chat&&me)setTyping(false);
   chat=null;closePK();cancelReply();
-  document.getElementById('app-right').classList.remove('mobile-open');
+  document.getElementById('app-right').classList.remove('mobile-open');document.getElementById('app-left')?.classList.remove('mobile-hidden');
   document.getElementById('chat-empty-state').style.display='flex';
   document.getElementById('chat-panel').style.display='none';
   renderContacts();
@@ -3234,7 +3235,7 @@ window.openGroup=function(gid){
   document.getElementById('chst').textContent=`${g.memberNames?.join(', ')||''}`;
   document.getElementById('chat-empty-state').style.display='none';
   document.getElementById('chat-panel').style.display='flex';
-  document.getElementById('app-right').classList.add('mobile-open');
+  document.getElementById('app-right').classList.add('mobile-open');document.getElementById('app-left')?.classList.add('mobile-hidden');
   closePK();cancelReply();loadGroupMsgs();
   setTimeout(()=>renderContacts(),1500);
 };
@@ -3258,7 +3259,7 @@ function loadGroupMsgs(){
       const ds=fmtDate(ts);
       if(ds!==ld){html+=`<div class="datesep">${ds}</div>`;ld=ds;}
       const rc=isMine?`mrow mine${isI?' ci':''}`:'mrow theirs';
-      const snd=!isMine?`<div class="msnd">${m.senderName}</div>`:'';
+      const snd='';  // Chat directo 1-a-1: nunca mostrar nombre del remitente
       let bc='bub',cont2='';
       if(m.type==='image'){bc='bub';cont2=`<img src="${m.imageData}" onclick="openModal('${m.imageData.replace(/'/g,"\\'")}')">`;if(m.text)cont2+=`<div style="margin-top:5px;font-size:13px;">${esc(m.text)}</div>`;}
       else if(m.type==='sticker'){bc='bub stk';cont2=`<span>${m.sticker}</span>`;}
@@ -3282,7 +3283,7 @@ function renderMsgEl(d, idx, allDocs, cid, prevDate){
   let html='';
   if(ds!==prevDate){html+=`<div class="datesep">${ds}</div>`;}
   const rc=isMine?`mrow mine${isI?' ci':''}`:'mrow theirs';
-  const snd=!isMine?`<div class="msnd">${m.senderName}</div>`:'';
+  const snd='';  // Chat directo 1-a-1: nunca mostrar nombre del remitente
   const seen=isMine&&m.seenBy&&m.seenBy.includes(chat.id);
   const seenHtml=isMine?`<span class="seen">${seen?'✓✓':'✓'}</span>`:'';
   let quoteHtml='';
@@ -3409,9 +3410,7 @@ function loadMsgs(){
     });
     lastCount=snap.docs.length;
     if(wasAtBottom){
-      const lastEl=cont.querySelector('[data-msgid]:last-of-type');
-      if(lastEl)lastEl.scrollIntoView({block:'start',behavior:'instant'});
-      else cont.scrollTop=cont.scrollHeight;
+      requestAnimationFrame(()=>{cont.scrollTop=cont.scrollHeight;});
     }
     firstLoad=false;
   });
