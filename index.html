@@ -3369,93 +3369,112 @@ function scrollToLastMsg(cont){
 function loadMsgs(){
   if(unsub)unsub();
   const cid=chatId(me.id,chat.id);
-  // NOTA: orderBy('ts','asc') se mantiene solo para que Firestore devuelva un orden base;
-  // el orden REAL y definitivo que se usa para renderizar se recalcula en el cliente con _sortKey,
-  // porque 'ts' (serverTimestamp) puede ser null mientras el documento está pendiente de
-  // confirmación del servidor, lo cual lo posiciona incorrectamente (al inicio) y antes
-  // causaba que el último mensaje pareciera "no aparecer" tras enviarlo.
+  // NOTA: orderBy('ts','asc') se mantiene como orden base de Firestore; el orden REAL
+  // y definitivo usado para renderizar se recalcula en el cliente con _sortKey, porque
+  // 'ts' (serverTimestamp) puede ser null mientras el documento está pendiente de
+  // confirmación del servidor — lo cual antes causaba que el mensaje recién enviado
+  // quedara mal posicionado y pareciera "no aparecer".
   const q=query(collection(db,'chats',cid,'messages'),orderBy('ts','asc'));
   const cont=document.getElementById('msgcont');
   const renderedIds=new Set();
   let firstLoad=true;
   unsub=onSnapshot(q,rawSnap=>{
-    // Reordenar SIEMPRE en el cliente usando _sortKey antes de cualquier otro procesamiento
     const sortedDocs=[...rawSnap.docs].sort((a,b)=>_sortKey(a.data())-_sortKey(b.data()));
-    const snap={docs:sortedDocs,empty:rawSnap.empty,docChanges:()=>rawSnap.docChanges()};
-    if(snap.empty){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();firstLoad=false;return;}
-    const wasAtBottom=firstLoad||isAtBottom(cont);
-    if(snap.docs.length>lastCount&&lastCount>0){
-      const last=snap.docs[snap.docs.length-1].data();
+    if(sortedDocs.length===0){cont.innerHTML=`<div class="empty"><div class="em">💌</div><p>¡Sé el primero en escribir!</p></div>`;lastCount=0;renderedIds.clear();firstLoad=false;return;}
+    if(sortedDocs.length>lastCount&&lastCount>0){
+      const last=sortedDocs[sortedDocs.length-1].data();
       if(last.senderId!==me.id)playNotif();
     }
-    // Marcar como visto SIN esperar — en background, no bloquea el render
-    snap.docs.forEach(d=>{
+    // Marcar como visto en background, no bloquea el render
+    sortedDocs.forEach(d=>{
       const m=d.data();
       if(m.senderId!==me.id&&!m.seenBy?.includes(me.id)){
         updateDoc(doc(db,'chats',cid,'messages',d.id),{seenBy:[...(m.seenBy||[]),me.id]}).catch(()=>{});
       }
     });
+
+    if(firstLoad){
+      // CARGA INICIAL: render completo y directo, sin inserción incremental.
+      // Esto es simple, predecible y garantiza que el scroll al fondo funcione siempre,
+      // sin depender de timing de inserciones parciales en el DOM.
+      let html='',ld='';
+      sortedDocs.forEach((d,idx)=>{
+        const prevDate=idx>0?ld:'';
+        const r=renderMsgEl(d,idx,sortedDocs,cid,prevDate);
+        html+=r.html;
+        ld=r.date;
+      });
+      cont.innerHTML=html;
+      renderedIds.clear();
+      sortedDocs.forEach(d=>renderedIds.add(d.id));
+      lastCount=sortedDocs.length;
+      firstLoad=false;
+      // Scroll robusto: usar ResizeObserver para detectar cuando el contenido
+      // termina de renderizarse realmente (incluyendo juegos e imágenes),
+      // con fallbacks temporales para navegadores sin ResizeObserver.
+      const scrollToEnd=()=>{cont.scrollTop=cont.scrollHeight;};
+      scrollToEnd();
+      requestAnimationFrame(scrollToEnd);
+      setTimeout(scrollToEnd,80);
+      setTimeout(scrollToEnd,250);
+      setTimeout(scrollToEnd,600);
+      // ResizeObserver: scroll cada vez que el contenedor crece, durante 1.5s
+      if(window.ResizeObserver){
+        let _roTimer=null;
+        const _ro=new ResizeObserver(()=>{
+          scrollToEnd();
+          clearTimeout(_roTimer);
+          _roTimer=setTimeout(()=>_ro.disconnect(),1500);
+        });
+        _ro.observe(cont);
+      }
+      return;
+    }
+
+    // SNAPSHOTS POSTERIORES: actualización incremental quirúrgica para no perder
+    // la posición de scroll del usuario si está leyendo mensajes antiguos.
+    const wasAtBottom=isAtBottom(cont);
     const empty=cont.querySelector('.empty');if(empty)empty.remove();
     const savedScrollTop=cont.scrollTop;
     let hasNew=false;
-    // Recorrer TODOS los docChanges en orden — added, modified, removed por separado
-    // Usamos snap.docs (ya reordenado con _sortKey) para calcular idx y prevDate correctamente
     rawSnap.docChanges().forEach(change=>{
       const d=change.doc;
-      const idx=snap.docs.findIndex(x=>x.id===d.id);
-      const prevDate=idx>0?fmtDate(snap.docs[idx-1].data().ts?.toDate()||snap.docs[idx-1].data().tsLocal||new Date()):'';
-      const r=renderMsgEl(d,idx,snap.docs,cid,prevDate);
+      const idx=sortedDocs.findIndex(x=>x.id===d.id);
+      const prevDate=idx>0?fmtDate(sortedDocs[idx-1].data().ts?.toDate()||new Date(sortedDocs[idx-1].data().tsLocal||Date.now())):'';
+      const r=renderMsgEl(d,idx,sortedDocs,cid,prevDate);
       const existing=cont.querySelector(`[data-msgid="${d.id}"]`);
-      // Encontrar el nodo de referencia correcto buscando por data-msgid del SIGUIENTE
-      // mensaje en snap.docs (no por índice numérico de cont.children, que se desalinea
-      // porque cada mensaje puede generar 1 o 2 nodos DOM — el separador de fecha + el mensaje).
       function findRefNode(){
-        for(let i=idx+1;i<snap.docs.length;i++){
-          const nextEl=cont.querySelector(`[data-msgid="${snap.docs[i].id}"]`);
+        for(let i=idx+1;i<sortedDocs.length;i++){
+          const nextEl=cont.querySelector(`[data-msgid="${sortedDocs[i].id}"]`);
           if(nextEl){
-            // El nodo de referencia debe ser el PRIMER nodo de ese mensaje (puede tener
-            // un .datesep inmediatamente antes que pertenece a ese mismo mensaje).
             const prevSibling=nextEl.previousElementSibling;
             if(prevSibling&&prevSibling.classList.contains('datesep'))return prevSibling;
             return nextEl;
           }
         }
-        return null; // No hay mensaje posterior renderizado aún → insertar al final
+        return null;
       }
-      if(change.type==='added'){
-        if(existing){
-          existing.outerHTML=r.html;
-        } else {
-          const div=document.createElement('div');
-          div.innerHTML=r.html;
-          const refNode=findRefNode();
-          while(div.firstChild){
-            if(refNode)cont.insertBefore(div.firstChild,refNode);
-            else cont.appendChild(div.firstChild);
-          }
-          hasNew=true;
-        }
-        renderedIds.add(d.id);
-      } else if(change.type==='modified'){
-        if(existing){
-          existing.outerHTML=r.html;
-        } else {
-          const div=document.createElement('div');
-          div.innerHTML=r.html;
-          const refNode=findRefNode();
-          while(div.firstChild){
-            if(refNode)cont.insertBefore(div.firstChild,refNode);
-            else cont.appendChild(div.firstChild);
-          }
-          hasNew=true;
-        }
-        renderedIds.add(d.id);
-      } else if(change.type==='removed'){
+      if(change.type==='removed'){
         if(existing)existing.remove();
         renderedIds.delete(d.id);
+        return;
       }
+      // added o modified: mismo tratamiento
+      if(existing){
+        existing.outerHTML=r.html;
+      } else {
+        const div=document.createElement('div');
+        div.innerHTML=r.html;
+        const refNode=findRefNode();
+        while(div.firstChild){
+          if(refNode)cont.insertBefore(div.firstChild,refNode);
+          else cont.appendChild(div.firstChild);
+        }
+        hasNew=true;
+      }
+      renderedIds.add(d.id);
     });
-    lastCount=snap.docs.length;
+    lastCount=sortedDocs.length;
     if(hasNew&&wasAtBottom){
       requestAnimationFrame(()=>{cont.scrollTop=cont.scrollHeight;});
       setTimeout(()=>{cont.scrollTop=cont.scrollHeight;},150);
@@ -3463,7 +3482,6 @@ function loadMsgs(){
     } else if(!hasNew){
       cont.scrollTop=savedScrollTop;
     }
-    firstLoad=false;
   });
 }
 
